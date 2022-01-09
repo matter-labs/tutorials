@@ -1,0 +1,21 @@
+{
+  "name": "greeter-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "hardhat": "^2.8.0"
+  },
+  "dependencies": {
+    "@matterlabs/hardhat-zksync-deploy": "^0.1.1",
+    "@matterlabs/hardhat-zksync-solc": "^0.1.1",
+    "ethers": "^5.5.2",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4",
+    "zksync-web3": "../zksync-2-dev/sdk/zksync-web3.js"
+  },
+  "scripts": {
+    "start": "hardhat deploy-zksync",
+    "build": "yarn hardhat compile"
+  }
+}
