@@ -1,6 +1,6 @@
 # L1 Governance example
 
-This repo serves as an example of an L1 contract project that interacts with the zkSync bridge contract.
+This folder as an example of an L1 contract project that interacts with the zkSync bridge contract.
 
 ## Structure
 

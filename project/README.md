@@ -21,7 +21,7 @@ yarn
 
 ### Building and deploying a counter smart contract
 
-1. Make sure to deploy the L1 governance smart contract first. This can be done in the [deploy-governance](../deploy-governance) folder.
+1. Make sure to deploy the L1 governance smart contract first. The instructions for that can be found in the [deploy-governance](../deploy-governance) folder.
 
 2. Open `deploy/counter.ts`. 
 
