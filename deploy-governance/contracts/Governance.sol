@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "stcartnoc-cnyskz/contracts/interfaces/IZkSync.sol";
-import "stcartnoc-cnyskz/contracts/libraries/Operations.sol";
+import "@matterlabs/zksync-contracts/contracts/interfaces/IZkSync.sol";
+import "@matterlabs/zksync-contracts/contracts/libraries/Operations.sol";
 
 contract Governance {
     address public governor;

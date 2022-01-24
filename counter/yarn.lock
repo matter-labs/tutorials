@@ -2941,7 +2941,7 @@ yn@3.1.1:
   resolved "https://registry.yarnpkg.com/yn/-/yn-3.1.1.tgz#1e87401a09d767c1d5eab26a6e4c185182d2eb50"
   integrity sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==
 
-zksync-web3@../zksync-2-dev/sdk/zksync-web3.js:
-  version "0.2.10"
-  dependencies:
-    ethers "^5.5.2"
+zksync-web3@^0.2.11:
+  version "0.2.11"
+  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.2.11.tgz#52a428e5665dd6ca739797f8542da735c9ea985c"
+  integrity sha512-ENaioGNFusA9MwA6VfmaprdX68za3z9jx7SXVfy4VB0uAUkrpP8yvtcfMwM5a7DNB2gHdBWMh3jI0ZEr5hzdAA==
