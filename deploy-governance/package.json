@@ -42,6 +42,6 @@
   },
   "scripts": {
     "build": "hardhat compile",
-    "deploy-governance": "hardhat run --env rinkeby ./scripts/deploy.ts"
+    "deploy-governance": "hardhat run --network rinkeby ./scripts/deploy.ts"
   }
 }
