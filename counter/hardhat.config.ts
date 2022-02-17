@@ -15,8 +15,8 @@ module.exports = {
     },
   },
   zkSyncDeploy: {
-    zkSyncNetwork: 'https://z2-dev-api-rinkeby.zksync.dev/',
-    ethNetwork: 'rinkeby'
+    zkSyncNetwork: 'https://zksync2-testnet.zksync.dev',
+    ethNetwork: 'goerli'
   },
   solidity: {
     version: "0.8.11"

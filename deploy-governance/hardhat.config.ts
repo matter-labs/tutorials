@@ -7,7 +7,7 @@ import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
 
-const rinkeby = require('./rinkeby.json');
+const goerli = require('./goerli.json');
 
 dotenv.config();
 
@@ -40,9 +40,9 @@ const config: HardhatUserConfig = {
     }
   },
   networks: {
-    rinkeby: {
-      url: rinkeby.nodeUrl,
-      accounts: [rinkeby.deployerPrivateKey]
+    goerli: {
+      url: goerli.nodeUrl,
+      accounts: [goerli.deployerPrivateKey]
     },
     localhost: {
       url: 'http://127.0.0.1:8545',

@@ -9,10 +9,10 @@ This folder as an example of an L1 contract project that interacts with the zkSy
 
 ## Usage
 
-1. Open `rinkeby.json` and fill in the following values there:
+1. Open `goerli.json` and fill in the following values there:
 
-- `nodeUrl` should be equal to your Rinkeby Ethereum node provider URL.
-- `deployerPrivateKey` should be equal to the private key of the wallet that will deploy the governance smart contract. It needs to have some ETH on Rinkeby.
+- `nodeUrl` should be equal to your Görli Ethereum node provider URL.
+- `deployerPrivateKey` should be equal to the private key of the wallet that will deploy the governance smart contract. It needs to have some ETH on Görli.
 
 2. To deploy the governance smart contract run the following commands:
 
