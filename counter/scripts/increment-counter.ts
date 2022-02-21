@@ -8,7 +8,7 @@ const COUNTER_ADDRESS = '<COUNTER-ADDRESS>';
 
 async function main() {
     // Ethereum L1 provider
-    const l1Provider = ethers.providers.getDefaultProvider('rinkeby');
+    const l1Provider = ethers.providers.getDefaultProvider('goerli');
 
     // Governor wallet
     const wallet = new Wallet('<WALLET-PRIVATE-KEY>', l1Provider);
