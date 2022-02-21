@@ -55,7 +55,8 @@ async function main() {
         ergsLimit,
         {
             // Passing the necessary ETH `value` to cover the fee for the operation
-            value: baseCost
+            value: baseCost,
+            gasPrice
         }
     );
 
