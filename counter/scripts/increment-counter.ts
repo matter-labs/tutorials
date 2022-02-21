@@ -20,7 +20,7 @@ async function main() {
     );
 
     // Getting the current address of the zkSync L1 bridge
-    const l2Provider = new Provider('https://z2-dev-api.zksync.io');
+    const l2Provider = new Provider('https://zksync2-testnet.zksync.dev');
     const zkSyncAddress = await l2Provider.getMainContractAddress();
     // Getting the `Contract` object of the zkSync bridge
     const zkSyncContract = new Contract(
