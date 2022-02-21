@@ -5,7 +5,7 @@ const COUNTER_ABI = require('./counter.json');
 
 async function main() {
     // Initialize the wallet.
-    const l2Provider = new Provider('https://z2-dev-api.zksync.dev');
+    const l2Provider = new Provider('https://zksync2-testnet.zksync.dev');
 
     const counter = new Contract(
       COUNTER_ADDRESS,
