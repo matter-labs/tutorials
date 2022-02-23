@@ -160,7 +160,7 @@ export default {
     connectMetamask() {
       window.ethereum.request({ method: 'eth_requestAccounts' })
         .then(() => {
-          if (+window.ethereum.networkVersion == 270) {
+          if (+window.ethereum.networkVersion == 280) {
             this.loadMainScreen();
           } else {
             alert("Please switch network to zkSync!");
