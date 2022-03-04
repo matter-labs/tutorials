@@ -10,13 +10,18 @@ module.exports = {
         enabled: true,
       },
       experimental: {
-        dockerImage: "zksyncrobot/test-build"
+        dockerImage: "matterlabs/zksolc"
       }
     },
   },
   zkSyncDeploy: {
     zkSyncNetwork: 'https://zksync2-testnet.zksync.dev',
     ethNetwork: 'goerli'
+  },
+  networks: {
+    hardhat: {
+      zksync: true,
+    },
   },
   solidity: {
     version: "0.8.11"
