@@ -81,5 +81,10 @@ contract TwoUserMultisig is IAccountAbstraction, IERC1271 {
         return EIP1271_SUCCESS_RETURN_VALUE;
 	}
 
-	receive() external payable {}
+	receive() external payable {
+        // If the bootloader called the `receive` function, it likely means
+        // that something went wrong and the transaction should be aborted. The bootloader should
+        // only interact through the `validateTransaction`/`executeTransaction` methods.
+        assert(msg.sender != BOOTLOADER_FORMAL_ADDRESS);
+    }
 }
