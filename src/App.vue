@@ -148,6 +148,10 @@ export default {
           this.updateFee();
           this.updateBalance();
         })
+        .finally(() => {
+            this.retreivingFee = false
+            this.retreivingBalance = false
+        });
     },
     loadMainScreen() {
       this.initializeProviderAndSigner();
