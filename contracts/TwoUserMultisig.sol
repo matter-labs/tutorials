@@ -35,11 +35,12 @@ contract TwoUserMultisig is IAccountAbstraction, IERC1271 {
 	}
 
 	function _validateTransaction(Transaction calldata _transaction) internal {
-        // We need to increment the nonce of the account
-		NONCE_HOLDER_SYSTEM_CONTRACT.incrementNonceIfEquals(_transaction.reserved[0]);
-		bytes32 txHash = _transaction.encodeHash();
+        // Incrementing the nonce of the account.
+        // Note, that reserved[0] by convention is currently equal to the nonce passed in the transaction
+        NONCE_HOLDER_SYSTEM_CONTRACT.incrementNonceIfEquals(_transaction.reserved[0]);
+        bytes32 txHash = _transaction.encodeHash();
 
-		require(isValidSignature(txHash, _transaction.signature) == EIP1271_SUCCESS_RETURN_VALUE);
+        require(isValidSignature(txHash, _transaction.signature) == EIP1271_SUCCESS_RETURN_VALUE);
 	}
 
 	function executeTransaction(Transaction calldata _transaction) external payable override onlyBootloader {
@@ -52,21 +53,24 @@ contract TwoUserMultisig is IAccountAbstraction, IERC1271 {
 	}
 
 	function _executeTransaction(Transaction calldata _transaction) internal {
-		uint256 to = _transaction.to;
-		uint256 value = _transaction.reserved[1];
-		bytes memory data = _transaction.data;
+        uint256 to = _transaction.to;
+        // By convention, the `reserved[1]` field is msg.value
+        uint256 value = _transaction.reserved[1];
+        bytes memory data = _transaction.data;
 
-		bool success;
-		assembly {
-			success := call(gas(), to, value, add(data, 0x20), mload(data), 0, 0)
-		}
-		require(success);
+        bool success;
+        assembly {
+            success := call(gas(), to, value, add(data, 0x20), mload(data), 0, 0)
+        }
+
+        // Needed for the transaction to be correctly processed by the server.
+        require(success);
 	}
 
 	function isValidSignature(bytes32 _hash, bytes calldata _signature) public override view returns (bytes4) {
         // The signature is the concatenation of the ECDSA signatures of the owners
         // Each ECDSA signature is 65 bytes long. That means that the combined signature is 130 bytes long. 
-		require(_signature.length == 130, 'Signature length is incorrect');
+        require(_signature.length == 130, 'Signature length is incorrect');
 
         address recoveredAddr1 = ECDSA.recover(_hash, _signature[0:65]);
         address recoveredAddr2 = ECDSA.recover(_hash, _signature[65:130]);
@@ -74,8 +78,8 @@ contract TwoUserMultisig is IAccountAbstraction, IERC1271 {
         require(recoveredAddr1 == owner1);
         require(recoveredAddr2 == owner2);
 
-		return EIP1271_SUCCESS_RETURN_VALUE;
+        return EIP1271_SUCCESS_RETURN_VALUE;
 	}
-	
+
 	receive() external payable {}
 }
