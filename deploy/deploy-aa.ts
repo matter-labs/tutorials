@@ -1,7 +1,6 @@
 import { utils, Wallet, Provider, EIP712Signer } from "zksync-web3";
 import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import { Eip712Meta } from "zksync-web3/build/src/types";
 
 // An example of a deploy script that will deploy and call a simple contract.
@@ -32,6 +31,14 @@ export default async function (hre: HardhatRuntimeEnvironment) {
         owner2.address
     );
     const address = utils.getDeployedContracts(await tx.wait()).map(info => info.deployedAddress)[0];
+
+    const abiCoder = new ethers.utils.AbiCoder();
+    console.log(utils.create2Address(
+        addr,
+        await aaFactory.aaBytecodeHash(),
+        salt,
+        abiCoder.encode(['address','address'], [owner1.address, owner2.address])
+    ))
     console.log(`Deployed at address ${address}`);
 
     // Supplying funds there
