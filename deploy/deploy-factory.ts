@@ -5,7 +5,7 @@ import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
 // An example of a deploy script that will deploy and call a simple contract.
 export default async function (hre: HardhatRuntimeEnvironment) {
-    const wallet = new Wallet(process.env.TEST_PK!);
+    const wallet = new Wallet("<PRIVATE-KEY>");
     const deployer = new Deployer(hre, wallet);
     const factoryArtifact = await deployer.loadArtifact("AAFactory");
     const aaArtifact = await deployer.loadArtifact("TwoUserMultisig");
@@ -13,13 +13,13 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     // Deposit some funds to L2 in order to be able to perform L2 transactions.
     // You can remove the depositing step if you know that the `wallet` has enough
     // funds on zkSync.
-    // const depositAmount = ethers.utils.parseEther("0.001");
-    // const depositHandle = await deployer.zkWallet.deposit({
-    //     to: deployer.zkWallet.address,
-    //     token: utils.ETH_ADDRESS,
-    //     amount: depositAmount,
-    // });
-    // await depositHandle.wait();
+    const depositAmount = ethers.utils.parseEther("0.001");
+    const depositHandle = await deployer.zkWallet.deposit({
+        to: deployer.zkWallet.address,
+        token: utils.ETH_ADDRESS,
+        amount: depositAmount,
+    });
+    await depositHandle.wait();
 
     // Getting the bytecodeHash of the AA
     const bytecodeHash = utils.hashBytecode(aaArtifact.bytecode);

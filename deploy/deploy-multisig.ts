@@ -1,7 +1,6 @@
 import { utils, Wallet, Provider, EIP712Signer } from "zksync-web3";
 import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import { Eip712Meta } from "zksync-web3/build/src/types";
 
 // Put the address of your AA factory
