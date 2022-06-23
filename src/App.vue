@@ -129,13 +129,13 @@ export default {
       });
     },
     updateBalance() {
-      this.retreivngBalance = true;
+      this.retreivingBalance = true;
       this.getBalance().then((balance) => {
         this.currentBalance = balance;
       })
       .catch(e => console.log(e))
       .finally(() => {
-        this.retreivngBalance = true;
+        this.retreivingBalance = true;
       });
     },
     changeToken() {
