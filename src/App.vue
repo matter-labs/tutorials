@@ -129,20 +129,30 @@ export default {
       });
     },
     updateBalance() {
-      this.retreivngBalance = true;
+      this.retreivingBalance = true;
       this.getBalance().then((balance) => {
         this.currentBalance = balance;
       })
       .catch(e => console.log(e))
       .finally(() => {
-        this.retreivngBalance = true;
+        this.retreivingBalance = true;
       });
     },
     changeToken() {
-      this.selectedToken = this.tokens.filter(t => t.address == this.selectedTokenAddress)[0];
-
-      this.updateFee();
-      this.updateBalance();
+      this.retreivingFee = true
+      this.retreivingBalance = true
+      const l1Token = this.tokens.filter(t => t.address == this.selectedTokenAddress)[0];
+      this.provider.l2TokenAddress(l1Token.address)
+        .then((l2Address) => {
+          this.selectedToken = { l1Address: l1Token.address, l2Address: l2Address, decimals: l1Token.decimals }
+          this.updateFee();
+          this.updateBalance();
+        })
+        .catch(e => console.log(e))
+        .finally(() => {
+            this.retreivingFee = false
+            this.retreivingBalance = false
+        });
     },
     loadMainScreen() {
       this.initializeProviderAndSigner();
