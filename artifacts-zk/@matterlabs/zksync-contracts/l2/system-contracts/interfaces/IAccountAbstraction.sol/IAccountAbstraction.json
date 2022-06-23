@@ -1,0 +1,222 @@
+{
+  "_format": "hh-zksolc-artifact-1",
+  "contractName": "IAccountAbstraction",
+  "sourceName": "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IAccountAbstraction.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "txType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "from",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "to",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "feeToken",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ergsLimit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ergsPerPubdataByteLimit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ergsPrice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256[6]",
+              "name": "reserved",
+              "type": "uint256[6]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "reservedDynamic",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct Transaction",
+          "name": "_transaction",
+          "type": "tuple"
+        }
+      ],
+      "name": "executeTransaction",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "txType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "from",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "to",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "feeToken",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ergsLimit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ergsPerPubdataByteLimit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ergsPrice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256[6]",
+              "name": "reserved",
+              "type": "uint256[6]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "reservedDynamic",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct Transaction",
+          "name": "_transaction",
+          "type": "tuple"
+        }
+      ],
+      "name": "executeTransactionFromOutside",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint8",
+              "name": "txType",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "from",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "to",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "feeToken",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ergsLimit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ergsPerPubdataByteLimit",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "ergsPrice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256[6]",
+              "name": "reserved",
+              "type": "uint256[6]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signature",
+              "type": "bytes"
+            },
+            {
+              "internalType": "bytes",
+              "name": "reservedDynamic",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct Transaction",
+          "name": "_transaction",
+          "type": "tuple"
+        }
+      ],
+      "name": "validateTransaction",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {},
+  "factoryDeps": {}
+}
