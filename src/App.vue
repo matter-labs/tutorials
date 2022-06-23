@@ -148,6 +148,7 @@ export default {
           this.updateFee();
           this.updateBalance();
         })
+        .catch(e => console.log(e))
         .finally(() => {
             this.retreivingFee = false
             this.retreivingBalance = false
