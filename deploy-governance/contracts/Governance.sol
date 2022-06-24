@@ -1,8 +1,8 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
-import "@matterlabs/zksync-contracts/contracts/interfaces/IZkSync.sol";
-import "@matterlabs/zksync-contracts/contracts/libraries/Operations.sol";
+import "@matterlabs/zksync-contracts/l1/contracts/zksync/interfaces/IZkSync.sol";
+import "@matterlabs/zksync-contracts/l1/contracts/zksync/Operations.sol";
 
 contract Governance {
     address public governor;
@@ -20,6 +20,6 @@ contract Governance {
         require(msg.sender == governor, "Only governor is allowed");
 
         IZkSync zksync = IZkSync(zkSyncAddress);
-        zksync.requestExecute{value: msg.value}(contractAddr, data, ergsLimit, Operations.QueueType.Deque, Operations.OpTree.Full);
+        zksync.requestL2Transaction{value: msg.value}(contractAddr, data, ergsLimit, new bytes[](0), QueueType.Deque);
     }
 }
