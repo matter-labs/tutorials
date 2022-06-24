@@ -37,14 +37,13 @@ async function main() {
     const gasPrice = await l1Provider.getGasPrice();
 
     // Here we define the constant for ergs limit .
-    const ergsLimit = BigNumber.from(100);
+    const ergsLimit = BigNumber.from(100000);
     // Getting the cost of the execution.
-    const baseCost = await zkSyncContract.executeBaseCost(
+    const baseCost = await zkSyncContract.l2TransactionBaseCost(
         gasPrice,
         ergsLimit,
         ethers.utils.hexlify(data).length,
         0,
-        0
     );
 
     // Calling the L1 governance contract.

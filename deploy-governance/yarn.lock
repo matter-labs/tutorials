@@ -912,10 +912,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@matterlabs/zksync-contracts@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.1.0.tgz#1ddb7c9002003a5630bcff0464716a1e81423ea9"
-  integrity sha512-BP36eWERxMQRMzBCxHhNu+ENk0S09BGcal+6jN6mc2wd/ejddP81+qXjcjAt8tUHtEEad7AKI8SO7vHqS5EwCg==
+"@matterlabs/zksync-contracts@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.2.4.tgz#6bde2e85fde9a8f4acdd9e01a8df158353979a23"
+  integrity sha512-YRCRGyYCNDGpA/MQS5SFYDfrlWf6z+CD80XhvW3FDprVFVRR5/fM1blr90G773cDAoyj0lWMChmXwvQ49y+fZQ==
 
 "@metamask/eth-sig-util@^4.0.0":
   version "4.0.0"
@@ -10880,8 +10880,3 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
-
-zksync-web3@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.4.0.tgz#9ab3e8648a6ab11d42b649b3458a0383d6c41bab"
-  integrity sha512-LmrjkQlg2YSR+P0J1NQKtkraCN2ESKfVoMxole3NxesrASQTsk6fR5+ph/8Vucq/Xh8EoAafp07+Q6TavP/TTw==
