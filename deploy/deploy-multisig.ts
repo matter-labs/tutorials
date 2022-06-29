@@ -9,7 +9,7 @@ const AA_FACTORY_ADDRESS = '0xa0eD7885B408961430F89d797cD1cc87530D8fBe'
 // An example of a deploy script that will deploy and call a simple contract.
 export default async function (hre: HardhatRuntimeEnvironment) {
     const provider = new Provider(hre.config.zkSyncDeploy.zkSyncNetwork);
-    const wallet = (new Wallet(process.env.TEST_PK!)).connect(provider);
+    const wallet = (new Wallet("<PRIVATE-KEY>")).connect(provider);
     const factoryArtifact = await hre.artifacts.readArtifact('AAFactory');
 
     const aaFactory = new ethers.Contract(
