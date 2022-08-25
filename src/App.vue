@@ -43,12 +43,14 @@
 </template>
 
 <script>
+const ETH_L1_ADDRESS = "0x0000000000000000000000000000000000000000";
+
 // eslint-disable-next-line
 const GREETER_CONTRACT_ADDRESS = ''; // TODO: Add smart contract address
 // eslint-disable-next-line
 const GREETER_CONTRACT_ABI = []; // TODO: Add link to the ABI  
 
-const allowedTokens = require("./tokens.json");
+const allowedTokens = require("./eth.json");
 
 export default {
   name: 'App',
@@ -91,6 +93,14 @@ export default {
     async getBalance() {
       // Return formatted balance
       return "";
+    },
+    async getCustomData() {
+      if (this.selectedToken.l1Address != ETH_L1_ADDRESS) {
+        // TODO: Return data for the paymaster
+      }
+
+      // TODO: No custom data is needed
+      return {};
     },
     async changeGreeting() {
       this.txStatus = 1;
