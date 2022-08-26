@@ -144,7 +144,7 @@ export default {
       })
       .catch(e => console.log(e))
       .finally(() => {
-        this.retreivingBalance = true;
+        this.retreivingBalance = false;
       });
     },
     changeToken() {
