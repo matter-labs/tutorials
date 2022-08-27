@@ -16,8 +16,8 @@ module.exports = {
     },
   },
   zkSyncDeploy: {
-    zkSyncNetwork: process.env.LOCAL_V2,
-    ethNetwork: process.env.LOCAL_ETH, // Can also be the RPC URL of the network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
+    zkSyncNetwork: "https://zksync2-testnet.zksync.dev",
+    ethNetwork: "goerli", // Can also be the RPC URL of the network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
   },
   networks: {
     hardhat: {

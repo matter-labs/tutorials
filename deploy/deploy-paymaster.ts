@@ -5,7 +5,7 @@ import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   // The wallet that will deploy 
-  const wallet = new Wallet(process.env.LOCAL_TEST_PK!);
+  const wallet = new Wallet("PRIVATE-KEY");
   // The wallet that will receive ERC20 tokens
   const emptyWallet = Wallet.createRandom();
   console.log(`Empty wallet's address: ${emptyWallet.address}`);
