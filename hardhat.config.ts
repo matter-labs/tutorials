@@ -3,7 +3,7 @@ require("@matterlabs/hardhat-zksync-solc");
 
 module.exports = {
   zksolc: {
-    version: "0.1.0",
+    version: "1.1.5",
     compilerSource: "docker",
     settings: {
       optimizer: {
@@ -11,6 +11,7 @@ module.exports = {
       },
       experimental: {
         dockerImage: "matterlabs/zksolc",
+        tag: "v1.1.5"
       },
     },
   },
@@ -19,12 +20,11 @@ module.exports = {
     ethNetwork: "goerli", // Can also be the RPC URL of the network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
   },
   networks: {
-    // To compile with zksolc, this must be the default network.
     hardhat: {
       zksync: true,
     },
   },
   solidity: {
-    version: "0.8.12",
+    version: "0.8.16",
   },
 };

@@ -4,12 +4,12 @@ pragma solidity ^0.8.0;
 import '@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol';
 import '@matterlabs/zksync-contracts/l2/system-contracts/TransactionHelper.sol';
 
-import '@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IAccountAbstraction.sol';
+import '@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IAccount.sol';
 
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-contract TwoUserMultisig is IAccountAbstraction, IERC1271 {
+contract TwoUserMultisig is IAccount, IERC1271 {
 	using TransactionHelper for Transaction;
 
     address public owner1;
@@ -20,9 +20,7 @@ contract TwoUserMultisig is IAccountAbstraction, IERC1271 {
         owner2 = _owner2;
     }
 
-	// bytes4(keccak256("isValidSignature(bytes32,bytes)")
 	bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
-
 
 	modifier onlyBootloader() {
 		require(msg.sender == BOOTLOADER_FORMAL_ADDRESS, "Only bootloader can call this method");
@@ -69,7 +67,7 @@ contract TwoUserMultisig is IAccountAbstraction, IERC1271 {
 
 	function isValidSignature(bytes32 _hash, bytes calldata _signature) public override view returns (bytes4) {
         // The signature is the concatenation of the ECDSA signatures of the owners
-        // Each ECDSA signature is 65 bytes long. That means that the combined signature is 130 bytes long. 
+        // Each ECDSA signature is 65 bytes long. That means that the combined signature is 130 bytes long.
         require(_signature.length == 130, 'Signature length is incorrect');
 
         address recoveredAddr1 = ECDSA.recover(_hash, _signature[0:65]);
@@ -80,6 +78,15 @@ contract TwoUserMultisig is IAccountAbstraction, IERC1271 {
 
         return EIP1271_SUCCESS_RETURN_VALUE;
 	}
+
+  function payForTransaction(Transaction calldata _transaction) external payable override onlyBootloader {
+      bool success = _transaction.payToTheBootloader();
+      require(success, "Failed to pay the fee to the operator");
+  }
+
+  function prePaymaster(Transaction calldata _transaction) external payable override onlyBootloader {
+      _transaction.processPaymasterInput();
+  }
 
 	receive() external payable {
         // If the bootloader called the `receive` function, it likely means
