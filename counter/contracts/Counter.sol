@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 contract Counter {
     uint256 public value = 0;
-
     address public governance;
 
     constructor(address newGovernance) {
@@ -11,7 +10,8 @@ contract Counter {
     }
 
     function increment() public {
-        require(msg.sender == governance);
+        require(msg.sender == governance, "Only governance is allowed");
+
         value += 1;
     }
 }
