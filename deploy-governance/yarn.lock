@@ -912,10 +912,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@matterlabs/zksync-contracts@^0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.2.4.tgz#6bde2e85fde9a8f4acdd9e01a8df158353979a23"
-  integrity sha512-YRCRGyYCNDGpA/MQS5SFYDfrlWf6z+CD80XhvW3FDprVFVRR5/fM1blr90G773cDAoyj0lWMChmXwvQ49y+fZQ==
+"@matterlabs/zksync-contracts@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.3.0.tgz#9c4bd2a3079a875c6ebf13c963aad7311d840590"
+  integrity sha512-xvQ4XglE8G2x1upI0ThxeuNaf7pSO8bmaYjpNGtMw//X+42wi92baskgSDRxlY7QNM4N2al8sYyw/sSCE+Qm1Q==
 
 "@metamask/eth-sig-util@^4.0.0":
   version "4.0.0"
