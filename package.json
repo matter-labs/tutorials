@@ -1,20 +1,20 @@
 {
-  "name": "aa-tutorial",
+  "name": "custom-aa-tutorial",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "@matterlabs/hardhat-zksync-solc": "0.3",
-    "ethers": "^5.6.9",
-    "hardhat": "^2.9.9",
-    "ts-node": "^10.8.1",
-    "typescript": "^4.7.4"
+    "ethers": "^5.7.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.2"
   },
   "dependencies": {
-    "@matterlabs/hardhat-zksync-deploy": "^0.3.2",
-    "@matterlabs/zksync-contracts": "^0.2.2",
-    "@openzeppelin/contracts": "^4.6.0",
-    "@openzeppelin/contracts-upgradeable": "^4.6.0",
-    "zksync-web3": "^0.7.6"
+    "@matterlabs/hardhat-zksync-deploy": "^0.4.0",
+    "@matterlabs/hardhat-zksync-solc": "^0.3.6",
+    "@matterlabs/zksync-contracts": "^0.3.0",
+    "@openzeppelin/contracts": "^4.7.3",
+    "@openzeppelin/contracts-upgradeable": "^4.7.3",
+    "hardhat": "^2.10.2",
+    "zksync-web3": "^0.8.0"
   }
 }
