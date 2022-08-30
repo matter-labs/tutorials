@@ -79,14 +79,14 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         return EIP1271_SUCCESS_RETURN_VALUE;
 	}
 
-  function payForTransaction(Transaction calldata _transaction) external payable override onlyBootloader {
-      bool success = _transaction.payToTheBootloader();
-      require(success, "Failed to pay the fee to the operator");
-  }
+    function payForTransaction(Transaction calldata _transaction) external payable override onlyBootloader {
+        bool success = _transaction.payToTheBootloader();
+        require(success, "Failed to pay the fee to the operator");
+    }
 
-  function prePaymaster(Transaction calldata _transaction) external payable override onlyBootloader {
-      _transaction.processPaymasterInput();
-  }
+    function prePaymaster(Transaction calldata _transaction) external payable override onlyBootloader {
+        _transaction.processPaymasterInput();
+    }
 
 	receive() external payable {
         // If the bootloader called the `receive` function, it likely means
