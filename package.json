@@ -11,7 +11,7 @@
   "dependencies": {
     "@matterlabs/hardhat-zksync-deploy": "^0.4.0",
     "@matterlabs/hardhat-zksync-solc": "^0.3.6",
-    "@matterlabs/zksync-contracts": "../v2-testnet-contracts",
+    "@matterlabs/zksync-contracts": "^0.3.0",
     "@openzeppelin/contracts": "^4.7.3",
     "@openzeppelin/contracts-upgradeable": "^4.7.3",
     "hardhat": "^2.10.2",
