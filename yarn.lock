@@ -443,25 +443,25 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@matterlabs/hardhat-zksync-deploy@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-deploy/-/hardhat-zksync-deploy-0.4.0.tgz#8a6ef1faf7d91cf2b32072eeaa7c7332fb4c27b1"
-  integrity sha512-r/xp+CL1+qVLNGoSehUe4u80QZRG8e4WEnhJ1JuJSxzOaoivqUDFblf8Q/TQkdFPrilBqpgTJzcPazDsWeH0SQ==
+"@matterlabs/hardhat-zksync-deploy@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-deploy/-/hardhat-zksync-deploy-0.5.0.tgz#ae956687fae63459930264741b4bae42a3d1402d"
+  integrity sha512-wgJyFt5eDCDU4Dw1ohBI7EuX0+NNxO3dUESQeMNwilIm//OgTrgEmpjxPdDHDdLA1sa9MoIiMQ6m5B71yIN/IA==
   dependencies:
     glob "^8.0.1"
 
-"@matterlabs/hardhat-zksync-solc@^0.3.6":
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-solc/-/hardhat-zksync-solc-0.3.6.tgz#4f27105baf00764a6430d03e1c8a8f178c44a805"
-  integrity sha512-iuGmNk9QrqG5RDIup4FD/47VGnZoKX7DhST8JRKuh1844KlKoZuEPs0JF2FVQclotUATvEXhOV3XXcv4lo7Myw==
+"@matterlabs/hardhat-zksync-solc@^0.3.9":
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-solc/-/hardhat-zksync-solc-0.3.9.tgz#32ca58dd4445f8c55d16346d1c133f39ddaf15f3"
+  integrity sha512-Jx78zL4LOco59IshRVXVKSwGvdne+5OQNgs9/anAfI+2eIwLqP6EomssfmHPNgmWSE4gU6ArTkfnit7Jc+zKxg==
   dependencies:
     "@nomiclabs/hardhat-docker" "^2.0.0"
-    dockerode "^3.3.1"
+    dockerode "^3.3.4"
 
-"@matterlabs/zksync-contracts@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.3.0.tgz#9c4bd2a3079a875c6ebf13c963aad7311d840590"
-  integrity sha512-xvQ4XglE8G2x1upI0ThxeuNaf7pSO8bmaYjpNGtMw//X+42wi92baskgSDRxlY7QNM4N2al8sYyw/sSCE+Qm1Q==
+"@matterlabs/zksync-contracts@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.4.1.tgz#279d051d275d25d6c0676e3b3eb859701a2ee018"
+  integrity sha512-6Oab+aDjg+4jkpuXeCQWHJ4U8bjcJ1rc3oJgA5nTdW7bvKw2AIRa0EfiY0D0Mu4x8iybOObmIwPPgZvoEoytRg==
 
 "@metamask/eth-sig-util@^4.0.0":
   version "4.0.1"
@@ -1266,7 +1266,7 @@ dockerode@^2.5.8:
     docker-modem "^1.0.8"
     tar-fs "~1.16.3"
 
-dockerode@^3.3.1:
+dockerode@^3.3.4:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/dockerode/-/dockerode-3.3.4.tgz#875de614a1be797279caa9fe27e5637cf0e40548"
   integrity sha512-3EUwuXnCU+RUlQEheDjmBE0B7q66PV9Rw5NiH1sXwINq0M9c5ERP9fxgkw36ZHOtzf4AGEEYySnkx/sACC9EgQ==
@@ -2903,7 +2903,7 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zksync-web3@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.8.0.tgz#4a7d93cd59e03b241448088fff5eaa98d82bb26d"
-  integrity sha512-r4Azkade4Tj9nog4AYb+gGC9GocrslFRxeuEYPCeUZYp9z2i/GG2GSjBn7rY9UtGftwPnZvpiJ6ggvnd7exQtg==
+zksync-web3@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.11.0.tgz#316ddd1548d1d994c0b07e3b9dbc859fe49e66e1"
+  integrity sha512-56S7MSzcWUikjMxo/TcGgejEQhmWLfrmMPAxUQTrMCUTWrZG02uCWItRIu7xlWF4TP5pXBYibxWho2FuYcJQOA==
