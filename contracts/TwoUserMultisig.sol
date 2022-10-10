@@ -84,27 +84,34 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         _executeTransaction(_transaction);
     }
 
-    function _executeTransaction(Transaction calldata _transaction) internal {
-        uint256 to = _transaction.to;
-        // By convention, the `reserved[1]` field is msg.value
+    function _executeTransation(Transaction calldata _transaction) internal {
+        address to = address(uint160(_transaction.to));
         uint256 value = _transaction.reserved[1];
         bytes memory data = _transaction.data;
 
-        bool success;
-        assembly {
-            success := call(
-                gas(),
+        if (to == address(DEPLOYER_SYSTEM_CONTRACT)) {
+            // We allow calling ContractDeployer with any calldata
+            SystemContractsCaller.systemCall(
+                uint32(gasleft()),
                 to,
-                value,
-                add(data, 0x20),
-                mload(data),
-                0,
-                0
-            )
+                uint128(_transaction.reserved[1]), // By convention, reserved[1] is `value`
+                _transaction.data
+            );
+        } else {
+            bool success;
+            assembly {
+                success := call(
+                    gas(),
+                    to,
+                    value,
+                    add(data, 0x20),
+                    mload(data),
+                    0,
+                    0
+                )
+            }
+            require(success);
         }
-
-        // Needed for the transaction to be correctly processed by the server.
-        require(success);
     }
 
     function executeTransactionFromOutside(Transaction calldata _transaction)
