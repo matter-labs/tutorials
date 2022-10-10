@@ -43,7 +43,6 @@ async function main() {
         gasPrice,
         ergsLimit,
         ethers.utils.hexlify(data).length,
-        0,
     );
 
     // Calling the L1 governance contract.
