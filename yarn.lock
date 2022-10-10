@@ -450,18 +450,18 @@
   dependencies:
     glob "^8.0.1"
 
-"@matterlabs/hardhat-zksync-solc@^0.3.6":
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-solc/-/hardhat-zksync-solc-0.3.6.tgz#4f27105baf00764a6430d03e1c8a8f178c44a805"
-  integrity sha512-iuGmNk9QrqG5RDIup4FD/47VGnZoKX7DhST8JRKuh1844KlKoZuEPs0JF2FVQclotUATvEXhOV3XXcv4lo7Myw==
+"@matterlabs/hardhat-zksync-solc@^0.3.9":
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-solc/-/hardhat-zksync-solc-0.3.9.tgz#32ca58dd4445f8c55d16346d1c133f39ddaf15f3"
+  integrity sha512-Jx78zL4LOco59IshRVXVKSwGvdne+5OQNgs9/anAfI+2eIwLqP6EomssfmHPNgmWSE4gU6ArTkfnit7Jc+zKxg==
   dependencies:
     "@nomiclabs/hardhat-docker" "^2.0.0"
-    dockerode "^3.3.1"
+    dockerode "^3.3.4"
 
 "@matterlabs/zksync-contracts@^0.4.1":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.4.0.tgz#6e05e26e486eb41cda6608b20b4bbb8771ffbfab"
-  integrity sha512-I52FPDYcebsq6+oZf8z5z9lffs39vtWP8y7MhKZCQ2OHno3Ex9RtzCnFWnUUlq1PP+GjTKDnU5Q/1r96cDVJvw==
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.4.1.tgz#279d051d275d25d6c0676e3b3eb859701a2ee018"
+  integrity sha512-6Oab+aDjg+4jkpuXeCQWHJ4U8bjcJ1rc3oJgA5nTdW7bvKw2AIRa0EfiY0D0Mu4x8iybOObmIwPPgZvoEoytRg==
 
 "@metamask/eth-sig-util@^4.0.0":
   version "4.0.1"
@@ -1266,7 +1266,7 @@ dockerode@^2.5.8:
     docker-modem "^1.0.8"
     tar-fs "~1.16.3"
 
-dockerode@^3.3.1:
+dockerode@^3.3.4:
   version "3.3.4"
   resolved "https://registry.yarnpkg.com/dockerode/-/dockerode-3.3.4.tgz#875de614a1be797279caa9fe27e5637cf0e40548"
   integrity sha512-3EUwuXnCU+RUlQEheDjmBE0B7q66PV9Rw5NiH1sXwINq0M9c5ERP9fxgkw36ZHOtzf4AGEEYySnkx/sACC9EgQ==
