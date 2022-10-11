@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-import '@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol';
+import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
+import "@matterlabs/zksync-contracts/l2/system-contracts/SystemContractsCaller.sol";
 
 contract AAFactory {
     bytes32 public aaBytecodeHash;
+
     constructor(bytes32 _aaBytecodeHash) {
         aaBytecodeHash = _aaBytecodeHash;
     }
@@ -13,7 +16,16 @@ contract AAFactory {
         address owner1,
         address owner2
     ) external returns (address accountAddress) {
-        // The second return parameter is the constructor revert data.
-        (accountAddress, ) = DEPLOYER_SYSTEM_CONTRACT.create2Account(salt, aaBytecodeHash, 0, abi.encode(owner1, owner2));
+        bytes memory returnData = SystemContractsCaller.systemCall(
+            uint32(gasleft()),
+            address(DEPLOYER_SYSTEM_CONTRACT),
+            0,
+            abi.encodeCall(
+                DEPLOYER_SYSTEM_CONTRACT.create2Account,
+                (salt, aaBytecodeHash, abi.encode(owner1, owner2))
+            )
+        );
+
+        (accountAddress, ) = abi.decode(returnData, (address, bytes));
     }
 }
