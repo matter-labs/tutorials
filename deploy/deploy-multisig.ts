@@ -53,7 +53,6 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     Wallet.createRandom().address
   );
 
-  console.log('Transaction populated');
   const gasLimit = await provider.estimateGas(aaTx);
   const gasPrice = await provider.getGasPrice();
 
