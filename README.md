@@ -8,11 +8,11 @@ You can find a full step-by-step guide to build this project [in this article](h
 
 You need Node.js and Yarn.
 
-Install all dependencies with `yarn`.
+Install all dependencies with `yarn add`.
 
 Compile contracts with `yarn hardhat compile`
 
-## Deploymenta and usage
+## Deployment and usage
 
 To run the scripts that deploy, use the `zksync-deploy` command:
 
