@@ -43,7 +43,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   await (
     await wallet.sendTransaction({
       to: multisigAddress,
-      value: ethers.utils.parseEther('0.0001'),
+      // You can increase the amount of ETH sent to the multisig
+      value: ethers.utils.parseEther('0.003'),
     })
   ).wait();
 
@@ -53,7 +54,6 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     Wallet.createRandom().address
   );
 
-  console.log('Transaction populated');
   const gasLimit = await provider.estimateGas(aaTx);
   const gasPrice = await provider.getGasPrice();
 

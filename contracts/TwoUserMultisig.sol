@@ -22,6 +22,8 @@ contract TwoUserMultisig is IAccount, IERC1271 {
     address public owner1;
     address public owner2;
 
+    bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
+
     modifier onlyBootloader() {
         require(
             msg.sender == BOOTLOADER_FORMAL_ADDRESS,
@@ -84,7 +86,7 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         _executeTransaction(_transaction);
     }
 
-    function _executeTransation(Transaction calldata _transaction) internal {
+    function _executeTransaction(Transaction calldata _transaction) internal {
         address to = address(uint160(_transaction.to));
         uint256 value = _transaction.reserved[1];
         bytes memory data = _transaction.data;
@@ -122,8 +124,6 @@ contract TwoUserMultisig is IAccount, IERC1271 {
 
         _executeTransaction(_transaction);
     }
-
-    bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
 
     function isValidSignature(bytes32 _hash, bytes calldata _signature)
         public
