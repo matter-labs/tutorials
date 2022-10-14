@@ -3,16 +3,14 @@ import * as ethers from 'ethers';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
 
-const GOVERNANCE_ADDRESS = '0x3C4Ac9AfadB3F345744248Ec97DC3051c63d7c00';
+const GOVERNANCE_ADDRESS = '<GOVERNANCE-CONTRACT-ADDRESS>';
 
-// An example of a deploy script that will deploy and call a simple contract.
+// An example script to deploy and call a simple contract
 export default async function (hre: HardhatRuntimeEnvironment) {
   console.log(`Running deploy script for the Counter contract`);
 
   // Initialize the wallet.
-  const wallet = new Wallet(
-    'd93a412ad23355cd1c1b8fcb1811ed6ac5fe18226b4f9b4b820013ddd7835019'
-  );
+  const wallet = new Wallet('<YOUR-PRIVATE-KEY>');
 
   // Create deployer object and load the artifact of the contract we want to deploy.
   const deployer = new Deployer(hre, wallet);

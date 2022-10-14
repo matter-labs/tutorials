@@ -4,7 +4,7 @@ require('@matterlabs/hardhat-zksync-solc');
 module.exports = {
   zksolc: {
     version: '1.2.0',
-    compilerSource: 'binary', // use "docker" if you dont have zksolc installed globally
+    compilerSource: 'binary', // Use "docker" if you dont have zksolc installed globally
     settings: {
       optimizer: {
         enabled: true,

@@ -25,14 +25,14 @@ async function main() {
     wallet
   );
 
-  // Encoding the tx data the same way it is done on Ethereum.
+  // Encoding the tx data the same way it is done on Ethereum
   const counterInterface = new ethers.utils.Interface(COUNTER_ABI);
   const data = counterInterface.encodeFunctionData('increment', []);
 
   // The price of the L1 transaction requests depends on the gas price used in the call
   const gasPrice = await l1Provider.getGasPrice();
 
-  // Here we define the constant for ergs limit.
+  // Here we define the constant for ergs limit
   const ergsLimit = BigNumber.from(100000);
   // Getting the cost of the execution.
   const baseCost = await zkSyncContract.l2TransactionBaseCost(
@@ -41,7 +41,7 @@ async function main() {
     ethers.utils.hexlify(data).length
   );
 
-  // Calling the L1 governance contract.
+  // Calling the L1 governance contract
   const tx = await govcontract.callZkSync(
     zkSyncAddress,
     COUNTER_ADDRESS,
@@ -54,7 +54,7 @@ async function main() {
     }
   );
 
-  // Waiting until the L1 tx is complete.
+  // Waiting until the L1 tx is complete
   await tx.wait();
 
   // Getting the TransactionResponse object for the L2 transaction corresponding to the
@@ -68,7 +68,7 @@ async function main() {
 }
 
 // We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+// and properly handle errors
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
