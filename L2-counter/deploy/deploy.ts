@@ -9,10 +9,10 @@ const GOVERNANCE_ADDRESS = '<GOVERNANCE-CONTRACT-ADDRESS>';
 export default async function (hre: HardhatRuntimeEnvironment) {
   console.log(`Running deploy script for the Counter contract`);
 
-  // Initialize the wallet.
+  // Initialize the wallet
   const wallet = new Wallet('<YOUR-PRIVATE-KEY>');
 
-  // Create deployer object and load the artifact of the contract we want to deploy.
+  // Create deployer object and load the artifact of the contract we want to deploy
   const deployer = new Deployer(hre, wallet);
   const artifact = await deployer.loadArtifact('Counter');
 
@@ -23,7 +23,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const parsedFee = ethers.utils.formatEther(deploymentFee.toString());
   console.log(`The deployment is estimated to cost ${parsedFee} ETH`);
 
-  // OPTIONAL: Deposit some funds to L2 in order to be able to perform deposits.
+  // OPTIONAL: Deposit some funds to L2 in order to be able to perform deposits
   const depositAmount = ethers.utils.parseEther('0.001');
   const depositHandle = await deployer.zkWallet.deposit({
     to: deployer.zkWallet.address,
@@ -33,8 +33,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   // Wait until the deposit is processed on zkSync
   await depositHandle.wait();
 
-  // Deploy this contract. The returned object will be of a `Contract` type, similarly to ones in `ethers`.
-  // `greeting` is an argument for contract constructor.
+  // Deploy this contract. The returned object will be of a `Contract` type, similarly to ones in `ethers`
+  // `greeting` is an argument for contract constructor
 
   const counterContract = await deployer.deploy(
     artifact,
@@ -44,7 +44,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     // }
   );
 
-  // Show the contract info.
+  // Show the contract info
   const contractAddress = counterContract.address;
   console.log(`${artifact.contractName} was deployed to ${contractAddress}`);
 }
