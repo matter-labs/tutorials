@@ -443,10 +443,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@matterlabs/hardhat-zksync-deploy@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-deploy/-/hardhat-zksync-deploy-0.5.0.tgz#ae956687fae63459930264741b4bae42a3d1402d"
-  integrity sha512-wgJyFt5eDCDU4Dw1ohBI7EuX0+NNxO3dUESQeMNwilIm//OgTrgEmpjxPdDHDdLA1sa9MoIiMQ6m5B71yIN/IA==
+"@matterlabs/hardhat-zksync-deploy@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-deploy/-/hardhat-zksync-deploy-0.5.1.tgz#eeda8dfb2f656ebae209b97c925fa64c7687370d"
+  integrity sha512-fXktrGl/CQ6kU7B6ofJzEnGdKcNDIqhA6+PGx7d2WUwib6KjvSWiMCKJexEARSpKfzU5rXrGD+JJFAxkcOzqWA==
   dependencies:
     glob "^8.0.1"
 
@@ -458,10 +458,10 @@
     "@nomiclabs/hardhat-docker" "^2.0.0"
     dockerode "^3.3.4"
 
-"@matterlabs/zksync-contracts@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.4.1.tgz#279d051d275d25d6c0676e3b3eb859701a2ee018"
-  integrity sha512-6Oab+aDjg+4jkpuXeCQWHJ4U8bjcJ1rc3oJgA5nTdW7bvKw2AIRa0EfiY0D0Mu4x8iybOObmIwPPgZvoEoytRg==
+"@matterlabs/zksync-contracts@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.4.2.tgz#7535c7b3e5a4fd2a5771c4c70d1e44dc865d2f1d"
+  integrity sha512-mniteHGhfuhWJFw4Xe0JtS5b00gE54Z0OI/PSScGG22F8BcGJmg4lfgUzVmtRCgSvDV3AR68jSEmInuLwLj8/Q==
 
 "@metamask/eth-sig-util@^4.0.0":
   version "4.0.1"
@@ -2903,7 +2903,7 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zksync-web3@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.11.0.tgz#316ddd1548d1d994c0b07e3b9dbc859fe49e66e1"
-  integrity sha512-56S7MSzcWUikjMxo/TcGgejEQhmWLfrmMPAxUQTrMCUTWrZG02uCWItRIu7xlWF4TP5pXBYibxWho2FuYcJQOA==
+zksync-web3@^0.11.1:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.11.1.tgz#039e3ec93b77a6908f6ad3819e15ef149e9d9dc6"
+  integrity sha512-8i0t4xYH+9ogwpKA8ztPNkFu86Qi/rNZrM6hDTb6wM3N1Trogttzz3phjkSO/1Z7JL+Hpzsh3fg+C8CtzLT8Rw==
