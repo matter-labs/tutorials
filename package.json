@@ -15,6 +15,6 @@
     "@openzeppelin/contracts": "^4.7.3",
     "@openzeppelin/contracts-upgradeable": "^4.7.3",
     "hardhat": "^2.10.2",
-    "zksync-web3": "^0.11.0"
+    "zksync-web3": "^0.11.1"
   }
 }

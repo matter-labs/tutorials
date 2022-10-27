@@ -6,7 +6,7 @@ import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
 export default async function (hre: HardhatRuntimeEnvironment) {
   // The wallet that will deploy the token and the paymaster
   // It is assumed that this wallet already has sufficient funds on zkSync
-  const wallet = new Wallet('<PRIVATE-KEY>');
+  const wallet = new Wallet('<WALLET_PRIVATE_KEY>');
 
   // The wallet that will receive ERC20 tokens
   const emptyWallet = Wallet.createRandom();
@@ -24,6 +24,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   ]);
   console.log(`ERC20 address: ${erc20.address}`);
 
+  console.log(
+    'constructor args: >> ',
+    erc20.interface.encodeDeploy(['MyToken', 'MyToken', 18])
+  );
+
   // Deploying the paymaster
   const paymasterArtifact = await deployer.loadArtifact('MyPaymaster');
   const paymaster = await deployer.deploy(paymasterArtifact, [erc20.address]);
@@ -40,6 +45,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   // Supplying the ERC20 tokens to the empty wallet:
   await // We will give the empty wallet 3 units of the token:
   (await erc20.mint(emptyWallet.address, 3)).wait();
+
+  console.log('Minted 3 tokens for the empty wallet');
 
   console.log(`Done!`);
 }
