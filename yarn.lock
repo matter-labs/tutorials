@@ -443,10 +443,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@matterlabs/hardhat-zksync-deploy@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-deploy/-/hardhat-zksync-deploy-0.5.1.tgz#eeda8dfb2f656ebae209b97c925fa64c7687370d"
-  integrity sha512-fXktrGl/CQ6kU7B6ofJzEnGdKcNDIqhA6+PGx7d2WUwib6KjvSWiMCKJexEARSpKfzU5rXrGD+JJFAxkcOzqWA==
+"@matterlabs/hardhat-zksync-deploy@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-deploy/-/hardhat-zksync-deploy-0.5.2.tgz#bac4e25f8fa3ef90993cc49610459c08673a0819"
+  integrity sha512-tjOVo4Tk8DTK7c3v7k6jCyT6ZfJj99WQycqif7sbzzHRg5DPrG+k0xTpnI+OyObz6kUF1Rq75WwSBC4hWBzfyQ==
   dependencies:
     glob "^8.0.1"
 
