@@ -6,7 +6,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 const PAYMASTER_ADDRESS = '<PAYMASTER_ADDRESS>';
 
 // Put the address of the ERC20 token here:
-const TOKEN_ADDRESS = '<TOKEN_ADDRESS';
+const TOKEN_ADDRESS = '<TOKEN_ADDRESS>';
 
 // Wallet private key
 const EMPTY_WALLET_PRIVATE_KEY = '<EMPTY_WALLET_PRIVATE_KEY>';
