@@ -17,10 +17,10 @@ contract AAFactory {
         address owner2
     ) external returns (address accountAddress) {
         (bool success, bytes memory returnData) = SystemContractsCaller
-            .systemCallWithReturnData(
+            .systemCallWithReturndata(
                 uint32(gasleft()),
                 address(DEPLOYER_SYSTEM_CONTRACT),
-                0,
+                uint128(0),
                 abi.encodeCall(
                     DEPLOYER_SYSTEM_CONTRACT.create2Account,
                     (salt, aaBytecodeHash, abi.encode(owner1, owner2))
