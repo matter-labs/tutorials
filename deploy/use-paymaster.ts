@@ -6,7 +6,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 const PAYMASTER_ADDRESS = '<PAYMASTER_ADDRESS>';
 
 // Put the address of the ERC20 token here:
-const TOKEN_ADDRESS = '<TOKEN_ADDRESS';
+const TOKEN_ADDRESS = '<TOKEN_ADDRESS>';
 
 // Wallet private key
 const EMPTY_WALLET_PRIVATE_KEY = '<EMPTY_WALLET_PRIVATE_KEY>';
@@ -17,7 +17,7 @@ function getToken(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
 }
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider(hre.config.zkSyncDeploy.zkSyncNetwork);
+  const provider = new Provider('https://zksync2-testnet.zksync.dev');
   const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
 
   // Obviously this step is not required, but it is here purely to demonstrate
