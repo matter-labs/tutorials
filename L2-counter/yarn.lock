@@ -550,17 +550,15 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@matterlabs/hardhat-zksync-deploy@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-deploy/-/hardhat-zksync-deploy-0.5.1.tgz#eeda8dfb2f656ebae209b97c925fa64c7687370d"
-  integrity sha512-fXktrGl/CQ6kU7B6ofJzEnGdKcNDIqhA6+PGx7d2WUwib6KjvSWiMCKJexEARSpKfzU5rXrGD+JJFAxkcOzqWA==
-  dependencies:
-    glob "^8.0.1"
+"@matterlabs/hardhat-zksync-deploy@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-deploy/-/hardhat-zksync-deploy-0.6.0.tgz#c24a79e325344511adb023062205dbc312efdf01"
+  integrity sha512-Gu7Zuzyx+YipyyKVtGjQ+EYWGtDmPLhH4oStyVLjIGWfdawT+AWUYxe6nwrIYGOxqI5RcGdGIDd5NANAOJKgjA==
 
-"@matterlabs/hardhat-zksync-solc@^0.3.9":
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-solc/-/hardhat-zksync-solc-0.3.9.tgz#32ca58dd4445f8c55d16346d1c133f39ddaf15f3"
-  integrity sha512-Jx78zL4LOco59IshRVXVKSwGvdne+5OQNgs9/anAfI+2eIwLqP6EomssfmHPNgmWSE4gU6ArTkfnit7Jc+zKxg==
+"@matterlabs/hardhat-zksync-solc@^0.3.12":
+  version "0.3.12"
+  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-solc/-/hardhat-zksync-solc-0.3.12.tgz#0caeb0a2aac1d66057988b981a4d1c72ff614a1e"
+  integrity sha512-0py4bsqphPYJV1Ub7jlCkMP2lEENIB16jv700rNnikJJn251ofQgzowcspJw+/WchP+Tu4tJSRL0a1MVngtCoQ==
   dependencies:
     "@nomiclabs/hardhat-docker" "^2.0.0"
     dockerode "^3.3.4"
@@ -1879,17 +1877,6 @@ glob@7.2.0, glob@^7.1.3:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^8.0.1:
-  version "8.0.3"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-8.0.3.tgz#415c6eb2deed9e502c68fa44a272e6da6eeca42e"
-  integrity sha512-ull455NHSHI/Y1FqGaaYFaLGkNMMJbavMrEGFXG/PGrg6y7sutWHUHrz6gy6WEBH6akM1M414dWKCNs+IhKdiQ==
-  dependencies:
-    fs.realpath "^1.0.0"
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "^5.0.1"
-    once "^1.3.0"
-
 graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   version "4.2.8"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.8.tgz#e412b8d33f5e006593cbd3cee6df9f2cebbe802a"
@@ -2288,13 +2275,6 @@ minimatch@^3.0.4:
   integrity sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==
   dependencies:
     brace-expansion "^1.1.7"
-
-minimatch@^5.0.1:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.0.tgz#1717b464f4971b144f6aabe8f2d0b8e4511e09c7"
-  integrity sha512-9TPBGGak4nHfGZsPBohm9AWg6NoT7QTCehS3BIJABslyZbzxfV78QM2Y6+i741OPZIafFAaiiEMh5OyIrJPgtg==
-  dependencies:
-    brace-expansion "^2.0.1"
 
 minimist@^1.2.6:
   version "1.2.6"
@@ -3124,7 +3104,7 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zksync-web3@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.11.0.tgz#316ddd1548d1d994c0b07e3b9dbc859fe49e66e1"
-  integrity sha512-56S7MSzcWUikjMxo/TcGgejEQhmWLfrmMPAxUQTrMCUTWrZG02uCWItRIu7xlWF4TP5pXBYibxWho2FuYcJQOA==
+zksync-web3@^0.12.0:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.12.1.tgz#e8fbdc22b61b3071a5b6150e09a03c8bc26664bf"
+  integrity sha512-SEr7u3Qos/d5ykhPisN2rQk7amk7kc+MUrUBmJOSgrxKzgnQcva61S3Gcyaf457u7nLaeQKGBIbwIITW2lwG1w==
