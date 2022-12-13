@@ -16,15 +16,17 @@ contract AAFactory {
         address owner1,
         address owner2
     ) external returns (address accountAddress) {
-        bytes memory returnData = SystemContractsCaller.systemCall(
-            uint32(gasleft()),
-            address(DEPLOYER_SYSTEM_CONTRACT),
-            0,
-            abi.encodeCall(
-                DEPLOYER_SYSTEM_CONTRACT.create2Account,
-                (salt, aaBytecodeHash, abi.encode(owner1, owner2))
-            )
-        );
+        (bool success, bytes memory returnData) = SystemContractsCaller
+            .systemCallWithReturndata(
+                uint32(gasleft()),
+                address(DEPLOYER_SYSTEM_CONTRACT),
+                uint128(0),
+                abi.encodeCall(
+                    DEPLOYER_SYSTEM_CONTRACT.create2Account,
+                    (salt, aaBytecodeHash, abi.encode(owner1, owner2))
+                )
+            );
+        require(success, "Deployment failed");
 
         (accountAddress, ) = abi.decode(returnData, (address, bytes));
     }
