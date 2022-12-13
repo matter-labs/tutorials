@@ -7,8 +7,6 @@ import {TransactionHelper, Transaction} from "@matterlabs/zksync-contracts/l2/sy
 
 import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
 
-import "@openzeppelin/contracts/interfaces/IERC20.sol";
-
 contract MyPaymaster is IPaymaster {
     uint256 constant PRICE_FOR_PAYING_FEES = 1;
 

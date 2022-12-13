@@ -387,10 +387,10 @@
     "@nomiclabs/hardhat-docker" "^2.0.0"
     dockerode "^3.3.4"
 
-"@matterlabs/zksync-contracts@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.4.2.tgz#7535c7b3e5a4fd2a5771c4c70d1e44dc865d2f1d"
-  integrity sha512-mniteHGhfuhWJFw4Xe0JtS5b00gE54Z0OI/PSScGG22F8BcGJmg4lfgUzVmtRCgSvDV3AR68jSEmInuLwLj8/Q==
+"@matterlabs/zksync-contracts@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@matterlabs/zksync-contracts/-/zksync-contracts-0.5.1.tgz#1b28bd585b34a3890c003a16b2be538f744b5229"
+  integrity sha512-9cU5UEh5AZ40q54QmL+BJySwy9iZQv4vvEDQm5A2kyZ6bJD1lxPy0QRPOmP3Y3375Yz7MGtO6ynFPmonMcfAfQ==
 
 "@metamask/eth-sig-util@^4.0.0":
   version "4.0.1"
