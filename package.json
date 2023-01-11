@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "@matterlabs/hardhat-zksync-deploy": "^0.6.0",
-    "@matterlabs/hardhat-zksync-solc": "^0.3.12",
+    "@matterlabs/hardhat-zksync-deploy": "^0.6.1",
+    "@matterlabs/hardhat-zksync-solc": "^0.3.1",
     "@matterlabs/zksync-contracts": "^0.5.1",
     "@openzeppelin/contracts": "^4.7.3",
     "@openzeppelin/contracts-upgradeable": "^4.7.3",
