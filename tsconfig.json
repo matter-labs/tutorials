@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "types" : [
+            "node",
+            "mocha",
+            "chai"
+        ],
+    },
+    "ts-node": {
+            "esm": true,
+            "experimentalSpecifierResolution": "node",
+    },
+}
