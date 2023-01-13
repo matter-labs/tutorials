@@ -6,12 +6,6 @@
     "symbol": "ETH"
   },
   {
-    "address": "0xd35CCeEAD182dcee0F148EbaC9447DA2c4D449c4",
-    "decimals": 6,
-    "name": "USD Coin (goerli)",
-    "symbol": "USDC"
-  },
-  {
     "address": "0x5C221E77624690fff6dd741493D735a17716c26B",
     "decimals": 18,
     "name": "DAI (goerli)",
@@ -22,5 +16,11 @@
     "decimals": 8,
     "name": "Wrapped Bitcoin (goerli)",
     "symbol": "wBTC"
+  },
+  {
+    "address": "0xd35CCeEAD182dcee0F148EbaC9447DA2c4D449c4",
+    "decimals": 6,
+    "name": "USD Coin (goerli)",
+    "symbol": "USDC"
   }
 ]
