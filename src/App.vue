@@ -63,17 +63,12 @@
 
 <script>
 // eslint-disable-next-line
-const GREETER_CONTRACT_ADDRESS = "0x62A5618Ead43B1CC4EBdb7496B5d578848565ae3"; // TODO: Add smart contract address
+const GREETER_CONTRACT_ADDRESS = ""; // TODO: Add smart contract address
 // eslint-disable-next-line
-const GREETER_CONTRACT_ABI = require("./abi.json"); // TODO: Add link to the ABI
+const GREETER_CONTRACT_ABI = []; // TODO: Complete and import the ABI
 
 const ETH_L1_ADDRESS = "0x0000000000000000000000000000000000000000";
-// const allowedTokens = require("./eth.json");
-const allowedTokens = require("./erc20.json");
-
-import { Contract, Web3Provider, Provider, utils } from "zksync-web3";
-// `ethers` is only used in this tutorial for its utility functions
-import { ethers } from "ethers";
+const allowedTokens = require("./eth.json");
 
 export default {
   name: "App",
@@ -104,89 +99,22 @@ export default {
   methods: {
     initializeProviderAndSigner() {
       // TODO: initialize provider and signer based on `window.ethereum`
-      this.provider = new Provider("https://zksync2-testnet.zksync.dev");
-      // Note that we still need to get the Metamask signer
-      this.signer = new Web3Provider(window.ethereum).getSigner();
-      this.contract = new Contract(
-        GREETER_CONTRACT_ADDRESS,
-        GREETER_CONTRACT_ABI,
-        this.signer
-      );
     },
     async getGreeting() {
       // TODO: return the current greeting
-      return await this.contract.greet();
+      return "";
     },
     async getFee() {
-      // Getting the amount of gas (ergs) needed for one transaction
-      const feeInGas = await this.contract.estimateGas.setGreeting(
-        this.newGreeting
-      );
-      // Getting the gas price per one erg. For now, it is the same for all tokens.
-      const gasPriceInUnits = await this.provider.getGasPrice();
-
-      // To display the number of tokens in the human-readable format, we need to format them,
-      // e.g. if feeInGas*gasPriceInUnits returns 500000000000000000 wei of ETH, we want to display 0.5 ETH the user
-      return ethers.utils.formatUnits(
-        feeInGas.mul(gasPriceInUnits),
-        this.selectedToken.decimals
-      );
+      // TOOD: return formatted fee
+      return "";
     },
     async getBalance() {
-      // Getting the balance for the signer in the selected token
-      const balanceInUnits = await this.signer.getBalance(
-        this.selectedToken.l2Address
-      );
-      // To display the number of tokens in the human-readable format, we need to format them,
-      // e.g. if balanceInUnits returns 500000000000000000 wei of ETH, we want to display 0.5 ETH to the user
-      return ethers.utils.formatUnits(
-        balanceInUnits,
-        this.selectedToken.decimals
-      );
+      // Return formatted balance
+      return "";
     },
     async getOverrides() {
       if (this.selectedToken.l1Address != ETH_L1_ADDRESS) {
-        const testnetPaymaster =
-          await this.provider.getTestnetPaymasterAddress();
-
-        const gasPrice = await this.provider.getGasPrice();
-
-        // estimate gasLimit via paymaster
-        const gasLimit = await this.contract.estimateGas.setGreeting(
-          this.newGreeting,
-          {
-            customData: {
-              ergsPerPubdata: utils.DEFAULT_ERGS_PER_PUBDATA_LIMIT,
-              paymasterParams: {
-                paymaster: testnetPaymaster,
-                // empty input as our paymaster doesn't require additional data
-                paymasterInput: "0x",
-              },
-            },
-          }
-        );
-
-        console.log("gasLimit :>> ", gasLimit);
-
-        const fee = gasPrice.mul(gasLimit.toString());
-
-        const paymasterParams = utils.getPaymasterParams(testnetPaymaster, {
-          type: "ApprovalBased",
-          token: this.selectedToken.l2Address,
-          minimalAllowance: fee,
-          // empty bytes as testnet paymaster does not use innerInput
-          innerInput: new Uint8Array(),
-        });
-
-        return {
-          maxFeePerGas: gasPrice,
-          maxPriorityFeePerGas: ethers.BigNumber.from(0),
-          gasLimit,
-          customData: {
-            ergsPerPubdata: utils.DEFAULT_ERGS_PER_PUBDATA_LIMIT,
-            paymasterParams,
-          },
-        };
+        // TODO: Return data for the paymaster
       }
 
       return {};
@@ -194,15 +122,10 @@ export default {
     async changeGreeting() {
       this.txStatus = 1;
       try {
-        const txHandle = await this.contract.setGreeting(
-          this.newGreeting,
-          await this.getOverrides()
-        );
-
+        // TODO: Submit the transaction
         this.txStatus = 2;
 
-        // Wait until the transaction is committed
-        await txHandle.wait();
+        // TODO: Wait for transaction compilation
         this.txStatus = 3;
 
         // Update greeting
@@ -244,13 +167,12 @@ export default {
           this.retreivingBalance = false;
         });
     },
-    async changeToken() {
+    changeToken() {
       this.retreivingFee = true;
       this.retreivingBalance = true;
       const l1Token = this.tokens.filter(
         (t) => t.address == this.selectedTokenAddress
       )[0];
-      // console.log(`${await this.provider.l1TokenAddress(l1Token.address)}`);
       this.provider
         .l2TokenAddress(l1Token.address)
         .then((l2Address) => {
@@ -258,7 +180,6 @@ export default {
             l1Address: l1Token.address,
             l2Address: l2Address,
             decimals: l1Token.decimals,
-            symbol: l1Token.symbol,
           };
           this.updateFee();
           this.updateBalance();
