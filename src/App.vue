@@ -180,6 +180,7 @@ export default {
             l1Address: l1Token.address,
             l2Address: l2Address,
             decimals: l1Token.decimals,
+            symbol: l1Token.symbol,
           };
           this.updateFee();
           this.updateBalance();
