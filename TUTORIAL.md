@@ -805,9 +805,9 @@ The value `available` in Limit struct was decremented, so now only 0.0001 ETH is
 
 Since the `ONE_DAY` is set to 1 minute only for this test, another transfer with any amount less than the limit is supposed to succeed accordingly after a minute instead of 24 hours. However, the second transfer wouldn't succeed, and we wiil have to wait at least for apx 10 more minutes instead. To understand the reason behind it, we are better to know about a constraint about block.timestamp on the current zkSync testnet first.
 
-Although [the documentation about blocks on zkSync](https://v2-docs.zksync.io/dev/developer-guides/transactions/blocks.html#block-properties) doesn't provide the compelete information about this, L2 blocks contain two timestamps which are from L1 and in L2. Furthermore, block.timestamp on testnet returns the one from latest L1 batch instead of L2 blocks, and timestamp in the latest L1 batch is only updated once in 5-10 minutes, as far as it's observed.    
+Although [the documentation about blocks on zkSync](https://v2-docs.zksync.io/dev/developer-guides/transactions/blocks.html#block-properties) doesn't provide the compelete information about this, L2 blocks contain two timestamps which are from L1 and in L2. Furthermore, block.timestamp on testnet returns the one from the latest L1 batch instead of L2 blocks, and timestamp in the latest L1 batch is only updated once in 5-10 minutes, as far as we have observed.    
 
-What this means is that basically, block.timestamp in smart contract on zkSync is a delayed value. 
+What this means is that basically, `block.timestamp` in smart contract on zkSync is a delayed value. [A discussion in Discord regarding this issue](https://discord.com/channels/722409280497516566/1061869082720358420).  
 
 The difference in timestamp between the latest L2 block and L1 batch can be checked runnning the code below:
 ```typescript
