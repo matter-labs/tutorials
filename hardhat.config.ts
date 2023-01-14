@@ -2,8 +2,8 @@ import { HardhatUserConfig } from 'hardhat/config';
 import "@matterlabs/hardhat-zksync-toolbox";
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
-
-require('dotenv').config();
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const zkSyncTestnet =
   process.env.NODE_ENV == "test"
