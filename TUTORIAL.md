@@ -819,7 +819,7 @@ console.log("l1TimeStamp: ", l1TimeStamp)
 console.log("l2TimeStamp: ", l2TimeStamp)
 
 ```
-The second transfer fails due to the delay of the timestamp update in the latest L1 batch. Technically, transfer execution goes wrong in such a way that the return of the if-else condition `timestamp > limit.resetTime` in `_checkSpendingLimit` function can't be true to update `available` since `timestamp` of apx 10-15 minutes ago isn't greater than `resetTime`. As a result, `available` value remains the same even after 1 minute, causing 'Exceed daily limit' error.  
+The second transfer would fail due to the delay of the timestamp update in the latest L1 batch. Technically, transfer execution goes wrong in such a way that the return of the if-else condition `timestamp > limit.resetTime` in `_checkSpendingLimit` function can't be true to update `available` since `timestamp` of apx 10-15 minutes ago isn't greater than `resetTime`. As a result, `available` value remains the same even after 1 minute, causing 'Exceed daily limit' error.  
 
 ```solidity
 if (limit.limit != limit.available && timestamp > limit.resetTime) {
@@ -830,7 +830,7 @@ if (limit.limit != limit.available && timestamp > limit.resetTime) {
 require(limit.available >= _amount, 'Exceed daily limit');
 ```
 
-This issue is only problematic for testing in this tutorial because a 10-15 minutes delay is still negligible in production where the contract requires 24 hours until `available` is restored. Though, now we have to test the second transfer to see if everything goes as expected except this matter.
+This issue is only problematic for testing in this tutorial because the 10-15 minutes delay is still negligible in production where the contract requires 24 hours until `available` is restored. Though, now we have to test the second transfer to see if everything goes as expected except this matter.
 
 So, let's rerun the same code with another value, say "0.003":
 
@@ -854,7 +854,7 @@ l1TimeStamp:  1673529741
 resetTime:  1673529801
 Tx would fail due to apx  X  mins difference in timestamp between resetTime and l1 batch
 ```
-In this case, the transaction wasn't triggered to avoid an unnecessary error due to the delay in the timestamp of L1 batch. Please try running the script again after more than 5-10 minutes.
+In the latter case, the transaction wasn't triggered to avoid an unnecessary error due to the delay in the L1 batch timestamp. Then, please try running the script again after more than 5-10 minutes.
 
 Note: `X mins difference` above doesn't indicate that the transaction will be sent and successful after X mins. Rather, it can only be sent when the timestamp update occurs to the latest L1 batch and probably succeed if its timestamp is bigger than `resetTime`.
 
