@@ -547,13 +547,13 @@ contract AAFactory {
 ### Compile
 
 Finally, we are ready to deploy the contracts.  
-Yet before that, run:  
+So, before the deployment, let's compile the contracts by running:  
 
 ```shell
 yarn hardhat compile
 ```
 
-So, let's create a file `deploy-factory-account.ts` that deploys all the contracts we've made above. 
+Then, let's create a file `deploy-factory-account.ts` that deploys all the contracts we've made above. 
 
 ```typescript
 import { utils, Wallet, Provider } from 'zksync-web3';
