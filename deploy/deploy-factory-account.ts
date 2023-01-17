@@ -10,7 +10,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const factoryArtifact = await deployer.loadArtifact('AAFactory');
   const aaArtifact = await deployer.loadArtifact('Account');
 
-  // Bridge funds if wallet on zkSync doesn't have enough funds.
+  // Bridge funds if the wallet on zkSync doesn't have enough funds.
   // const depositAmount = ethers.utils.parseEther('0.1');
   // const depositHandle = await deployer.zkWallet.deposit({
   //   to: deployer.zkWallet.address,

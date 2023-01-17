@@ -1,15 +1,9 @@
 {
     "compilerOptions": {
-        "baseUrl": "./src",
         "module": "CommonJS",
         "moduleResolution": "Node",
         "esModuleInterop": true,
-        "resolveJsonModule": true,
-        "types" : [
-            "node",
-            "mocha",
-            "chai"
-        ],
+        "resolveJsonModule": true
     },
     "ts-node": {
             "esm": true,

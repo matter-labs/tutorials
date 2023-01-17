@@ -1,7 +1,8 @@
 import { HardhatUserConfig } from 'hardhat/config';
-import "@matterlabs/hardhat-zksync-toolbox";
+import "@matterlabs/hardhat-zksync-chai-matchers";
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
+import "@matterlabs/hardhat-zksync-verify";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -14,8 +15,9 @@ const zkSyncTestnet =
       }
     : {
         url: "https://zksync2-testnet.zksync.dev",
-        ethNetwork: process.env.alchemy_key_goerli,
+        ethNetwork: process.env.alchemy, // e.g. alchemy url
         zksync: true,
+        verifyURL: 'https://zksync2-testnet-explorer.zksync.dev/contract_verification'
       };
 
 const config:HardhatUserConfig = {

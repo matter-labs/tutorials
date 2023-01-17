@@ -3,7 +3,8 @@ import * as hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import { ethers } from "ethers";
 
-export async function deployAAFactory(deployer: Deployer): Promise<Contract> {
+export async function deployAAFactory(wallet: Wallet): Promise<Contract> {
+    let deployer:Deployer = new Deployer(hre, wallet);
     const factoryArtifact = await deployer.loadArtifact("AAFactory");
     const accountArtifact = await deployer.loadArtifact("TestAccount");
     const bytecodeHash = utils.hashBytecode(accountArtifact.bytecode);
@@ -11,7 +12,8 @@ export async function deployAAFactory(deployer: Deployer): Promise<Contract> {
     return await deployer.deploy(factoryArtifact, [bytecodeHash], undefined, [accountArtifact.bytecode]);
     }
 
-export async function deployAccount(deployer: Deployer, wallet: Wallet, owner: Wallet, factory_address:string): Promise<Contract> {
+export async function deployAccount(wallet: Wallet, owner: Wallet, factory_address:string): Promise<Contract> {
+    let deployer:Deployer = new Deployer(hre, wallet);
     const factoryArtifact = await hre.artifacts.readArtifact("AAFactory");
     const factory = new ethers.Contract(factory_address, factoryArtifact.abi, wallet);
   

@@ -44,14 +44,14 @@ export async function consoleAddreses(wallet, factory, account, user) {
     const AccountETHBal = await provider.getBalance(account.address)
     const UserETHBal = await provider.getBalance(user.address)
   
-    console.log(
-        '\n',
-        'Balances', '\n',
-        '- Wallet ETH balance: ', WalletETHBal.toString(), '\n',
-        '- Account ETH balance: ', AccountETHBal.toString(), '\n',
-        '- User ETH balance: ', UserETHBal.toString(), '\n',
-        '\n',
-      )
+    // console.log(
+    //     '\n',
+    //     'Balances', '\n',
+    //     '- Wallet ETH balance: ', WalletETHBal.toString(), '\n',
+    //     '- Account ETH balance: ', AccountETHBal.toString(), '\n',
+    //     '- User ETH balance: ', UserETHBal.toString(), '\n',
+    //     '\n',
+    //   )
   
     const balances = {
         WalletETHBal, 
@@ -60,12 +60,4 @@ export async function consoleAddreses(wallet, factory, account, user) {
     }
   
     return balances
-    
-  }
-
-  export async function fakeTxs(wallet: Wallet, loop:number) {
-    let i:number = 0;
-    for (i; i < loop ; i++) {
-      await wallet.sendTransaction({to:wallet.address, value: 1});
-    }
   }

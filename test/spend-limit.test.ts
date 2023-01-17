@@ -1,42 +1,31 @@
-import * as chai from "chai";
-const expect = chai.expect;
-import { solidity } from 'ethereum-waffle';
-chai.use(solidity);
-
 import { Wallet, Provider, Contract, utils } from "zksync-web3";
-import * as hre from "hardhat";
-import { ethers } from "ethers";
-import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
-const rich_wallet = require('../local-setup/rich-wallets');
-const dev_pk = rich_wallet[0].privateKey
+import { expect } from "chai";
+import * as ethers from "ethers"; 
 
+import { toBN, Tx, consoleLimit, consoleAddreses, getBalances } from "./utils/helper"
+import { deployAAFactory, deployAccount } from "./utils/deploy"
+import { sendTx } from "./utils/sendtx"
+import { rich_wallet } from "./utils/rich-wallets"
+
+const dev_pk = rich_wallet[0].privateKey
 const ETH_ADDRESS = "0x000000000000000000000000000000000000800A"
 const SLEEP_TIME = 10 // 10 sec
 
-import { toBN, Tx, consoleLimit, consoleAddreses, getBalances, fakeTxs } from "./utils/helper"
-import {
-    deployAAFactory,
-    deployAccount
-} from "./utils/deploy"
-import { sendTx } from "./utils/sendtx"
-
 let provider: Provider
 let wallet: Wallet
-let deployer: Deployer
 let user: Wallet
 
 let factory: Contract
 let account: Contract
 
 before(async () => {
+
     provider = Provider.getDefaultProvider();
     wallet = new Wallet(dev_pk, provider);
-    deployer = new Deployer(hre, wallet);
-
     user = Wallet.createRandom();
   
-    factory = await deployAAFactory(deployer);
-    account = await deployAccount(deployer, wallet, user, factory.address);
+    factory = await deployAAFactory(wallet);
+    account = await deployAccount(wallet, user, factory.address);
   
       // 100 ETH transfered to Account
       await (
@@ -53,7 +42,7 @@ before(async () => {
   
   })
 
-  describe("Deployment & Setup", function () {
+  describe("Deployment, Setup & Transfer", function () {
 
     it("Should deploy contracts, send ETH, and set varible correctly", async function () {
 
@@ -62,7 +51,7 @@ before(async () => {
   
       expect(await account.owner()).to.equal(user.address)
 
-      await consoleAddreses(wallet, factory, account, user)
+      // await consoleAddreses(wallet, factory, account, user)
 
     });
 
@@ -81,7 +70,7 @@ before(async () => {
         expect(limit.resetTime.toNumber()).to.closeTo(Math.floor(Date.now() / 1000), 5)
         expect(limit.isEnabled).to.eq(true)
 
-        await consoleLimit(limit)
+        // await consoleLimit(limit)
 
     })
 
@@ -98,14 +87,14 @@ before(async () => {
     expect((await provider.getBalance(user.address))).to.eq(balances.UserETHBal.add(toBN("5")))
 
     const limit = await account.limits(ETH_ADDRESS)
-    await consoleLimit(limit)
+    // await consoleLimit(limit)
 
     expect(limit.limit).to.eq(toBN("10"))
     expect(limit.available).to.eq(toBN("5"))
     expect(limit.resetTime.toNumber()).to.gt(Math.floor(Date.now() / 1000))
     expect(limit.isEnabled).to.eq(true)
 
-    await getBalances(provider, wallet, account, user)
+    // await getBalances(provider, wallet, account, user)
 
   })
 
@@ -113,24 +102,22 @@ before(async () => {
 
     const balances = await getBalances(provider, wallet, account, user)
 
-    //await utils.sleep(SLEEP_TIME * 1000);
     const tx = Tx(user, "6")
     const txReceipt = await sendTx(provider, account, user, tx)
-    await expect(txReceipt.wait()).to.be.reverted
-    //await txReceipt.wait()
+    await expect(txReceipt.wait()).to.be.revertedWithoutReason
 
     expect((await provider.getBalance(account.address))).to.be.closeTo(balances.AccountETHBal, toBN("0.01"))
     expect((await provider.getBalance(user.address))).to.eq(balances.UserETHBal)
 
     const limit = await account.limits(ETH_ADDRESS)
-    await consoleLimit(limit)
+    // await consoleLimit(limit)
 
     expect(limit.limit).to.eq(toBN("10"))
     expect(limit.available).to.eq(toBN("5"))
     expect(limit.resetTime.toNumber()).to.gt(Math.floor(Date.now() / 1000))
     expect(limit.isEnabled).to.eq(true)
 
-    await getBalances(provider, wallet, account, user)
+    // await getBalances(provider, wallet, account, user)
 
   })
 
@@ -144,7 +131,7 @@ before(async () => {
 
     if (Math.floor(Date.now()/ 1000) < resetTime) { // before 10 seconds has passed
         const txReceipt = await sendTx(provider, account, user, tx)
-        await expect(txReceipt.wait()).to.be.reverted
+        await expect(txReceipt.wait()).to.be.revertedWithoutReason
     }
 
     await utils.sleep(SLEEP_TIME * 1000); 
@@ -158,14 +145,14 @@ before(async () => {
     expect((await provider.getBalance(user.address))).to.eq((balances.UserETHBal.add(toBN("6"))))
       
     const limit = await account.limits(ETH_ADDRESS)
-    await consoleLimit(limit)
+    // await consoleLimit(limit)
 
     expect(limit.limit).to.eq(toBN("10"))
     expect(limit.available).to.eq(toBN("4"))
     expect(limit.resetTime.toNumber()).to.gt(resetTime)
     expect(limit.isEnabled).to.eq(true)
 
-    await getBalances(provider, wallet, account, user)
+    // await getBalances(provider, wallet, account, user)
 
   })
 
@@ -191,7 +178,7 @@ describe("Spending Limit Updates to make a transfer", function () {
 
         const tx1 = Tx(user, "15")
         const txReceipt1 = await sendTx(provider, account, user, tx1)
-        await expect(txReceipt1.wait()).to.be.reverted
+        await expect(txReceipt1.wait()).to.be.revertedWithoutReason
     
         await utils.sleep(SLEEP_TIME * 1000);
     
@@ -211,7 +198,7 @@ describe("Spending Limit Updates to make a transfer", function () {
 
     
         const limit = await account.limits(ETH_ADDRESS)
-        await consoleLimit(limit)
+        // await consoleLimit(limit)
 
         expect(limit.limit).to.eq(toBN("20"))
         expect(limit.available).to.eq(toBN("5"))
@@ -219,7 +206,7 @@ describe("Spending Limit Updates to make a transfer", function () {
         expect(limit.isEnabled).to.eq(true)
     
         
-        await getBalances(provider, wallet, account, user)
+        // await getBalances(provider, wallet, account, user)
       })
 
       it("Should succeed after removing SpendLimit", async function() {
@@ -227,7 +214,7 @@ describe("Spending Limit Updates to make a transfer", function () {
 
         const tx1 = Tx(user, "30")
         const txReceipt1 = await sendTx(provider, account, user, tx1)
-        await expect(txReceipt1.wait()).to.be.reverted
+        await expect(txReceipt1.wait()).to.be.revertedWithoutReason
     
         await utils.sleep(SLEEP_TIME * 1000); 
     
@@ -246,14 +233,14 @@ describe("Spending Limit Updates to make a transfer", function () {
         expect((await provider.getBalance(user.address))).to.eq((balances.UserETHBal.add(toBN("30"))))
 
         const limit = await account.limits(ETH_ADDRESS)
-        await consoleLimit(limit)
+        // await consoleLimit(limit)
 
         expect(limit.limit).to.eq(toBN("0"))
         expect(limit.available).to.eq(toBN("0"))
         expect(limit.resetTime.toNumber()).to.eq(0)
         expect(limit.isEnabled).to.eq(false)
     
-        await getBalances(provider, wallet, account, user)
+        // await getBalances(provider, wallet, account, user)
       })
 })
 
@@ -282,10 +269,10 @@ describe("Spending Limit Updates", function () {
         )
 
     const txReceipt = await sendTx(provider, account, user, tx)
-    await expect(txReceipt.wait()).to.be.reverted
+    await expect(txReceipt.wait()).to.be.revertedWithoutReason
 
     const limit = await account.limits(ETH_ADDRESS)
-    await consoleLimit(limit)
+    // await consoleLimit(limit)
 
     expect(limit.limit).to.eq(toBN("10"))
     expect(limit.available).to.eq(toBN("5"))
@@ -301,10 +288,10 @@ describe("Spending Limit Updates", function () {
         )
 
     const txReceipt = await sendTx(provider, account, user, tx2)
-    await expect(txReceipt.wait()).to.be.reverted
+    await expect(txReceipt.wait()).to.be.revertedWithoutReason
 
     const limit = await account.limits(ETH_ADDRESS)
-    await consoleLimit(limit)
+    // await consoleLimit(limit)
 
     expect(limit.limit).to.eq(toBN("10"))
     expect(limit.available).to.eq(toBN("5"))
