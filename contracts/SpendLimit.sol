@@ -6,11 +6,11 @@ contract SpendLimit {
     // uint public ONE_DAY = 24 hours in production but 1 min for tutorial
     uint public ONE_DAY = 1 minutes;
 
-    /// This struct serves as data storage of daily limits users enable
-    /// limit: amount of daily spending limit 
-    /// available: available amount that can be spent 
+    /// This struct serves as data storage of daily spending limits users enable
+    /// limit: the amount of a daily spending limit 
+    /// available: the available amount that can be spent 
     /// resetTime: block.timestamp at the available amount is restored
-    /// isEnabled: true when the daily spending limit is enabled
+    /// isEnabled: true when a daily spending limit is enabled
     struct Limit {
         uint limit;
         uint available;
@@ -23,12 +23,12 @@ contract SpendLimit {
     modifier onlyAccount() {
         require(
             msg.sender == address(this),
-            "Only account that inherits this contract can call this method"
+            "Only the account that inherits this contract can call this method."
         );
         _;
     }
 
-    /// this function enables a daily spending limit for specific token.
+    /// this function enables a daily spending limit for specific tokens.
     /// @param _token ETH or ERC20 token address that the given spending limit is applied to.
     /// @param _amount non-zero limit.
     function setSpendingLimit(address _token, uint _amount) public onlyAccount {
@@ -47,7 +47,7 @@ contract SpendLimit {
     } 
 
     // this function disables an active daily spending limit,
-    // decreasing each uint number in Limit struct to zero and making isEnabled false.
+    // decreasing each uint number in the Limit struct to zero and making isEnabled false.
     function removeSpendingLimit(address _token) public onlyAccount {
         require(isValidUpdate(_token), "Invalid Update");
         _updateLimit(_token, 0, 0, 0, false);
@@ -58,7 +58,7 @@ contract SpendLimit {
     function isValidUpdate(address _token) internal view returns(bool) {
 
         // Reverts unless it is first spending after enabling 
-        // or called after 24 hours have passed since last update.
+        // or called after 24 hours have passed since the last update.
         if (limits[_token].isEnabled) {
             require(limits[_token].limit == limits[_token].available || block.timestamp > limits[_token].resetTime,
                 "Invalid Update");
@@ -78,8 +78,8 @@ contract SpendLimit {
         limit.isEnabled = _isEnabled;
     }
 
-    // this function is called by account before execution.
-    // Verify an account is able to spend a given amount of token and records a new available amount.
+    // this function is called by the account itself before execution.
+    // Verify the account is able to spend a given amount of token. And it records a new available amount.
     function _checkSpendingLimit(address _token, uint _amount) internal {
         Limit memory limit = limits[_token];
 
@@ -99,7 +99,7 @@ contract SpendLimit {
             limit.resetTime = timestamp + ONE_DAY;
         }
 
-        // reverts if amount exceeds the remaining available amount. 
+        // reverts if the amount exceeds the remaining available amount. 
         require(limit.available >= _amount, 'Exceed daily limit');
 
         // decrement `available` 
