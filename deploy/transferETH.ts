@@ -21,7 +21,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
         } as types.Eip712Meta,
         value: ethers.utils.parseEther("0.005"), // 0.0051 fails but 0.0049 succeeds
         gasPrice: await provider.getGasPrice(),
-        gasLimit: ethers.BigNumber.from(20000000), // 20M since estimateGas() causes an error and this tx consumes more than 15M at most
+        gasLimit: ethers.BigNumber.from(20000000), // constant 20M since estimateGas() causes an error and this tx consumes more than 15M at most
         data: "0x"
       }
       const signedTxHash = EIP712Signer.getSignedDigest(ethTransferTx); 
@@ -36,7 +36,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
       const account = new Contract(ACCOUNT_ADDRESS, accountArtifact.abi, wallet)
       const limit = (await account.limits(ETH_ADDRESS))
 
-      // L1 timestamp tends to be undefined in latest blocks. So should find the latest L1 Batch first.
+      // L1 timestamp tends to be undefined in latest blocks. So it should find the latest L1 Batch first.
       let l1BatchRange = await provider.getL1BatchBlockRange(await provider.getL1BatchNumber())
       let l1TimeStamp = (await provider.getBlock(l1BatchRange[1])).l1BatchTimestamp
 
@@ -44,7 +44,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
       console.log("resetTime: ", limit.resetTime.toString())
 
       // avoid unnecessary errors due to the delay in timestamp of L1 batch
-      // first spending after enabling of limit is ignored
+      // first spending after enabling of the Limit is ignored
       if ( l1TimeStamp > limit.resetTime.toNumber() || limit.limit == limit.available )  {
          const sentTx = await provider.sendTransaction(utils.serialize(ethTransferTx));
          await sentTx.wait();
@@ -57,7 +57,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
          return;
       } else {
          let wait = Math.round((limit.resetTime.toNumber() - l1TimeStamp) / 60)
-         console.log("Tx would fail due to apx ", wait, " mins difference in timestamp between resetTime and l1 batch")
+         console.log("Tx would fail due to approx ", wait, " mins difference in timestamp between resetTime and l1 batch")
       }
 
 }
