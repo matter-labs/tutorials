@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In this tutorial, we go through an example of implementing the daily spending limit feature with the Account Abstraction wallet on zkSync. We will build `SpendLimit` contract inherited from an account contract and prevents it from spending ETH more than the limit amount preliminarily set by the account.
+In this tutorial, we go through an example of implementing the daily spending limit feature with the Account Abstraction wallet on zkSync. We will build a `SpendLimit` contract inherited from an account contract and prevents it from spending ETH more than the limit amount preliminarily set by the account.
 
 ## Prerequisite
 
@@ -16,7 +16,7 @@ We will use hardhat-plugins to deploy and perform transactions. First, let’s i
 mkdir custom-spendlimit-tutorial
 cd custom-spendlimit-tutorial
 yarn init -y
-yarn add -D typescript ts-node ethers zksync-web3 hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy @matterlabs/hardhat-zksync-verify @nomiclabs/hardhat-etherscan
+yarn add -D typescript ts-node ethers zksync-web3 hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy
 ```
 
 Additionally, please install a few packages that allow us to utilize [zkSync smart contracts](https://v2-docs.zksync.io/dev/developer-guides/contracts/system-contracts.html).
@@ -36,7 +36,7 @@ Now, let’s dive into the design and implementation of the daily spending limit
 The `SpendLimit` contract is inherited from the `Account` contract as a module that has the following functionalities:
 
 - Allow the account to enable the daily spending limit in a token (ETH in this example).
-- Allow the account to change (increase/decrease or remove) the limit.
+- Allow the account to change (increase/decrease or remove) the daily spending limit.
 - Reject token transfer if the daily spending limit has been exceeded.
 - Restore the available amount for spending after 24 hours. 
 
@@ -274,7 +274,7 @@ contract SpendLimit {
     function isValidUpdate(address _token) internal view returns(bool) {
 
         // Reverts unless it is first spending after enabling 
-        // or called after 24 hours have passed since last update.
+        // or called after 24 hours have passed since the last update.
         if (limits[_token].isEnabled) {
             require(limits[_token].limit == limits[_token].available || block.timestamp > limits[_token].resetTime,
                 "Invalid Update");
@@ -294,8 +294,8 @@ contract SpendLimit {
         limit.isEnabled = _isEnabled;
     }
 
-    // this function is called by account before execution.
-    // Verify the account is able to spend a given amount of token. And it records a new available amount.
+    // this function is called by the account before execution.
+    // Verify the account is able to spend a given amount of tokens. And it records a new available amount.
     function _checkSpendingLimit(address _token, uint _amount) internal {
         Limit memory limit = limits[_token];
 
@@ -501,9 +501,9 @@ if ( value > 0 ) {
 
 Since we set the spending limit of ETH in this example, the first argument in `_checkSpendingLimit` should be `address(ETH_TOKEN_SYSTEM_CONTRACT)`, which is imported from a system contract called `system-contracts/Constant.sol`.
 
-Note: The formal ETH address on zkSync is `0x000000000000000000000000000000000000800a`, neither the well-known `0xEee...EEeE` used by protocols as a placeholder on Ethereum, nor zero address `0x000...000`, which is what `zksync-web3` package([See](https://v2-docs.zksync.io/api/js/utils.html#the-address-of-ether)) provides as a more user-friendly alias.
+**Note1** : The formal ETH address on zkSync is `0x000000000000000000000000000000000000800a`, neither the well-known `0xEee...EEeE` used by protocols as a placeholder on Ethereum, nor zero address `0x000...000`, which is what `zksync-web3` package([See](https://v2-docs.zksync.io/api/js/utils.html#the-address-of-ether)) provides as a more user-friendly alias.
 
-Hint: SpendLimit is token-agnostic. Thus an extension is also possible: add a check for whether or not the execution is an ERC20 transfer by extracting the function selector in bytes from transaction calldata.
+**Note2** : SpendLimit is token-agnostic. Thus an extension is also possible: add a check for whether or not the execution is an ERC20 transfer by extracting the function selector in bytes from transaction calldata.
 
 #### AAFactory.sol
 
@@ -747,7 +747,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
       const account = new Contract(ACCOUNT_ADDRESS, accountArtifact.abi, wallet)
       const limit = (await account.limits(ETH_ADDRESS))
 
-      // L1 timestamp tends to be undefined in latest blocks. So should find the latest L1 Batch first.
+      // L1 timestamp tends to be undefined in the latest blocks. So should find the latest L1 Batch first.
       let l1BatchRange = await provider.getL1BatchBlockRange(await provider.getL1BatchNumber())
       let l1TimeStamp = (await provider.getBlock(l1BatchRange[1])).l1BatchTimestamp
 
@@ -847,7 +847,7 @@ limit:  5000000000000000
 available: 2000000000000000 // 0.005 - 0.003 = 0.002
 New resetTime: 1673530575
 ```
-Otherwise, we will probably see the output mostly like the one below. 
+Otherwise, we will see the output mostly like the one below. 
 
 ```shell
 l1TimeStamp:  1673529741
