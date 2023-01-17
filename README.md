@@ -27,7 +27,7 @@ cd daily-spendlimit-tutorial
 npm i
 ```
 
-- To set-up local environment, Docker and docker-compose should be installed.  
+- To set up a local environment, Docker and docker-compose should be installed.  
   If they are not installed on your computer: [Install](https://docs.docker.com/get-docker/).
 
 - To run zkSync local chain, do:
@@ -46,7 +46,7 @@ cd local-setup
 npx hardhat compile
 ```
 
-- additional configuration: add .env file `touch .env` and add `NODE_ENV=test` in it.
+- additional configuration: add .env file `touch .env` and add `NODE_ENV=test`.
 
 then run:
 
