@@ -206,7 +206,7 @@ require(limit.available >= _amount, 'Exceed daily limit');
 limit.available -= _amount;
 ```
 
-Additionally, you might have noticed the comment `// L1 batch timestamp` above. The details of this will be explained below. 
+Note: you might have noticed the comment `// L1 batch timestamp` above. The details of this will be explained below. 
 
 ### Full code
 
