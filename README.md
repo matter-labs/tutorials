@@ -14,7 +14,7 @@ As for deployment and simple test on zkSync2.0 testnet, please take a look at th
 
 ### zkSync local network.
 
-`spend-limit.test.ts` in [the test folder](https://github.com/porco-rosso-j/daily-spendlimit-tutorial/tree/main/test) offers more detailed tests for each functionality of SpendLimit contract and its revert case.
+`spend-limit.test.ts` in [the test folder](https://github.com/porco-rosso-j/daily-spendlimit-tutorial/tree/main/test) offers more detailed tests for each functionality of the SpendLimit contract.
 
 ```shell
 git clone git@github.com:porco-rosso-j/daily-spendlimit-tutorial.git
@@ -24,7 +24,7 @@ git clone git@github.com:porco-rosso-j/daily-spendlimit-tutorial.git
 
 ```shell
 cd daily-spendlimit-tutorial
-npm i
+yarn
 ```
 
 - To set up a local environment, Docker and docker-compose should be installed.  
@@ -43,7 +43,7 @@ cd local-setup
 - compile:
 
 ```shell
-npx hardhat compile
+yarn hardhat compile
 ```
 
 - additional configuration: add .env file `touch .env` and add `NODE_ENV=test`.
@@ -51,5 +51,5 @@ npx hardhat compile
 then run:
 
 ```shell
-npx hardhat test
+yarn hardhat test
 ```
