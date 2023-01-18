@@ -18,7 +18,6 @@ cd custom-spendlimit-tutorial
 yarn init -y
 yarn add -D typescript ts-node ethers zksync-web3 hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy
 ```
-
 Additionally, please install a few packages that allow us to utilize [zkSync smart contracts](https://v2-docs.zksync.io/dev/developer-guides/contracts/system-contracts.html).
 
 ```shell
@@ -27,7 +26,7 @@ yarn add @matterlabs/zksync-contracts @openzeppelin/contracts @openzeppelin/cont
 
 Lastly, create `hardhat.config.ts` config file and contracts and `deploy` folders like [quickstart tutorial](https://v2-docs.zksync.io/dev/developer-guides/hello-world.html).
 
-\*TIP You can use the zkSync CLI to scaffold a project automatically. Find [more info about the zkSync CLI here](https://v2-docs.zksync.io/api/tools/zksync-cli/).
+**TIP**: You can use the zkSync CLI to scaffold a project automatically. Find [more info about the zkSync CLI here](https://v2-docs.zksync.io/api/tools/zksync-cli/).
 
 ## Design
 
@@ -546,8 +545,7 @@ contract AAFactory {
 
 ### Compile
 
-Finally, we are ready to deploy the contracts.  
-So, before the deployment, let's compile the contracts by running:  
+Finally, we are ready to deploy the contracts. So, before the deployment, let's compile the contracts by running:  
 
 ```shell
 yarn hardhat compile
@@ -632,7 +630,9 @@ owner pk: 0x957aff65500eda28beb7130b7c1bc48f783556bb84fa6874d2204c1d66a0ddc7
 Account deployed on address 0x6b6B8ea196a6F27EFE408288a4FEeBE9A9e12005
 ```
 
-So, we are ready to use `SpendLimit`. For the test, now please open [zkSync2.0 testnet explorer](https://zksync2-testnet.zkscan.io/) and search for the deployed Account contract address to be able to track transactions and changes in balance which we will see in the following sections.
+So, we are ready to try the functionality of the `SpendLimit` contract. For the test, now please open [zkSync2.0 testnet explorer](https://zksync2-testnet.zkscan.io/) and search for the deployed Account contract address to be able to track transactions and changes in balance which we will see in the following sections.
+
+**TIP**: For contract verification, please refer to [this section of the documentation](https://v2-docs.zksync.io/dev/developer-guides/contracts/contract-verification.html).
 
 ## Set the daily spending limit
 
