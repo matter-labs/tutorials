@@ -2,11 +2,11 @@
 
 ## Introduction
 
-In this tutorial, we'll implement an account with a daily spending limit thanks to the Account Abstraction support on zkSync.
+In this tutorial, we'll create smart contract account with a daily spend limit thanks to the Account Abstraction support on zkSync.
 
 ## Prerequisite
 
-This is another tutorial about account abstraction and hence, it is encouraged that you read [the basics of Account Abstraction on zkSync](https://v2-docs.zksync.io/dev/developer-guides/aa.html) and complete the [multisig account tutorial](https://v2-docs.zksync.io/dev/tutorials/custom-aa-tutorial.html) first.
+It is highly encouraged that you read [the basics of Account Abstraction on zkSync](https://v2-docs.zksync.io/dev/developer-guides/aa.html) and complete the [multisig account tutorial](https://v2-docs.zksync.io/dev/tutorials/custom-aa-tutorial.html) first.
 
 Apart from that we'll build this project with [Node.js](https://nodejs.org/en/download/) and [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) so make sure you have installed them.
 
