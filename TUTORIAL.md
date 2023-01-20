@@ -2,15 +2,19 @@
 
 ## Introduction
 
-In this tutorial, we go through an example of implementing the daily spending limit feature with the Account Abstraction wallet on zkSync. We will build a `SpendLimit` contract inherited from an account contract and prevents it from spending ETH more than the limit amount preliminarily set by the account.
+In this tutorial, we'll implement an account with a daily spending limit thanks to the Account Abstraction support on zkSync.
 
 ## Prerequisite
 
-The project in this tutorial is implemented based on zkSync's Account Abstraction, which you can learn on [the existing tutorial](https://v2-docs.zksync.io/dev/tutorials/custom-aa-tutorial.html). Hence, it is encouraged to finish that tutorial first and read [the basics of Account Abstraction](https://v2-docs.zksync.io/dev/developer-guides/aa.html) on zkSync.
+This is another tutorial about account abstraction and hence, it is encouraged that you read [the basics of Account Abstraction on zkSync](https://v2-docs.zksync.io/dev/developer-guides/aa.html) and complete the [multisig account tutorial](https://v2-docs.zksync.io/dev/tutorials/custom-aa-tutorial.html) first.
+
+Apart from that we'll build this project with [Node.js](https://nodejs.org/en/download/) and [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) so make sure you have installed them.
 
 ## Installing dependencies
 
-We will use hardhat-plugins to deploy and perform transactions. First, let’s install all the dependencies for it:
+We will use the [zkSync Hardhat plugins](https://v2-docs.zksync.io/api/hardhat/) to build, deploy, and interact with the smart contracts of this project.
+
+First, let’s install all the dependencies that we'll need:
 
 ```shell
 mkdir custom-spendlimit-tutorial
@@ -18,27 +22,31 @@ cd custom-spendlimit-tutorial
 yarn init -y
 yarn add -D typescript ts-node ethers zksync-web3 hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy
 ```
-Additionally, please install a few packages that allow us to utilize [zkSync smart contracts](https://v2-docs.zksync.io/dev/developer-guides/contracts/system-contracts.html).
+
+Additionally, please install a few packages that allow us to utilize the [zkSync smart contracts](https://v2-docs.zksync.io/dev/developer-guides/contracts/system-contracts.html).
 
 ```shell
 yarn add @matterlabs/zksync-contracts @openzeppelin/contracts @openzeppelin/contracts-upgradeable
 ```
 
-Lastly, create `hardhat.config.ts` config file and contracts and `deploy` folders like [quickstart tutorial](https://v2-docs.zksync.io/dev/developer-guides/hello-world.html).
+Lastly, create `hardhat.config.ts` config file and the `contracts` and `deploy` folders like in the [quickstart tutorial](https://v2-docs.zksync.io/dev/developer-guides/hello-world.html).
 
-**TIP**: You can use the zkSync CLI to scaffold a project automatically. Find [more info about the zkSync CLI here](https://v2-docs.zksync.io/api/tools/zksync-cli/).
+::: tip zksync-cli
+
+You can use the zkSync CLI to scaffold a project automatically. Find [more info about the zkSync CLI here](https://v2-docs.zksync.io/api/tools/zksync-cli/).
+
+:::
 
 ## Design
 
-Now, let’s dive into the design and implementation of the daily spending limit feature that helps prevent an account from spending more than its owner wants it to do.
+Now, let’s dive into the design and implementation of the daily spending limit feature that helps prevent an account from spending more ETH than the limit set by its owner.
 
 The `SpendLimit` contract is inherited from the `Account` contract as a module that has the following functionalities:
 
-- Allow the account to enable the daily spending limit in a token (ETH in this example).
+- Allow the account to enable/disable the daily spending limit in a token (ETH in this example).
 - Allow the account to change (increase/decrease or remove) the daily spending limit.
 - Reject token transfer if the daily spending limit has been exceeded.
-- Restore the available amount for spending after 24 hours. 
-
+- Restore the available amount for spending after 24 hours.
 
 ### Basic structure
 
@@ -65,7 +73,7 @@ contract SpendLimit {
 
     function removeSpendingLimit(address _token) public onlyAccount {
     }
-    
+
     function _isValidUpdate(address _token) internal view returns(bool) {
     }
 
@@ -83,17 +91,19 @@ First, add the mapping `limits` and struct `Limit` that serve as data storages f
 ```solidity
     struct Limit {
         uint limit;      // the amount of a daily spending limit
-        uint available;  // the available amount that can be spent 
-        uint resetTime;  // block.timestamp at the available amount is restored
+        uint available;  // the available amount that can be spent
+        uint resetTime;  // block.timestamp when the available amount is restored
         bool isEnabled;  // true when a daily spending limit is enabled
     }
 
-    mapping(address => Limit) public limits; // token => Limit
+    mapping(address => Limit) public limits; // token address => Limit
 ```
 
-### Setting and Removal of the daily spending limit
+Note that the `limits` mapping uses the token address as its key. This means that users will be able to set limits for ETH or any ERC20 token.
 
-And the implementation of the setting and removal of the Limit is the following.
+### Setting and Removing of the daily spending limit
+
+Here is the implementation to set and remove the limit:
 
 ```solidity
 
@@ -104,14 +114,14 @@ And the implementation of the setting and removal of the Limit is the following.
         uint resetTime;
         uint timestamp = block.timestamp; // L1 batch timestamp
 
-        if (isValidUpdate(_token)) {
+        if (_isValidUpdate(_token)) {
             resetTime = timestamp + ONE_DAY;
         } else {
             resetTime = timestamp;
         }
-        
+
         _updateLimit(_token, _amount, _amount, resetTime, true);
-    } 
+    }
 
     // this function disables an active daily spending limit,
     function removeSpendingLimit(address _token) public onlyAccount {
@@ -143,13 +153,15 @@ And the implementation of the setting and removal of the Limit is the following.
 
 ```
 
-Both `setSpendingLimit` and `removeSpendingLimit` can only be called by account contracts that inherit this contract `SpendLimit`, which is ensured by the `onlyAccount` modifier. They call `_updateLimit` and pass the arguments to it to modify the storage data of Limit after the verification in `_isValidUpdate` succeeds.
+Both `setSpendingLimit` and `removeSpendingLimit` can only be called by account contracts that inherit this contract `SpendLimit`, which is ensured by the `onlyAccount` modifier. They call `_updateLimit` and passing the arguments to modify the storage data of the limit after the verification in `_isValidUpdate` succeeds.
 
-Specifically, `setSpendingLimit` enables a non-zero daily spending limit for a specific token, and `removeSpendingLimit` disables the active daily spending limit, decreasing `limit` and `available` to 0 and setting `isEnabled` false.
+Specifically, `setSpendingLimit` sets a non-zero daily spending limit for a given token, and `removeSpendingLimit` disables the active daily spending limit by decreasing `limit` and `available` to 0 and setting `isEnabled` to false.
 
-`_isValidUpdate` returns false if the spending limit is not enabled and also throws an `Invalid Update` error unless it is first spending after enabling or called after 24 hours have passed since the last update to ensure that users can't freely modify(increase or remove) the daily limit to spend more.
+`_isValidUpdate` returns false if the spending limit is not enabled and also throws an `Invalid Update` error if the user has spend some amount in the day (the available amount is different to the limit) or the function is called before 24 hours have passed since the last update. This ensures that users can't freely modify (increase or remove) the daily limit to spend more.
 
 ### Checking daily spending limit
+
+The `_checkSpendingLimit` function is internally called by the account contract itself before executing the transaction.
 
 ```solidity
 
@@ -176,14 +188,13 @@ Specifically, `setSpendingLimit` enables a non-zero daily spending limit for a s
     }
 ```
 
-The `_checkSpendingLimit` function is internally called by the account contract itself before execution.
-
- If the daily spending limit is disabled, the checking process immediately stops.
+If the daily spending limit is disabled, the checking process immediately stops.
 
 ```solidity
 if(!limit.isEnabled) return;
 ```
-Before checking the spending amount, it renews the `resetTime` and `available` amount if a day has already passed since the last update: timestamp > resetTime. Or only `resetTime` is updated if it's the first spending after enabling the Limit. Otherwise, these processes are skipped.  
+
+Before checking the spending amount, this method renews the `resetTime` and `available` amount if a day has already passed since the last update: timestamp > resetTime. It only updates the `resetTime` if the transaction is the first spending after enabling the limit. This way the daily limit actually starts with the first transaction.
 
 ```solidity
 
@@ -191,13 +202,13 @@ if (limit.limit != limit.available && timestamp > limit.resetTime) {
       limit.resetTime = timestamp + ONE_DAY;
       limit.available = limit.limit;
 
-} else if (limit.limit == limit.available) { 
+} else if (limit.limit == limit.available) {
       limit.resetTime = timestamp + ONE_DAY;
 }
-        
+
 ```
 
-And it checks to see if the account is able to spend a specified amount of the token. If the amount doesn't exceed the available, it decrements the `available` amount.
+Finally, the method checks if the account is able to spend a specified amount of the token. If the amount doesn't exceed the available amount, it decrements the `available` in the limit:
 
 ```solidity
 require(limit.available >= _amount, 'Exceed daily limit');
@@ -205,11 +216,11 @@ require(limit.available >= _amount, 'Exceed daily limit');
 limit.available -= _amount;
 ```
 
-Note: you might have noticed the comment `// L1 batch timestamp` above. The details of this will be explained below. 
+Note: you might have noticed the comment `// L1 batch timestamp` above. The details of this will be explained below.
 
 ### Full code
 
-Now, here is the complete code of the SpendLimit contract. But one thing to be noted is that the value of the ONE_DAY variable is set to `1 minutes` instead of `24 hours` for the sake of the testing we will carry out later. So, please don't forget to change the value or copy&paste the entire code below for deploying.
+Now, here is the complete code of the SpendLimit contract. But one thing to be noted is that the value of the ONE_DAY variable is set to `1 minutes` instead of `24 hours`. This is just for testing purposes (we don't want to wait a full day to see if it works!) so, please don't forget to change the value before for deploying the contract.
 
 ```solidity
 
@@ -217,13 +228,13 @@ Now, here is the complete code of the SpendLimit contract. But one thing to be n
 pragma solidity ^0.8.0;
 
 contract SpendLimit {
-    
-    // uint public ONE_DAY = 24 hours; 
+
+    // uint public ONE_DAY = 24 hours;
     uint public ONE_DAY = 1 minutes; // set to 1 min for tutorial
-    
+
     /// This struct serves as data storage of daily spending limits users enable
-    /// limit: the amount of a daily spending limit 
-    /// available: the available amount that can be spent 
+    /// limit: the amount of a daily spending limit
+    /// available: the available amount that can be spent
     /// resetTime: block.timestamp at the available amount is restored
     /// isEnabled: true when a daily spending limit is enabled
     struct Limit {
@@ -252,14 +263,14 @@ contract SpendLimit {
         uint resetTime;
         uint timestamp = block.timestamp; // L1 batch timestamp
 
-        if (isValidUpdate(_token)) {
+        if (_isValidUpdate(_token)) {
             resetTime = timestamp + ONE_DAY;
         } else {
             resetTime = timestamp;
         }
-        
+
         _updateLimit(_token, _amount, _amount, resetTime, true);
-    } 
+    }
 
     // this function disables an active daily spending limit,
     // decreasing each uint number in the Limit struct to zero and setting isEnabled false.
@@ -272,7 +283,7 @@ contract SpendLimit {
     // Ensure that users can't freely modify(increase or remove) the daily limit to spend more.
     function isValidUpdate(address _token) internal view returns(bool) {
 
-        // Reverts unless it is first spending after enabling 
+        // Reverts unless it is first spending after enabling
         // or called after 24 hours have passed since the last update.
         if (limits[_token].isEnabled) {
             require(limits[_token].limit == limits[_token].available || block.timestamp > limits[_token].resetTime,
@@ -314,10 +325,10 @@ contract SpendLimit {
             limit.resetTime = timestamp + ONE_DAY;
         }
 
-        // reverts if the amount exceeds the remaining available amount. 
+        // reverts if the amount exceeds the remaining available amount.
         require(limit.available >= _amount, 'Exceed daily limit');
 
-        // decrement `available` 
+        // decrement `available`
         limit.available -= _amount;
         limits[_token] = limit;
     }
@@ -328,11 +339,17 @@ contract SpendLimit {
 
 ### Account & Factory contracts
 
-That's pretty much for `SpendLimit.sol`. Now, we also need to add `Account.sol`, the Account Abstraction wallet contract and `AAFactory.sol`, the factory contract which deploys account contracts. As noted earlier, those two contracts are mostly based on the implementations of [another tutorial about Account Abstraction](https://v2-docs.zksync.io/dev/tutorials/custom-aa-tutorial.html).
+That's pretty much for `SpendLimit.sol`. Now, we also need to create the account contract `Account.sol`, and the factory contract that deploys account contracts,`AAFactory.sol`.
 
-We are skipping this tutorial's detailed explanation of how these two contracts work. However, the primary difference is whether or not it has two signers, meaning that `Account.sol` in this tutorial doesn't implement a multi-signature scheme but only needs a single signature. Below are the full codes.
+As noted earlier, those two contracts are mostly based on the implementations of [another tutorial about Account Abstraction](https://v2-docs.zksync.io/dev/tutorials/custom-aa-tutorial.html).
 
-#### Account.sol
+We will not explain in depth how these contract work as they're similar to the ones used in the multisig account abstraction tutorial. The only difference is that our account will have a single signer instead of two.
+
+Below are the full codes.
+
+#### Account.sol contract
+
+The account contract implements the IAccount interface and inherits the SpendLimit contract we just created:
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -349,7 +366,7 @@ import "./SpendLimit.sol";
 contract Account is IAccount, IERC1271, SpendLimit { // imports SpendLimit contract
 
     using TransactionHelper for Transaction;
-    
+
     address public owner;
 
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
@@ -359,7 +376,7 @@ contract Account is IAccount, IERC1271, SpendLimit { // imports SpendLimit contr
             msg.sender == BOOTLOADER_FORMAL_ADDRESS,
             "Only bootloader can call this method"
         );
-    
+
         _;
     }
 
@@ -420,8 +437,8 @@ contract Account is IAccount, IERC1271, SpendLimit { // imports SpendLimit contr
         // Call SpendLimit contract to ensure that ETH `value` doesn't exceed the daily spending limit
         if ( value > 0 ) {
            _checkSpendingLimit(address(ETH_TOKEN_SYSTEM_CONTRACT), value);
-        } 
-        
+        }
+
         if (to == address(DEPLOYER_SYSTEM_CONTRACT)) {
             SystemContractsCaller.systemCall(
                 uint32(gasleft()),
@@ -489,22 +506,24 @@ contract Account is IAccount, IERC1271, SpendLimit { // imports SpendLimit contr
 }
 ```
 
-In the lines below, if the ETH value is non-zero, the Account contract calls `_checkSpendingLimit` in the SpendLimit contract to verify the allowance for spending.
+The `_executeTransaction` method is where we'll use the methods from the `SpendLimit.sol` contrac. If the ETH transaction value is non-zero, the Account contract calls `_checkSpendingLimit` to verify the allowance for spending.
 
 ```solidity
 
 if ( value > 0 ) {
     _checkSpendingLimit(address(ETH_TOKEN_SYSTEM_CONTRACT), value);
-} 
+}
 ```
 
-Since we set the spending limit of ETH in this example, the first argument in `_checkSpendingLimit` should be `address(ETH_TOKEN_SYSTEM_CONTRACT)`, which is imported from a system contract called `system-contracts/Constant.sol`.
+Since we want to set the spending limit of ETH in this example, the first argument in `_checkSpendingLimit` should be `address(ETH_TOKEN_SYSTEM_CONTRACT)`, which is imported from a system contract called `system-contracts/Constant.sol`.
 
-**Note1** : The formal ETH address on zkSync is `0x000000000000000000000000000000000000800a`, neither the well-known `0xEee...EEeE` used by protocols as a placeholder on Ethereum, nor zero address `0x000...000`, which is what `zksync-web3` package([See](https://v2-docs.zksync.io/api/js/utils.html#the-address-of-ether)) provides as a more user-friendly alias.
+**Note1** : The formal ETH address on zkSync is `0x000000000000000000000000000000000000800a`, neither the well-known `0xEee...EEeE` used by protocols as a placeholder on Ethereum, nor the zero address `0x000...000`, which is what `zksync-web3` package([See](https://v2-docs.zksync.io/api/js/utils.html#the-address-of-ether)) provides as a more user-friendly alias.
 
 **Note2** : SpendLimit is token-agnostic. Thus an extension is also possible: add a check for whether or not the execution is an ERC20 transfer by extracting the function selector in bytes from transaction calldata.
 
-#### AAFactory.sol
+#### AAFactory.sol contract
+
+The `AAFactory.sol` contract will be responsible of deploying instances of the `Account.sol` contract:
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -545,26 +564,26 @@ contract AAFactory {
 
 ### Compile
 
-Finally, we are ready to deploy the contracts. So, before the deployment, let's compile the contracts by running:  
+Finally, we are ready to compile and deploy the contracts. So, before the deployment, let's compile the contracts by running:
 
 ```shell
 yarn hardhat compile
 ```
 
-Then, let's create a file `deploy-factory-account.ts` that deploys all the contracts we've made above. 
+Then, let's create a file `deploy-factory-account.ts` that deploys all the contracts we've made above and creates an account.
 
 ```typescript
-import { utils, Wallet, Provider } from 'zksync-web3';
-import * as ethers from 'ethers';
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
+import { utils, Wallet, Provider } from "zksync-web3";
+import * as ethers from "ethers";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider('https://zksync2-testnet.zksync.dev');
-  const wallet = new Wallet('<WALLET_PRIVATE_KEY>', provider);
+  const provider = new Provider("https://zksync2-testnet.zksync.dev");
+  const wallet = new Wallet("<WALLET_PRIVATE_KEY>", provider);
   const deployer = new Deployer(hre, wallet);
-  const factoryArtifact = await deployer.loadArtifact('AAFactory');
-  const aaArtifact = await deployer.loadArtifact('Account');
+  const factoryArtifact = await deployer.loadArtifact("AAFactory");
+  const aaArtifact = await deployer.loadArtifact("Account");
 
   // Bridge funds if wallet on zkSync doesn't have enough funds.
   // const depositAmount = ethers.utils.parseEther('0.1');
@@ -577,9 +596,9 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   const factory = await deployer.deploy(
     factoryArtifact,
-    [utils.hashBytecode(aaArtifact.bytecode)], 
+    [utils.hashBytecode(aaArtifact.bytecode)],
     undefined,
-    [aaArtifact.bytecode,], 
+    [aaArtifact.bytecode]
   );
 
   console.log(`AA factory address: ${factory.address}`);
@@ -591,74 +610,84 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   );
 
   const owner = Wallet.createRandom();
-  console.log("owner pk: ", owner.privateKey)
+  console.log("Account owner pk: ", owner.privateKey);
 
+  // For the simplicity of the tutorial, we will use zero hash as salt
   const salt = ethers.constants.HashZero;
+
   const tx = await aaFactory.deployAccount(salt, owner.address);
   await tx.wait();
-  
+
   const abiCoder = new ethers.utils.AbiCoder();
   const accountAddress = utils.create2Address(
     factory.address,
     await aaFactory.aaBytecodeHash(),
     salt,
-    abiCoder.encode(['address'], [owner.address])
+    abiCoder.encode(["address"], [owner.address])
   );
 
   console.log(`Account deployed on address ${accountAddress}`);
 
-  await (await wallet.sendTransaction({
+  await (
+    await wallet.sendTransaction({
       to: accountAddress,
-      value: ethers.utils.parseEther('0.02')
+      value: ethers.utils.parseEther("0.02"),
     })
   ).wait();
-
 }
 ```
 
 After changing `<WALLET_PRIVATE_KEY>`, run:
 
 ```shell
-yarn hardhat deploy-zksync --script deploy/deploy-factory-account.ts
+yarn hardhat deploy-zksync --script deploy-factory-account.ts
 ```
 
 The output would look like the following:
 
 ```shell
 AA factory address: 0x9db333Cb68Fb6D317E3E415269a5b9bE7c72627Ds
-owner pk: 0x957aff65500eda28beb7130b7c1bc48f783556bb84fa6874d2204c1d66a0ddc7
+Account owner pk: 0x957aff65500eda28beb7130b7c1bc48f783556bb84fa6874d2204c1d66a0ddc7
 Account deployed on address 0x6b6B8ea196a6F27EFE408288a4FEeBE9A9e12005
 ```
 
-So, we are ready to try the functionality of the `SpendLimit` contract. For the test, now please open [zkSync2.0 testnet explorer](https://zksync2-testnet.zkscan.io/) and search for the deployed Account contract address to be able to track transactions and changes in balance which we will see in the following sections.
+So, we are ready to try the functionality of the `SpendLimit` contract. For the test, now please open [zkSync2.0 testnet explorer](https://zksync2-testnet.zkscan.io/) and search for the deployed Account contract address to be able to track transactions and changes in the balance which we will see in the following sections.
 
 **TIP**: For contract verification, please refer to [this section of the documentation](https://v2-docs.zksync.io/dev/developer-guides/contracts/contract-verification.html).
 
 ## Set the daily spending limit
 
-First, create `setLimit.ts` and after pasting the example code below, replace the undefined account address and private key string values with the ones we got in the previous section.
+First, create `setLimit.ts` in the `/deploy` folder and after pasting the example code below, replace the undefined account address and private key string values with the ones we got in the previous section.
 
 To enable the daily spending limit, we execute the `setSpendingLimit` function with two parameters: token address and amount limit. The token address is ETH_ADDRESS and the limit parameter is "0.005" in the example below. (can be any amount)
 
 ```typescript
-import { utils, Wallet, Provider, Contract, EIP712Signer, types} from 'zksync-web3';
-import * as ethers from 'ethers';
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import {
+  utils,
+  Wallet,
+  Provider,
+  Contract,
+  EIP712Signer,
+  types,
+} from "zksync-web3";
+import * as ethers from "ethers";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-const ETH_ADDRESS = "0x000000000000000000000000000000000000800A"
-const ACCOUNT_ADDRESS = '<ACCOUNT_ADDRESS>'
+const ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
+const ACCOUNT_ADDRESS = "<ACCOUNT_ADDRESS>";
 
-export default async function (hre: HardhatRuntimeEnvironment) { 
-  const provider = new Provider('https://zksync2-testnet.zksync.dev');
-  const wallet = new Wallet('<WALLET_PRIVATE_KEY>', provider);
-  const owner = new Wallet('<OWNER_PRIVATE_KEY>', provider);
-  
-  const accountArtifact = await hre.artifacts.readArtifact('Account');
-  const account = new Contract(ACCOUNT_ADDRESS, accountArtifact.abi, wallet)
+export default async function (hre: HardhatRuntimeEnvironment) {
+  const provider = new Provider("https://zksync2-testnet.zksync.dev");
+  const wallet = new Wallet("<WALLET_PRIVATE_KEY>", provider);
+  const owner = new Wallet("<OWNER_PRIVATE_KEY>", provider);
+
+  const accountArtifact = await hre.artifacts.readArtifact("Account");
+  const account = new Contract(ACCOUNT_ADDRESS, accountArtifact.abi, wallet);
 
   let setLimitTx = await account.populateTransaction.setSpendingLimit(
-    ETH_ADDRESS, ethers.utils.parseEther("0.005")
-  )
+    ETH_ADDRESS,
+    ethers.utils.parseEther("0.005")
+  );
 
   setLimitTx = {
     ...setLimitTx,
@@ -669,14 +698,16 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     customData: {
       ergsPerPubdata: utils.DEFAULT_ERGS_PER_PUBDATA_LIMIT,
     } as types.Eip712Meta,
-    value: ethers.BigNumber.from(0)
-  }
+    value: ethers.BigNumber.from(0),
+  };
 
   setLimitTx.gasPrice = await provider.getGasPrice();
-  setLimitTx.gasLimit = await provider.estimateGas(setLimitTx)
+  setLimitTx.gasLimit = await provider.estimateGas(setLimitTx);
 
-  const signedTxHash = EIP712Signer.getSignedDigest(setLimitTx); 
-  const signature = ethers.utils.arrayify(ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash)))
+  const signedTxHash = EIP712Signer.getSignedDigest(setLimitTx);
+  const signature = ethers.utils.arrayify(
+    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash))
+  );
 
   setLimitTx.customData = {
     ...setLimitTx.customData,
@@ -686,12 +717,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const sentTx = await provider.sendTransaction(utils.serialize(setLimitTx));
   await sentTx.wait();
 
-  const limit = await account.limits(ETH_ADDRESS)
-  console.log("limit: ", limit.limit.toString())
-  console.log("available: ", limit.available.toString())
-  console.log("resetTime: ", limit.resetTime.toString())
-  console.log("Enabled: ", limit.isEnabled)
-
+  const limit = await account.limits(ETH_ADDRESS);
+  console.log("limit: ", limit.limit.toString());
+  console.log("available: ", limit.available.toString());
+  console.log("resetTime: ", limit.resetTime.toString());
+  console.log("Enabled: ", limit.isEnabled);
 }
 ```
 
@@ -709,69 +739,88 @@ Enabled:  true
 Finally, we will see if the SpendLimit contract works and refuses any ETH transfer that exceeds the daily limit. Let's create `transferETH.ts` with the example code below.
 
 ```typescript
-import { utils, Wallet, Provider, Contract, EIP712Signer, types} from 'zksync-web3';
-import * as ethers from 'ethers';
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import {
+  utils,
+  Wallet,
+  Provider,
+  Contract,
+  EIP712Signer,
+  types,
+} from "zksync-web3";
+import * as ethers from "ethers";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-const ETH_ADDRESS = "0x000000000000000000000000000000000000800A"
-const ACCOUNT_ADDRESS = '<ACCOUNT_ADDRESS>'
+const ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
+const ACCOUNT_ADDRESS = "<ACCOUNT_ADDRESS>";
 
-export default async function (hre: HardhatRuntimeEnvironment) { 
-  const provider = new Provider('https://zksync2-testnet.zksync.dev');
-  const wallet = new Wallet('<WALLET_PRIVATE_KEY>', provider);
-  const owner = new Wallet('<OWNER_PRIVATE_KEY>', provider);
+export default async function (hre: HardhatRuntimeEnvironment) {
+  const provider = new Provider("https://zksync2-testnet.zksync.dev");
+  const wallet = new Wallet("<WALLET_PRIVATE_KEY>", provider);
+  const owner = new Wallet("<OWNER_PRIVATE_KEY>", provider);
 
-    let ethTransferTx = {
-        from: ACCOUNT_ADDRESS,
-        to: wallet.address,
-        chainId: (await provider.getNetwork()).chainId,
-        nonce: await provider.getTransactionCount(ACCOUNT_ADDRESS),
-        type: 113,
-        customData: {
-          ergsPerPubdata: utils.DEFAULT_ERGS_PER_PUBDATA_LIMIT,
-        } as types.Eip712Meta,
-        value: ethers.utils.parseEther("0.0051"), // 0.0051 fails but 0.0049 succeeds
-        gasPrice: await provider.getGasPrice(),
-        gasLimit: ethers.BigNumber.from(20000000), // constant 20M since estimateGas() causes an error, and this tx consumes more than 15M at most
-        data: "0x"
-      }
-      const signedTxHash = EIP712Signer.getSignedDigest(ethTransferTx); 
-      const signature = ethers.utils.arrayify(ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash)))
-    
-      ethTransferTx.customData = {
-        ...ethTransferTx.customData,
-        customSignature: signature,
-      };
+  let ethTransferTx = {
+    from: ACCOUNT_ADDRESS,
+    to: wallet.address,
+    chainId: (await provider.getNetwork()).chainId,
+    nonce: await provider.getTransactionCount(ACCOUNT_ADDRESS),
+    type: 113,
+    customData: {
+      ergsPerPubdata: utils.DEFAULT_ERGS_PER_PUBDATA_LIMIT,
+    } as types.Eip712Meta,
+    value: ethers.utils.parseEther("0.0051"), // 0.0051 fails but 0.0049 succeeds
+    gasPrice: await provider.getGasPrice(),
+    gasLimit: ethers.BigNumber.from(20000000), // constant 20M since estimateGas() causes an error, and this tx consumes more than 15M at most
+    data: "0x",
+  };
+  const signedTxHash = EIP712Signer.getSignedDigest(ethTransferTx);
+  const signature = ethers.utils.arrayify(
+    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash))
+  );
 
-      const accountArtifact = await hre.artifacts.readArtifact('Account');
-      const account = new Contract(ACCOUNT_ADDRESS, accountArtifact.abi, wallet)
-      const limit = (await account.limits(ETH_ADDRESS))
+  ethTransferTx.customData = {
+    ...ethTransferTx.customData,
+    customSignature: signature,
+  };
 
-      // L1 timestamp tends to be undefined in the latest blocks. So should find the latest L1 Batch first.
-      let l1BatchRange = await provider.getL1BatchBlockRange(await provider.getL1BatchNumber())
-      let l1TimeStamp = (await provider.getBlock(l1BatchRange[1])).l1BatchTimestamp
+  const accountArtifact = await hre.artifacts.readArtifact("Account");
+  const account = new Contract(ACCOUNT_ADDRESS, accountArtifact.abi, wallet);
+  const limit = await account.limits(ETH_ADDRESS);
 
-      console.log("l1TimeStamp: ", l1TimeStamp)
-      console.log("resetTime: ", limit.resetTime.toString())
+  // L1 timestamp tends to be undefined in the latest blocks. So should find the latest L1 Batch first.
+  let l1BatchRange = await provider.getL1BatchBlockRange(
+    await provider.getL1BatchNumber()
+  );
+  let l1TimeStamp = (await provider.getBlock(l1BatchRange[1])).l1BatchTimestamp;
 
-      // avoid unnecessary errors due to the delay in timestamp of L1 batch
-      // first spending after enabling of limit is ignored
-      if ( l1TimeStamp > limit.resetTime.toNumber() || limit.limit == limit.available )  {
-         const sentTx = await provider.sendTransaction(utils.serialize(ethTransferTx));
-         await sentTx.wait();
+  console.log("l1TimeStamp: ", l1TimeStamp);
+  console.log("resetTime: ", limit.resetTime.toString());
 
-         const limit = await account.limits(ETH_ADDRESS)
-         console.log("limit: ", limit.limit.toString())
-         console.log("available: ", limit.available.toString())
-         console.log("resetTime: ", limit.resetTime.toString())
-         console.log("Enabled: ", limit.isEnabled)
+  // avoid unnecessary errors due to the delay in timestamp of L1 batch
+  // first spending after enabling of limit is ignored
+  if (
+    l1TimeStamp > limit.resetTime.toNumber() ||
+    limit.limit == limit.available
+  ) {
+    const sentTx = await provider.sendTransaction(
+      utils.serialize(ethTransferTx)
+    );
+    await sentTx.wait();
 
-         return;
-      } else {
-         let wait = Math.round((limit.resetTime.toNumber() - l1TimeStamp) / 60)
-         console.log("Tx would fail due to approx ", wait, " mins difference in timestamp between resetTime and l1 batch")
-      }
+    const limit = await account.limits(ETH_ADDRESS);
+    console.log("limit: ", limit.limit.toString());
+    console.log("available: ", limit.available.toString());
+    console.log("resetTime: ", limit.resetTime.toString());
+    console.log("Enabled: ", limit.isEnabled);
 
+    return;
+  } else {
+    let wait = Math.round((limit.resetTime.toNumber() - l1TimeStamp) / 60);
+    console.log(
+      "Tx would fail due to approx ",
+      wait,
+      " mins difference in timestamp between resetTime and l1 batch"
+    );
+  }
 }
 ```
 
@@ -789,7 +838,7 @@ An unexpected error occurred:
 Error: transaction failed...
 ```
 
-Then, it's recommended to rerun the code with a different ETH amount that doesn't exceed the limit, say "0.0049", to see if the SpendLimit contract doesn't refuse the amount less than the limit.  
+After the error, we can rerun the code with a different ETH amount that doesn't exceed the limit, say "0.0049", to see if the `SpendLimit` contract doesn't refuse the amount lower than the limit.
 
 If the transaction succeeds, the output would be like the following:
 
@@ -801,67 +850,23 @@ available:  100000000000000
 New resetTime: 1673530575
 ```
 
-The value `available` in the Limit struct was decremented, so now only 0.0001 ETH is available for transfer.  
+The value `available` in the Limit struct was decremented, so now only 0.0001 ETH is available for transfer.
 
-Since the `ONE_DAY` is set to 1 minute for this test, another transfer with any amount less than the limit is supposed to succeed accordingly after a minute instead of 24 hours. However, the second transfer would fail, and we would have to wait at least ten more minutes to make a successful transaction instead. To understand the reason behind it, we should know about a constraint about block.timestamp on the current zkSync testnet first.
+Since the `ONE_DAY` is set to 1 minute for this test, another transfer with any amount less than the limit is supposed to succeed accordingly after a minute instead of 24 hours. However, the second transfer would fail, and we would have to wait until the next L1 batch is sealed (around ten minutes on testnet) to make a successful transaction instead. To understand the reason behind this, we should know about a constraint of using `block.timestamp`.
 
-Although [the documentation about blocks on zkSync](https://v2-docs.zksync.io/dev/developer-guides/transactions/blocks.html#block-properties) doesn't provide the complete information about this, L2 blocks contain two timestamps which are from L1 and in L2. Furthermore, block.timestamp on testnet returns the one from the latest L1 batch instead of L2 blocks, and the timestamp in the latest L1 batch is only updated once in 5-10 minutes, as far as we have observed.    
+::: warning block.timestamp returns L1 batch value
 
-What this means is that basically, `block.timestamp` in smart contracts on zkSync is a delayed value. [A discussion in Discord regarding this issue](https://discord.com/channels/722409280497516566/1061869082720358420).  
+The `block.timestamp` returns the time of the latest L1 batch instead of the L2 block and it's only updated once a new batch is sealed ( 5-10 minutes on testnet). What this means is that basically, `block.timestamp` in smart contracts on zkSync is a delayed value.
 
-The difference in timestamp between the latest L2 block and L1 batch can be checked by running the code below:
-```typescript
-const l1BatchRange = await provider.getL1BatchBlockRange(await provider.getL1BatchNumber())
-const l1TimeStamp = (await provider.getBlock(l1BatchRange[1])).l1BatchTimestamp
-const l2TimeStamp = (await provider.getBlock(blockNum)).timestamp
+To keep this tutorial as simple as possible, we've used `block.timestamp` but we don't recomment relaying on this for accurate time calculations.
 
-console.log("l1TimeStamp: ", l1TimeStamp)
-console.log("l2TimeStamp: ", l2TimeStamp)
-
-```
-The second transfer would fail due to the delay of the timestamp update in the latest L1 batch. Technically, transfer execution goes wrong in such a way that the return of the if-else condition `timestamp > limit.resetTime` in the `_checkSpendingLimit` function can't be true to update `available` since `timestamp` of approx 10-15 minutes ago isn't greater than `resetTime`. As a result, the `available` value remains the same even after 1 minute, causing the 'Exceed daily limit' error.  
-
-```solidity
-if (limit.limit != limit.available && timestamp > limit.resetTime) {
-      limit.resetTime = timestamp + ONE_DAY;
-      limit.available = limit.limit;
-}
-・・・
-require(limit.available >= _amount, 'Exceed daily limit');
-```
-
-This issue is only problematic for testing in this tutorial because the 10-15 minutes delay is still negligible in production, where the contract requires 24 hours until `available` is restored. Though, now we have to test the second transfer to see if everything goes as expected except this matter.
-
-So, let's rerun the same code with another value, say "0.003":
-
-```shell
-yarn hardhat deploy-zksync --script deploy/transferETH.ts
-```
-
-It may succeed if 5-10 minutes have passed since the last successful transfer transaction and the L1 batch timestamp is updated to a value greater than resetTime as `available` was successfully restored before comparing it with `_amount`.
-
-```shell
-l1TimeStamp:  1673530137
-resetTime:  1673529801
-limit:  5000000000000000
-available: 2000000000000000 // 0.005 - 0.003 = 0.002
-New resetTime: 1673530575
-```
-Otherwise, we will see the output mostly like the one below. 
-
-```shell
-l1TimeStamp:  1673529741
-resetTime:  1673529801
-Tx would fail due to approx  X  mins difference in timestamp between resetTime and l1 batch
-```
-In the latter case, the transaction wasn't triggered to avoid an unnecessary error due to the delay in the L1 batch timestamp. Then, try running the script again after more than 5-10 minutes.
-
-Note: `X mins difference` above doesn't indicate that the transaction will be sent and successful after X mins. Rather, the transaction can only be sent when the timestamp update occurs to the latest L1 batch and probably succeed if its timestamp is bigger than `resetTime`.
+:::
 
 ## Common Errors
 
 - Insufficient gasLimit: Transactions often fail due to insufficient gasLimit. Please increase the value manually when transactions fail without clear reasons.
 - Insufficient balance in account contract: transactions may fail due to the lack of balance in the deployed account contract. Please transfer funds to the account using Metamask or `wallet.sendTransaction()` method used in `deploy/deploy-factory-account.ts`.
+- Transactions submitted in a close range of time will have the same `block.timestamp` as they can be added to the same L1 batch and might cause the spend limit to not work as expected.
 
 ## Complete Project
 
