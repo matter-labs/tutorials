@@ -40,15 +40,15 @@ cd local-setup
 
 \*check details and common errors for running local zksync chain [here](https://v2-docs.zksync.io/api/hardhat/testing.html#reset-the-zksync-state).
 
-- compile:
+- Compile:
 
 ```shell
 yarn hardhat compile
 ```
 
-- additional configuration: add .env file `touch .env` and add `NODE_ENV=test`.
+- Additional configuration: rename .env.example to `.env` and add `NODE_ENV=test`.
 
-then run:
+Then run:
 
 ```shell
 yarn hardhat test
