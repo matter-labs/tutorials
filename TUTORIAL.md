@@ -858,7 +858,7 @@ Since the `ONE_DAY` is set to 1 minute for this test, another transfer with any 
 
 The `block.timestamp` returns the time of the latest L1 batch instead of the L2 block and it's only updated once a new batch is sealed ( 5-10 minutes on testnet). What this means is that basically, `block.timestamp` in smart contracts on zkSync is a delayed value.
 
-To keep this tutorial as simple as possible, we've used `block.timestamp` but we don't recomment relaying on this for accurate time calculations.
+To keep this tutorial as simple as possible, we've used `block.timestamp` but we don't recommend relying on this for accurate time calculations.
 
 :::
 
