@@ -43,7 +43,7 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         bytes32 _suggestedSignedHash,
         Transaction calldata _transaction
     ) external payable override onlyBootloader returns (bytes4 magic) {
-        return _validateTransaction(_suggestedSignedHash, _transaction);
+        magic = _validateTransaction(_suggestedSignedHash, _transaction);
     }
 
     function _validateTransaction(
@@ -77,8 +77,6 @@ contract TwoUserMultisig is IAccount, IERC1271 {
 
         if (isValidSignature(txHash, _transaction.signature) == EIP1271_SUCCESS_RETURN_VALUE) {
             magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;
-        } else {
-            magic = bytes4(0);
         }
     }
 
