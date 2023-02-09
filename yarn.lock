@@ -381,10 +381,10 @@
   dependencies:
     chalk "4.1.2"
 
-"@matterlabs/hardhat-zksync-solc@^0.3.14-beta.3":
-  version "0.3.14-beta.3"
-  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-solc/-/hardhat-zksync-solc-0.3.14-beta.3.tgz#b80275666459d8a047480d223c1098075b790170"
-  integrity sha512-H7MqJ4QXDgCvTYPWTJGjIJ71IGShT450SiSKKS3Vz8qbJNJusv7KKDsIDe2urwCTwLasSxRXk+Z+cEf03TnR8A==
+"@matterlabs/hardhat-zksync-solc@^0.3.14":
+  version "0.3.14"
+  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-solc/-/hardhat-zksync-solc-0.3.14.tgz#0a32f01b4cd8631ecd8dfe0547e3ac49ab8290d5"
+  integrity sha512-iKuQ+vvnpv3K2lkFO41xpJcNWH0KHJ/5JbOboTlPZATVR7F3GJeHfJL+GG4wkxKXnxZczpxyQqC4rAfMKvRaDg==
   dependencies:
     "@nomiclabs/hardhat-docker" "^2.0.0"
     chalk "4.1.2"
