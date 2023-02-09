@@ -3,17 +3,13 @@ require('@matterlabs/hardhat-zksync-solc');
 
 module.exports = {
   zksolc: {
-    version: '1.2.1',
+    version: '1.3.1',
     compilerSource: 'binary',
     settings: {
-      experimental: {
-        dockerImage: 'matterlabs/zksolc',
-        tag: 'v1.2.0',
-      },
-    },
+      isSystem: true
+    }
   },
   defaultNetwork: 'zkSyncTestnet',
-
   networks: {
     hardhat: {
       zksync: true,

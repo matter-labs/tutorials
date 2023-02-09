@@ -66,7 +66,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     nonce: await provider.getTransactionCount(multisigAddress),
     type: 113,
     customData: {
-      ergsPerPubdata: utils.DEFAULT_ERGS_PER_PUBDATA_LIMIT,
+      ergsPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
     } as types.Eip712Meta,
     value: ethers.BigNumber.from(0),
   };
