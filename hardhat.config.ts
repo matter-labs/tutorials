@@ -5,7 +5,7 @@ import "@matterlabs/hardhat-zksync-solc";
 
 const config: HardhatUserConfig = {
   zksolc: {
-    version: "1.3.2",
+    version: "1.3.5",
     compilerSource: "binary",
     settings: {},
   },
