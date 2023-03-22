@@ -1,14 +1,14 @@
-import { utils, Wallet, Provider, EIP712Signer, types } from 'zksync-web3';
-import * as ethers from 'ethers';
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { utils, Wallet, Provider, EIP712Signer, types } from "zksync-web3";
+import * as ethers from "ethers";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 // Put the address of your AA factory
-const AA_FACTORY_ADDRESS = '<FACTORY-ADDRESS>';
+const AA_FACTORY_ADDRESS = "<FACTORY-ADDRESS>";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider('https://zksync2-testnet.zksync.dev');
-  const wallet = new Wallet('<WALLET-PRIVATE-KEY>').connect(provider);
-  const factoryArtifact = await hre.artifacts.readArtifact('AAFactory');
+  const provider = new Provider("https://zksync2-testnet.zksync.dev");
+  const wallet = new Wallet("<WALLET_PRIVATE_KEY>").connect(provider);
+  const factoryArtifact = await hre.artifacts.readArtifact("AAFactory");
 
   const aaFactory = new ethers.Contract(
     AA_FACTORY_ADDRESS,
@@ -36,7 +36,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     AA_FACTORY_ADDRESS,
     await aaFactory.aaBytecodeHash(),
     salt,
-    abiCoder.encode(['address', 'address'], [owner1.address, owner2.address])
+    abiCoder.encode(["address", "address"], [owner1.address, owner2.address])
   );
   console.log(`Multisig deployed on address ${multisigAddress}`);
 
@@ -44,7 +44,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     await wallet.sendTransaction({
       to: multisigAddress,
       // You can increase the amount of ETH sent to the multisig
-      value: ethers.utils.parseEther('0.003'),
+      value: ethers.utils.parseEther("0.006"),
     })
   ).wait();
 
