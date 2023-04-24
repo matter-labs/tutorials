@@ -34,12 +34,10 @@ contract MyPaymaster is IPaymaster, Ownable {
     function readDAPI()
         external
         view
-        returns (uint256 tokenPriceUint256) {
-            int224 value;
-            uint256 timestamp;
+        returns (uint256 ETHUSDCUint256) {
             address proxy = 0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b;
-            (value, timestamp) = IProxy(proxy).read();
-            tokenPriceUint256 = uint224(value);
+            (int224 ETHUSDCPrice, ) = IProxy(proxy).read();
+            ETHUSDCUint256 = uint224(ETHUSDCPrice);
     }
 
     function validateAndPayForPaymasterTransaction (
@@ -78,14 +76,20 @@ contract MyPaymaster is IPaymaster, Ownable {
                 thisAddress
             );
 
-            address proxy = 0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b;
-            ( ,uint256 tokenPrice) = IProxy(proxy).read();
+            address ETHUSDCProxy = 0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b;
+            address USDCUSDProxy = 0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB;
+
+            (int224 ETHUSDCPrice, ) = IProxy(ETHUSDCProxy).read();
+            (int224 USDCUSDPrice, ) = IProxy(USDCUSDProxy).read();
+            uint256 ETHUSDCUint256 = uint224(ETHUSDCPrice);
+            uint256 USDCUSDUint256 = uint224(USDCUSDPrice);
+
             uint256 requiredETH = _transaction.gasLimit *
                 _transaction.maxFeePerGas;
-            uint256 requiredERC20 = requiredETH * tokenPrice;
+            uint256 requiredERC20 = (requiredETH * ETHUSDCUint256)/USDCUSDUint256;
             require(
                 providedAllowance >= requiredERC20,
-                "Min allowance too low"
+                "Min paying allowance too lowwww"
             );
 
             // Note, that while the minimal amount of ETH needed is tx.gasPrice * tx.gasLimit,

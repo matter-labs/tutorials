@@ -20,7 +20,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   // Deploying the ERC20 token
   const erc20Artifact = await deployer.loadArtifact("MyERC20");
-  const erc20 = await deployer.deploy(erc20Artifact, ["MyToken", "MyToken", 18]);
+  const erc20 = await deployer.deploy(erc20Artifact, ["USDC", "USDC", 18]);
   console.log(`ERC20 address: ${erc20.address}`);
 
   // Deploying the paymaster
@@ -38,9 +38,9 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   // Supplying the ERC20 tokens to the empty wallet:
   await // We will give the empty wallet 3 units of the token:
-  (await erc20.mint(emptyWallet.address, 3)).wait();
+  (await erc20.mint(emptyWallet.address, "5000000000000000000000")).wait();
 
-  console.log("Minted 3 tokens for the empty wallet");
+  console.log("Minted 5k mUSDC for the empty wallet");
 
   console.log(`Done!`);
 }

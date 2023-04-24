@@ -22,12 +22,12 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const provider = new Provider("https://testnet.era.zksync.dev");
   const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
 
-  // Obviously this step is not required, but it is here purely to demonstrate that indeed the wallet has no ether.
-  const ethBalance = await emptyWallet.getBalance();
-  if (!ethBalance.eq(0)) {
-    throw new Error("The wallet is not empty");
-  }
-
+  // // Obviously this step is not required, but it is here purely to demonstrate that indeed the wallet has no ether.
+  // const ethBalance = await emptyWallet.getBalance();
+  // if (!ethBalance.eq(0)) {
+  //   throw new Error("The wallet is not empty");
+  // }
+  
   console.log(
     `Balance of the user before mint: ${await emptyWallet.getBalance(
       TOKEN_ADDRESS
@@ -38,18 +38,20 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   const gasPrice = await provider.getGasPrice();
 
+  console.log()
+
   // Encoding the "ApprovalBased" paymaster flow's input
   const paymasterParams = utils.getPaymasterParams(PAYMASTER_ADDRESS, {
     type: "ApprovalBased",
     token: TOKEN_ADDRESS,
     // set minimalAllowance as we defined in the paymaster contract
-    minimalAllowance: ethers.BigNumber.from(1),
+    minimalAllowance: ethers.BigNumber.from("30000000000000000000"),
     // empty bytes as testnet paymaster does not use innerInput
     innerInput: new Uint8Array(),
   });
 
   // Estimate gas fee for mint transaction
-  const gasLimit = await erc20.estimateGas.mint(emptyWallet.address, 100, {
+  const gasLimit = await erc20.estimateGas.mint(emptyWallet.address, "20000000000000000000", {
     customData: {
       gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
       paymasterParams: paymasterParams,
@@ -57,9 +59,10 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   });
 
   const fee = gasPrice.mul(gasLimit.toString());
+  console.log(fee)
 
   await (
-    await erc20.connect(emptyWallet).mint(emptyWallet.address, 100, {
+    await erc20.connect(emptyWallet).mint(emptyWallet.address, "1000000000000000000", {
       // paymaster info
       customData: {
         paymasterParams: paymasterParams,
