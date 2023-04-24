@@ -1,74 +1,63 @@
-import { BigNumber, Contract, ethers, Wallet } from 'ethers';
-import { Provider, utils } from 'zksync-web3';
-
+import { BigNumber, Contract, ethers, Wallet } from "ethers";
+import { Provider, utils } from "zksync-web3";
 const GOVERNANCE_ABI = require('./governance.json');
-const GOVERNANCE_ADDRESS = '<GOVERNANCE-CONTRACT-ADDRESS>';
+const GOVERNANCE_ADDRESS = '<GOVERNANCE-ADDRESS>';
 const COUNTER_ABI = require('./counter.json');
-const COUNTER_ADDRESS = '<COUNTER-CONTRACT-ADDRESS>';
+const COUNTER_ADDRESS = '<COUNTER-ADDRESS>';
 
 async function main() {
-  // Ethereum L1 provider
-  const l1Provider = ethers.providers.getDefaultProvider('goerli');
-
-  // Governor wallet
-  const wallet = new Wallet('<YOUR-PRIVATE-KEY>', l1Provider);
-
+  // Enter your Ethereum L1 provider RPC URL.
+  const l1Provider = new ethers.providers.JsonRpcProvider("<RPC-URL>");
+  // Set up the Governor wallet to be the same as the one that deployed the governance contract.
+  const wallet = new ethers.Wallet("<YOUR-PRIVATE-KEY>", l1Provider);
+  // Set a constant that accesses the Layer 1 contract.
   const govcontract = new Contract(GOVERNANCE_ADDRESS, GOVERNANCE_ABI, wallet);
 
-  // Getting the current address of the zkSync L1 bridge
-  const l2Provider = new Provider('https://zksync2-testnet.zksync.dev');
+  // Initialize the L2 provider.
+  const l2Provider = new Provider("https://testnet.era.zksync.dev");
+  // Get the current address of the zkSync L1 bridge.
   const zkSyncAddress = await l2Provider.getMainContractAddress();
-  // Getting the `Contract` object of the zkSync bridge
-  const zkSyncContract = new Contract(
-    zkSyncAddress,
-    utils.ZKSYNC_MAIN_ABI,
-    wallet
-  );
+  // Get the `Contract` object of the zkSync bridge.
+  const zkSyncContract = new Contract(zkSyncAddress, utils.ZKSYNC_MAIN_ABI, wallet);
 
-  // Encoding the tx data the same way it is done on Ethereum
+  // Encoding the L1 transaction is done in the same way as it is done on Ethereum.
+  // Use an Interface which gives access to the contract functions.
   const counterInterface = new ethers.utils.Interface(COUNTER_ABI);
-  const data = counterInterface.encodeFunctionData('increment', []);
+  const data = counterInterface.encodeFunctionData("increment", []);
 
-  // The price of the L1 transaction requests depends on the gas price used in the call
+  // The price of an L1 transaction depends on the gas price used.
+  // You should explicitly fetch the gas price before making the call.
   const gasPrice = await l1Provider.getGasPrice();
 
-  // Here we define the constant for ergs limit
-  const ergsLimit = BigNumber.from(100000);
-  // Getting the cost of the execution.
-  const baseCost = await zkSyncContract.l2TransactionBaseCost(
+  // Define a constant for gas limit which estimates the limit for the L1 to L2 transaction.
+  const gasLimit = await l2Provider.estimateL1ToL2Execute({
+    contractAddress: COUNTER_ADDRESS,
+    calldata: data,
+    caller: utils.applyL1ToL2Alias(GOVERNANCE_ADDRESS) 
+  });
+  // baseCost takes the price and limit and formats the total in wei.
+  // For more information on `REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT` see the [fee model documentation](../developer-guides/transactions/fee-model.md).
+  const baseCost = await zkSyncContract.l2TransactionBaseCost(gasPrice, gasLimit, utils.REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT);
+
+  // !! If you don't include the gasPrice and baseCost in the transaction, a re-estimation of fee may generate errors.
+  const tx = await govcontract.callZkSync(zkSyncAddress, COUNTER_ADDRESS, data, gasLimit, utils.REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT, {
+    // Pass the necessary ETH `value` to cover the fee for the operation
+    value: baseCost,
     gasPrice,
-    ergsLimit,
-    ethers.utils.hexlify(data).length
-  );
+  });
 
-  // Calling the L1 governance contract
-  const tx = await govcontract.callZkSync(
-    zkSyncAddress,
-    COUNTER_ADDRESS,
-    data,
-    ergsLimit,
-    {
-      // Passing the necessary ETH `value` to cover the fee for the operation
-      value: baseCost,
-      gasPrice,
-    }
-  );
-
-  // Waiting until the L1 tx is complete
+  // Wait until the L1 tx is complete.
   await tx.wait();
 
-  // Getting the TransactionResponse object for the L2 transaction corresponding to the
-  // execution call
+  // Get the TransactionResponse object for the L2 transaction corresponding to the execution call.
   const l2Response = await l2Provider.getL2TransactionFromPriorityOp(tx);
 
-  // The receipt of the L2 transaction corresponding to the call to the Increment contract
+  // Output the receipt of the L2 transaction corresponding to the call to the counter contract.
   const l2Receipt = await l2Response.wait();
-
   console.log(l2Receipt);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors
+// We recommend always using this async/await pattern to properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

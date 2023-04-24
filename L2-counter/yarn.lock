@@ -550,17 +550,20 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@matterlabs/hardhat-zksync-deploy@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-deploy/-/hardhat-zksync-deploy-0.6.0.tgz#c24a79e325344511adb023062205dbc312efdf01"
-  integrity sha512-Gu7Zuzyx+YipyyKVtGjQ+EYWGtDmPLhH4oStyVLjIGWfdawT+AWUYxe6nwrIYGOxqI5RcGdGIDd5NANAOJKgjA==
+"@matterlabs/hardhat-zksync-deploy@^0.6.3":
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-deploy/-/hardhat-zksync-deploy-0.6.3.tgz#833b208373e7037bf43671054328d82511444e2a"
+  integrity sha512-FB+2xFL/80JJwlGna+aHA6dk4ONrMFqThTZATYVJUAKooA0Aw5qmpmM8B3qsNB4LLzHSO/EmVrHIcLaPv8hYwQ==
+  dependencies:
+    chalk "4.1.2"
 
-"@matterlabs/hardhat-zksync-solc@^0.3.12":
-  version "0.3.12"
-  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-solc/-/hardhat-zksync-solc-0.3.12.tgz#0caeb0a2aac1d66057988b981a4d1c72ff614a1e"
-  integrity sha512-0py4bsqphPYJV1Ub7jlCkMP2lEENIB16jv700rNnikJJn251ofQgzowcspJw+/WchP+Tu4tJSRL0a1MVngtCoQ==
+"@matterlabs/hardhat-zksync-solc@^0.3.16":
+  version "0.3.16"
+  resolved "https://registry.yarnpkg.com/@matterlabs/hardhat-zksync-solc/-/hardhat-zksync-solc-0.3.16.tgz#dd8ed44f1a580f282794a15fee995f418b040158"
+  integrity sha512-gw46yyiCfj49I/nbUcOlnF5xE80WyeW/i8i9ouHom4KWJNt1kioQIwOPkN7aJURhXpJJxKSdeWBrQHLWTZDnTA==
   dependencies:
     "@nomiclabs/hardhat-docker" "^2.0.0"
+    chalk "4.1.2"
     dockerode "^3.3.4"
 
 "@metamask/eth-sig-util@^4.0.0":
@@ -1319,6 +1322,14 @@ catering@^2.1.0, catering@^2.1.1:
   resolved "https://registry.yarnpkg.com/catering/-/catering-2.1.1.tgz#66acba06ed5ee28d5286133982a927de9a04b510"
   integrity sha512-K7Qy8O9p76sL3/3m7/zLKbRkyOlSZAgzEaLhyj2mXS8PsCud2Eo4hAb8aLtZqHh0QGqLcb9dlJSu6lHRVENm1w==
 
+chalk@4.1.2, chalk@^4.1.0:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
+  integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
+  dependencies:
+    ansi-styles "^4.1.0"
+    supports-color "^7.1.0"
+
 chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
@@ -1327,14 +1338,6 @@ chalk@^2.4.2:
     ansi-styles "^3.2.1"
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
-
-chalk@^4.1.0:
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
-  integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
-  dependencies:
-    ansi-styles "^4.1.0"
-    supports-color "^7.1.0"
 
 chokidar@3.5.3:
   version "3.5.3"
@@ -3104,7 +3107,7 @@ yocto-queue@^0.1.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-zksync-web3@^0.12.0:
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.12.1.tgz#e8fbdc22b61b3071a5b6150e09a03c8bc26664bf"
-  integrity sha512-SEr7u3Qos/d5ykhPisN2rQk7amk7kc+MUrUBmJOSgrxKzgnQcva61S3Gcyaf457u7nLaeQKGBIbwIITW2lwG1w==
+zksync-web3@^0.14.3:
+  version "0.14.3"
+  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.14.3.tgz#64ac2a16d597464c3fc4ae07447a8007631c57c9"
+  integrity sha512-hT72th4AnqyLW1d5Jlv8N2B/qhEnl2NePK2A3org7tAa24niem/UAaHMkEvmWI3SF9waYUPtqAtjpf+yvQ9zvQ==
