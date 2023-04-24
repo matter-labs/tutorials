@@ -17,6 +17,7 @@ contract MyPaymaster is IPaymaster, Ownable {
     uint256 constant PRICE_FOR_PAYING_FEES = 1;
 
     address public allowedToken;
+    address public USDCdAPIProxy;
 
     modifier onlyBootloader() {
         require(
@@ -27,9 +28,23 @@ contract MyPaymaster is IPaymaster, Ownable {
         _;
     }
 
+    mapping(address => address) public tokenProxyMapping;
+
     constructor(address _erc20) {
         allowedToken = _erc20;
     }
+
+    // Set dapi proxy for the allowed token
+    function setDapiProxy(address _proxy) 
+    public onlyOwner {
+        tokenProxyMapping[allowedToken] = _proxy;
+    }
+
+    function setUSDCProxy(address _proxy)
+    public onlyOwner {
+        USDCdAPIProxy = _proxy;
+    }
+
     // Reads and returns the dAPI value 
     function readDAPI()
         external
@@ -76,11 +91,10 @@ contract MyPaymaster is IPaymaster, Ownable {
                 thisAddress
             );
 
-            address ETHUSDCProxy = 0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b;
-            address USDCUSDProxy = 0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB;
+            address ETHUSDCProxy = tokenProxyMapping[allowedToken];
 
             (int224 ETHUSDCPrice, ) = IProxy(ETHUSDCProxy).read();
-            (int224 USDCUSDPrice, ) = IProxy(USDCUSDProxy).read();
+            (int224 USDCUSDPrice, ) = IProxy(USDCdAPIProxy).read();
             uint256 ETHUSDCUint256 = uint224(ETHUSDCPrice);
             uint256 USDCUSDUint256 = uint224(USDCUSDPrice);
 
