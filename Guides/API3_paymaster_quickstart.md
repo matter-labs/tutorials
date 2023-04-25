@@ -29,7 +29,7 @@ Within a paymaster price oracles can be used to provide price data on-chain for 
 
 ## Project repo
 
-The tutorial code is available [here](https://github.com/matter-labs/custom-paymaster-tutorial).<!--update-->
+The tutorial code is available [here](https://github.com/matter-labs/custom-paymaster-tutorial).<!--update?-->
 
 ## Set up the project
 
