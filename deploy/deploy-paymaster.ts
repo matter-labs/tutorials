@@ -36,6 +36,19 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     })
   ).wait();
 
+  // Setting the dAPIs in Paymaster
+    const ETHUSDdAPI = "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b";
+    const USDCUSDdAPI = "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB";
+  const setProxy = paymaster.setDapiProxy(USDCUSDdAPI, ETHUSDdAPI)
+  await (await setProxy).wait()
+  console.log("dAPI Proxies Set!")
+
+  // Deploying the greeting contract
+  const greetingContractArtifact = await deployer.loadArtifact("Greeting");
+  const oldGreeting = "old greeting"
+  const deployGreeting = await deployer.deploy(greetingContractArtifact, [oldGreeting]);
+  console.log(`Greeting address: ${deployGreeting.address}`);
+
   // Supplying the ERC20 tokens to the empty wallet:
   await // We will give the empty wallet 3 units of the token:
   (await erc20.mint(emptyWallet.address, "5000000000000000000000")).wait();

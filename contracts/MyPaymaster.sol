@@ -14,10 +14,9 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
 
 contract MyPaymaster is IPaymaster, Ownable {
 
-    uint256 constant PRICE_FOR_PAYING_FEES = 1;
-
     address public allowedToken;
     address public USDCdAPIProxy;
+    address public ETHdAPIProxy;
 
     modifier onlyBootloader() {
         require(
@@ -28,31 +27,15 @@ contract MyPaymaster is IPaymaster, Ownable {
         _;
     }
 
-    mapping(address => address) public tokenProxyMapping;
-
     constructor(address _erc20) {
         allowedToken = _erc20;
     }
 
-    // Set dapi proxy for the allowed token
-    function setDapiProxy(address _proxy) 
+    // Set dapi proxies for the allowed token/s
+    function setDapiProxy(address _USDCproxy, address _ETHproxy) 
     public onlyOwner {
-        tokenProxyMapping[allowedToken] = _proxy;
-    }
-
-    function setUSDCProxy(address _proxy)
-    public onlyOwner {
-        USDCdAPIProxy = _proxy;
-    }
-
-    // Reads and returns the dAPI value 
-    function readDAPI()
-        external
-        view
-        returns (uint256 ETHUSDCUint256) {
-            address proxy = 0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b;
-            (int224 ETHUSDCPrice, ) = IProxy(proxy).read();
-            ETHUSDCUint256 = uint224(ETHUSDCPrice);
+        USDCdAPIProxy = _USDCproxy;
+        ETHdAPIProxy = _ETHproxy;
     }
 
     function validateAndPayForPaymasterTransaction (
@@ -91,9 +74,7 @@ contract MyPaymaster is IPaymaster, Ownable {
                 thisAddress
             );
 
-            address ETHUSDCProxy = tokenProxyMapping[allowedToken];
-
-            (int224 ETHUSDCPrice, ) = IProxy(ETHUSDCProxy).read();
+            (int224 ETHUSDCPrice, ) = IProxy(ETHdAPIProxy).read();
             (int224 USDCUSDPrice, ) = IProxy(USDCdAPIProxy).read();
             uint256 ETHUSDCUint256 = uint224(ETHUSDCPrice);
             uint256 USDCUSDUint256 = uint224(USDCUSDPrice);
@@ -103,7 +84,7 @@ contract MyPaymaster is IPaymaster, Ownable {
             uint256 requiredERC20 = (requiredETH * ETHUSDCUint256)/USDCUSDUint256;
             require(
                 providedAllowance >= requiredERC20,
-                "Min paying allowance too lowwww"
+                "Min paying allowance too low"
             );
 
             // Note, that while the minimal amount of ETH needed is tx.gasPrice * tx.gasLimit,
