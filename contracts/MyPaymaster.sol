@@ -90,7 +90,10 @@ contract MyPaymaster is IPaymaster {
             (bool success, ) = payable(BOOTLOADER_FORMAL_ADDRESS).call{
                 value: requiredETH
             }("");
-            require(success, "Failed to transfer funds to the bootloader");
+            require(
+                success,
+                "Failed to transfer tx fee to the bootloader. Paymaster balance might not be enough."
+            );
         } else {
             revert("Unsupported paymaster flow");
         }
