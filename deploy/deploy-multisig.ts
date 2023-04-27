@@ -6,8 +6,9 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 const AA_FACTORY_ADDRESS = "<FACTORY-ADDRESS>";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider("https://zksync2-testnet.zksync.dev");
-  const wallet = new Wallet("<WALLET_PRIVATE_KEY>").connect(provider);
+  const provider = new Provider("https://testnet.era.zksync.dev");
+  // Private key of the account used to deploy
+  const wallet = new Wallet("<WALLET-PRIVATE-KEY>").connect(provider);
   const factoryArtifact = await hre.artifacts.readArtifact("AAFactory");
 
   const aaFactory = new ethers.Contract(
@@ -23,6 +24,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   // For the simplicity of the tutorial, we will use zero hash as salt
   const salt = ethers.constants.HashZero;
 
+  // deploy account owned by owner1 & owner2
   const tx = await aaFactory.deployAccount(
     salt,
     owner1.address,
@@ -30,7 +32,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   );
   await tx.wait();
 
-  // Getting the address of the deployed contract
+  // Getting the address of the deployed contract account
   const abiCoder = new ethers.utils.AbiCoder();
   const multisigAddress = utils.create2Address(
     AA_FACTORY_ADDRESS,
@@ -38,18 +40,26 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     salt,
     abiCoder.encode(["address", "address"], [owner1.address, owner2.address])
   );
-  console.log(`Multisig deployed on address ${multisigAddress}`);
+  console.log(`Multisig account deployed on address ${multisigAddress}`);
 
+  console.log("Sending funds to multisig account");
+  // Send funds to the multisig account we just deployed
   await (
     await wallet.sendTransaction({
       to: multisigAddress,
       // You can increase the amount of ETH sent to the multisig
-      value: ethers.utils.parseEther("0.006"),
+      value: ethers.utils.parseEther("0.008"),
     })
   ).wait();
 
+  let multisigBalance = await provider.getBalance(multisigAddress);
+
+  console.log(`Multisig account balance is ${multisigBalance.toString()}`);
+
+  // Transaction to deploy a new account using the multisig we just deployed
   let aaTx = await aaFactory.populateTransaction.deployAccount(
     salt,
+    // These are accounts that will own the newly deployed account
     Wallet.createRandom().address,
     Wallet.createRandom().address
   );
@@ -59,6 +69,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   aaTx = {
     ...aaTx,
+    // deploy a new account using the multisig
     from: multisigAddress,
     gasLimit: gasLimit,
     gasPrice: gasPrice,
@@ -98,4 +109,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
       multisigAddress
     )}`
   );
+
+  multisigBalance = await provider.getBalance(multisigAddress);
+
+  console.log(`Multisig account balance is now ${multisigBalance.toString()}`);
 }
