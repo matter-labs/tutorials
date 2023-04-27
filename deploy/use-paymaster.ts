@@ -17,20 +17,24 @@ function getToken(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
 }
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider("https://zksync2-testnet.zksync.dev");
+  const provider = new Provider("https://testnet.era.zksync.dev");
   const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
 
+  // const paymasterWallet = new Wallet(PAYMASTER_ADDRESS, provider);
   // Obviously this step is not required, but it is here purely to demonstrate that indeed the wallet has no ether.
   const ethBalance = await emptyWallet.getBalance();
   if (!ethBalance.eq(0)) {
-    throw new Error("The wallet is not empty");
+    throw new Error("The wallet is not empty!");
   }
 
   console.log(
-    `Balance of the user before mint: ${await emptyWallet.getBalance(
+    `ERC20 token balance of the empty wallet before mint: ${await emptyWallet.getBalance(
       TOKEN_ADDRESS
     )}`
   );
+
+  let paymasterBalance = await provider.getBalance(PAYMASTER_ADDRESS);
+  console.log(`Paymaster ETH balance is ${paymasterBalance.toString()}`);
 
   const erc20 = getToken(hre, emptyWallet);
 
@@ -47,7 +51,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   });
 
   // Estimate gas fee for mint transaction
-  const gasLimit = await erc20.estimateGas.mint(emptyWallet.address, 100, {
+  const gasLimit = await erc20.estimateGas.mint(emptyWallet.address, 5, {
     customData: {
       gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
       paymasterParams: paymasterParams,
@@ -55,9 +59,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   });
 
   const fee = gasPrice.mul(gasLimit.toString());
+  console.log("Transaction fee estimation is :>> ", fee.toString());
 
+  console.log(`Minting 5 tokens for empty wallet via paymaster...`);
   await (
-    await erc20.mint(emptyWallet.address, 100, {
+    await erc20.mint(emptyWallet.address, 5, {
       // paymaster info
       customData: {
         paymasterParams: paymasterParams,
@@ -67,7 +73,16 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   ).wait();
 
   console.log(
-    `Balance of the user after mint: ${await emptyWallet.getBalance(
+    `Paymaster ERC20 token balance is now ${await erc20.balanceOf(
+      PAYMASTER_ADDRESS
+    )}`
+  );
+
+  paymasterBalance = await provider.getBalance(PAYMASTER_ADDRESS);
+  console.log(`Paymaster ETH balance is now ${paymasterBalance.toString()}`);
+
+  console.log(
+    `ERC20 token balance of the empty wallet after mint: ${await emptyWallet.getBalance(
       TOKEN_ADDRESS
     )}`
   );

@@ -19,7 +19,7 @@ contract MyPaymaster is IPaymaster {
             msg.sender == BOOTLOADER_FORMAL_ADDRESS,
             "Only bootloader can call this method"
         );
-        // Continure execution if called from the bootloader.
+        // Continue execution if called from the bootloader.
         _;
     }
 
@@ -31,7 +31,12 @@ contract MyPaymaster is IPaymaster {
         bytes32,
         bytes32,
         Transaction calldata _transaction
-    ) external payable returns (bytes4 magic, bytes memory context) {
+    )
+        external
+        payable
+        onlyBootloader
+        returns (bytes4 magic, bytes memory context)
+    {
         // By default we consider the transaction as accepted.
         magic = PAYMASTER_VALIDATION_SUCCESS_MAGIC;
         require(
@@ -90,7 +95,10 @@ contract MyPaymaster is IPaymaster {
             (bool success, ) = payable(BOOTLOADER_FORMAL_ADDRESS).call{
                 value: requiredETH
             }("");
-            require(success, "Failed to transfer funds to the bootloader");
+            require(
+                success,
+                "Failed to transfer tx fee to the bootloader. Paymaster balance might not be enough."
+            );
         } else {
             revert("Unsupported paymaster flow");
         }
@@ -103,7 +111,7 @@ contract MyPaymaster is IPaymaster {
         bytes32,
         ExecutionResult _txResult,
         uint256 _maxRefundedGas
-    ) external payable override {
+    ) external payable override onlyBootloader {
         // Refunds are not supported yet.
     }
 
