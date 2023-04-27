@@ -12,7 +12,7 @@ const config: HardhatUserConfig = {
   defaultNetwork: "zkSyncTestnet",
   networks: {
     hardhat: {
-      zksync: false,
+      zksync: true,
     },
     zkSyncTestnet: {
       url: "https://zksync2-testnet.zksync.dev",
