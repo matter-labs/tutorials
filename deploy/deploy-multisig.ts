@@ -21,7 +21,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const owner1 = Wallet.createRandom();
   const owner2 = Wallet.createRandom();
 
-  // // For the simplicity of the tutorial, we will use zero hash as salt
+  // For the simplicity of the tutorial, we will use zero hash as salt
   const salt = ethers.constants.HashZero;
 
   // deploy account owned by owner1 & owner2
@@ -59,6 +59,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   // Transaction to deploy a new account using the multisig we just deployed
   let aaTx = await aaFactory.populateTransaction.deployAccount(
     salt,
+    // These are accounts that will own the newly deployed account
     Wallet.createRandom().address,
     Wallet.createRandom().address
   );
