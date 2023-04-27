@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.13;
 
 import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContractsCaller.sol";
@@ -22,7 +22,12 @@ contract AAFactory {
                 uint128(0),
                 abi.encodeCall(
                     DEPLOYER_SYSTEM_CONTRACT.create2Account,
-                    (salt, aaBytecodeHash, abi.encode(owner), IContractDeployer.AccountAbstractionVersion.Version1)
+                    (
+                        salt,
+                        aaBytecodeHash,
+                        abi.encode(owner),
+                        IContractDeployer.AccountAbstractionVersion.Version1
+                    )
                 )
             );
         require(success, "Deployment failed");

@@ -2,17 +2,16 @@
 pragma solidity ^0.8.0;
 
 import "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IAccount.sol";
-import "@matterlabs/zksync-contracts/l2/system-contracts/TransactionHelper.sol";
+import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
-import "@matterlabs/zksync-contracts/l2/system-contracts/SystemContractsCaller.sol";
+import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContractsCaller.sol";
 import "./TestSpendLimit.sol";
 
 contract TestAccount is IAccount, IERC1271, TestSpendLimit {
-
     using TransactionHelper for Transaction;
-    
+
     address public owner;
 
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
@@ -22,7 +21,7 @@ contract TestAccount is IAccount, IERC1271, TestSpendLimit {
             msg.sender == BOOTLOADER_FORMAL_ADDRESS,
             "Only bootloader can call this method"
         );
-    
+
         _;
     }
 
@@ -34,7 +33,7 @@ contract TestAccount is IAccount, IERC1271, TestSpendLimit {
         bytes32,
         bytes32 _suggestedSignedHash,
         Transaction calldata _transaction
-    ) external payable override onlyBootloader {
+    ) external payable override onlyBootloader returns (bytes4 magic) {
         _validateTransaction(_suggestedSignedHash, _transaction);
     }
 
@@ -42,7 +41,6 @@ contract TestAccount is IAccount, IERC1271, TestSpendLimit {
         bytes32 _suggestedSignedHash,
         Transaction calldata _transaction
     ) internal {
-
         SystemContractsCaller.systemCall(
             uint32(gasleft()),
             address(NONCE_HOLDER_SYSTEM_CONTRACT),
@@ -82,12 +80,12 @@ contract TestAccount is IAccount, IERC1271, TestSpendLimit {
 
         // Call SpendLimit contract to make sure that ETH `value` doesn't exceed
         // the daily spending limit for specific token which this account enabled
-        if ( value > 0 ) {
-           _checkSpendingLimit(address(ETH_TOKEN_SYSTEM_CONTRACT), value);
-        } 
+        if (value > 0) {
+            _checkSpendingLimit(address(ETH_TOKEN_SYSTEM_CONTRACT), value);
+        }
 
         // SpendLimit contract is token-agnostic, a check when ERC20 transfer can also be added.
-        
+
         if (to == address(DEPLOYER_SYSTEM_CONTRACT)) {
             SystemContractsCaller.systemCall(
                 uint32(gasleft()),
@@ -112,22 +110,18 @@ contract TestAccount is IAccount, IERC1271, TestSpendLimit {
         }
     }
 
-    function executeTransactionFromOutside(Transaction calldata _transaction)
-        external
-        payable
-    {
+    function executeTransactionFromOutside(
+        Transaction calldata _transaction
+    ) external payable {
         _validateTransaction(bytes32(0), _transaction);
 
         _executeTransaction(_transaction);
     }
 
-    function isValidSignature(bytes32 _hash, bytes calldata _signature)
-        public
-        view
-        override
-        returns (bytes4)
-    {
-
+    function isValidSignature(
+        bytes32 _hash,
+        bytes calldata _signature
+    ) public view override returns (bytes4) {
         require(owner == ECDSA.recover(_hash, _signature));
         return EIP1271_SUCCESS_RETURN_VALUE;
     }
@@ -141,7 +135,7 @@ contract TestAccount is IAccount, IERC1271, TestSpendLimit {
         require(success, "Failed to pay the fee to the operator");
     }
 
-    function prePaymaster(
+    function prepareForPaymaster(
         bytes32,
         bytes32,
         Transaction calldata _transaction
