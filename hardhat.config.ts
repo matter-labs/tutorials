@@ -1,9 +1,11 @@
-require("@matterlabs/hardhat-zksync-deploy");
-require("@matterlabs/hardhat-zksync-solc");
+import { HardhatUserConfig } from "hardhat/config";
 
-module.exports = {
+import "@matterlabs/hardhat-zksync-deploy";
+import "@matterlabs/hardhat-zksync-solc";
+
+const config: HardhatUserConfig = {
   zksolc: {
-    version: "1.3.5",
+    version: "1.3.10", // Use latest available in https://github.com/matter-labs/zksolc-bin/
     compilerSource: "binary",
     settings: {
       isSystem: true,
@@ -24,3 +26,5 @@ module.exports = {
     version: "0.8.16",
   },
 };
+
+export default config;

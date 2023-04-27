@@ -10,10 +10,9 @@
   },
   "dependencies": {
     "@matterlabs/hardhat-zksync-deploy": "^0.6.1",
-    "@matterlabs/hardhat-zksync-solc": "^0.3.14",
-    "@matterlabs/zksync-contracts": "^0.6.0",
+    "@matterlabs/hardhat-zksync-solc": "^0.3.16",
+    "@matterlabs/zksync-contracts": "^0.6.1",
     "@openzeppelin/contracts": "^4.7.3",
-    "@openzeppelin/contracts-upgradeable": "^4.7.3",
     "hardhat": "^2.12.0",
     "zksync-web3": "^0.14.3"
   }
