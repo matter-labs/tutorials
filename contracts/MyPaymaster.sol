@@ -111,7 +111,7 @@ contract MyPaymaster is IPaymaster {
         bytes32,
         ExecutionResult _txResult,
         uint256 _maxRefundedGas
-    ) external payable override {
+    ) external payable override onlyBootloader {
         // Refunds are not supported yet.
     }
 
