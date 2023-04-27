@@ -54,19 +54,21 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     type: "ApprovalBased",
     token: TOKEN_ADDRESS,
     // set minimalAllowance as we defined in the paymaster contract
-    minimalAllowance: ethers.BigNumber.from("36000000000000000000"),
+    minimalAllowance: ethers.BigNumber.from("100000000000000000000"),
     // empty bytes as testnet paymaster does not use innerInput
     innerInput: new Uint8Array(),
   });
 
   // Estimate gas fee for update transaction
-  const gasLimit = await GreetingContract.estimateGas.setGreeting("new greeting", {
+  const gasLimit = await GreetingContract.estimateGas.setGreeting("new updated greeting", {
     customData: {
       gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
       paymasterParams: paymasterParams,
     },
   });
 
+  // _transaction.gasLimit * _transaction.maxFeePerGas
+  console.log(gasLimit.toNumber())
   const gasPriceInUnits = await provider.getGasPrice();
   const finalGas = ethers.utils.formatUnits(gasLimit.mul(gasPriceInUnits))
 
@@ -77,7 +79,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   console.log(fee)
 
   await (
-    await GreetingContract.connect(emptyWallet).setGreeting("new greeting", {
+    await GreetingContract.connect(emptyWallet).setGreeting("new updated greeting", {
       // paymaster info
       customData: {
         paymasterParams: paymasterParams,

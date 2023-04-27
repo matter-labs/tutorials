@@ -2,10 +2,10 @@
 
 This tutorial shows you how to build a custom paymaster that allows users to pay fees with any ERC20 token. You will:
 
-- Create a paymaster that assumes a single unit of an ERC20 token is enough to cover any transaction fee.
-- Create the ERC20 token contract and send some tokens to a new wallet.
-- Send a `mint` transaction from the newly created wallet via the paymaster. Although the transaction normally requires ETH to pay the gas fee, our paymaster executes the transaction in exchange for 1 unit of the ERC20 token.
-- Utilize API3 Data Feeds within a paymaster. 
+- Create a paymaster that will take mockUSDC as gas to cover the transaction cost.
+- Create the mockUSDC token contract and send some tokens to a new wallet.
+- Send a `greet` transaction to update the greeting from the newly created wallet via the paymaster. Although the transaction normally requires ETH to pay the gas fee, our paymaster executes the transaction in exchange for the same USDC value.
+- Utilize API3 Data Feeds within a paymaster.
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ Within a paymaster price oracles can be used to provide price data on-chain for 
 
 ## Project repo
 
-The tutorial code is available [here](https://github.com/matter-labs/custom-paymaster-tutorial).<!--update?-->
+The tutorial code is available [here](https://github.com/vanshwassan/zk-paymaster-dapi-poc).<!--update?-->
 
 ## Set up the project
 
@@ -49,7 +49,7 @@ yarn init -y
 3. Add the project dependencies, including Hardhat and all zkSync packages:
 
 ```sh
-yarn add -D typescript ts-node ethers@^5.7.2 zksync-web3 hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy @matterlabs/zksync-contracts @openzeppelin/contracts @openzeppelin/contracts-upgradeable
+yarn add -D typescript ts-node ethers@^5.7.2 zksync-web3 hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy @matterlabs/zksync-contracts @openzeppelin/contracts @openzeppelin/contracts-upgradeable @api3/contracts
 ```
 
 ::: tip
@@ -99,6 +99,8 @@ module.exports = {
 ### Paymaster Solidity contract
 
 The contract code defines an ERC20 token and allows it to be used to pay the fees for transactions. 
+
+Here, we are naming it `mockUSDC` that will be used to pay for the transactions.
 
 The skeleton contract looks like this:
 

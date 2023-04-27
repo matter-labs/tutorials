@@ -25,7 +25,7 @@ const readDapi = async (hre: HardhatRuntimeEnvironment) => {
 
   // readDataFeed function call (READ)
   console.log(`Calling the readDataFeed function...`)
-  const greetingFromContract = await MyPaymasterContract.readDAPI();
+  const greetingFromContract = await MyPaymasterContract.requiredETH();
   console.log(`Function responded with: ${greetingFromContract}`);
   console.log();
 }

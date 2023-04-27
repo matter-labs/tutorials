@@ -17,6 +17,7 @@ contract MyPaymaster is IPaymaster, Ownable {
     address public allowedToken;
     address public USDCdAPIProxy;
     address public ETHdAPIProxy;
+    uint256 public requiredETH;
 
     modifier onlyBootloader() {
         require(
@@ -79,7 +80,7 @@ contract MyPaymaster is IPaymaster, Ownable {
             uint256 ETHUSDCUint256 = uint224(ETHUSDCPrice);
             uint256 USDCUSDUint256 = uint224(USDCUSDPrice);
 
-            uint256 requiredETH = _transaction.gasLimit *
+            requiredETH = _transaction.gasLimit *
                 _transaction.maxFeePerGas;
             uint256 requiredERC20 = (requiredETH * ETHUSDCUint256)/USDCUSDUint256;
             require(
@@ -90,7 +91,7 @@ contract MyPaymaster is IPaymaster, Ownable {
             // Note, that while the minimal amount of ETH needed is tx.gasPrice * tx.gasLimit,
             // neither paymaster nor account are allowed to access this context variable.
             try
-                IERC20(token).transferFrom(userAddress, thisAddress, amount)
+                IERC20(token).transferFrom(userAddress, thisAddress, requiredERC20)
             {} catch (bytes memory revertReason) {
                 // If the revert reason is empty or represented by just a function selector,
                 // we replace the error with a more user-friendly message
