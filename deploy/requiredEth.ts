@@ -5,7 +5,7 @@ import { ContractFactory, Wallet } from "zksync-web3";
 
 require('dotenv').config()
 
-const readDapi = async (hre: HardhatRuntimeEnvironment) => {
+const reqeth = async (hre: HardhatRuntimeEnvironment) => {
 
   const PAYMASTER_ADDRESS = process.env.PAYMASTER_ADDRESS;
   if (!PAYMASTER_ADDRESS) {
@@ -25,9 +25,9 @@ const readDapi = async (hre: HardhatRuntimeEnvironment) => {
 
   // readDataFeed function call (READ)
   console.log(`Calling the readDataFeed function...`)
-  const greetingFromContract = await MyPaymasterContract.requiredETH();
-  console.log(`Function responded with: ${greetingFromContract}`);
+  const requiredEth = await MyPaymasterContract.requiredETH();
+  console.log(`Function responded with: ${requiredEth}`);
   console.log();
 }
 
-export default readDapi;
+export default reqeth;

@@ -28,11 +28,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const paymaster = await deployer.deploy(paymasterArtifact, [erc20.address]);
   console.log(`Paymaster address: ${paymaster.address}`);
 
-  // Supplying paymaster with ETH
+  // Supplying paymaster with ETH.
   await (
     await deployer.zkWallet.sendTransaction({
       to: paymaster.address,
-      value: ethers.utils.parseEther("0.03"),
+      value: ethers.utils.parseEther("0.05"),
     })
   ).wait();
 
