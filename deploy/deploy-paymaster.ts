@@ -50,7 +50,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   console.log(`Greeting address: ${deployGreeting.address}`);
 
   // Supplying the ERC20 tokens to the empty wallet:
-  await // We will give the empty wallet 3 units of the token:
+  await // We will give the empty wallet 5k mUSDC:
   (await erc20.mint(emptyWallet.address, "5000000000000000000000")).wait();
 
   console.log("Minted 5k mUSDC for the empty wallet");

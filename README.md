@@ -37,7 +37,7 @@ $ git clone https://github.com/matter-labs/custom-paymaster-tutorial.git .
 2. Add the project dependencies, including Hardhat, zkSync packages and API3 contracts:
 
 ```sh
-$ yarn add -D typescript ts-node ethers@^5.7.2 zksync-web3 hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy @matterlabs/zksync-contracts @openzeppelin/contracts @openzeppelin/contracts-upgradeable @api3/contracts
+$ yarn add -D typescript ts-node ethers@^5.7.2 zksync-web3 hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy @matterlabs/zksync-contracts @openzeppelin/contracts @openzeppelin/contracts-upgradeable @api3/contracts dotenv
 ```
 
 ## Design
@@ -280,3 +280,232 @@ contract MyPaymaster is IPaymaster, Ownable {
 }
 ```
 
+## Compile and Deploy the Contracts
+
+The script below deploys the ERC20 (mockUSDC), Greeting and the Paymaster contracts. It also creates an empty wallet and mints some `mockUSDC` tokens for the paymaster to use at a later step. It also sends 0.05 eth to the paymaster contract so it can pay for the transactions. 
+
+The script also calls the `setDapiProxy` to set the proxy addresses for the required dAPIs on-chain. It also sets the `greeting`.
+
+1. Create the file `deploy-paymaster.ts` under `deploy` and copy/paste the following:
+
+```ts
+import { utils, Wallet } from "zksync-web3";
+import * as ethers from "ethers";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
+
+require('dotenv').config();
+
+export default async function (hre: HardhatRuntimeEnvironment) {
+  // The wallet that will deploy the token and the paymaster
+  // It is assumed that this wallet already has sufficient funds on zkSync
+  // ⚠️ Never commit private keys to file tracking history, or your account could be compromised.
+
+  const wallet = new Wallet(process.env.PRIVATE_KEY);
+  // The wallet that will receive ERC20 tokens
+  const emptyWallet = Wallet.createRandom();
+  console.log(`Empty wallet's address: ${emptyWallet.address}`);
+  console.log(`Empty wallet's private key: ${emptyWallet.privateKey}`);
+
+  const deployer = new Deployer(hre, wallet);
+
+  // Deploying the ERC20 token
+  const erc20Artifact = await deployer.loadArtifact("MyERC20");
+  const erc20 = await deployer.deploy(erc20Artifact, ["USDC", "USDC", 18]);
+  console.log(`ERC20 address: ${erc20.address}`);
+
+  // Deploying the paymaster
+  const paymasterArtifact = await deployer.loadArtifact("MyPaymaster");
+  const paymaster = await deployer.deploy(paymasterArtifact, [erc20.address]);
+  console.log(`Paymaster address: ${paymaster.address}`);
+
+  // Supplying paymaster with ETH.
+  await (
+    await deployer.zkWallet.sendTransaction({
+      to: paymaster.address,
+      value: ethers.utils.parseEther("0.05"),
+    })
+  ).wait();
+
+  // Setting the dAPIs in Paymaster
+    const ETHUSDdAPI = "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b";
+    const USDCUSDdAPI = "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB";
+  const setProxy = paymaster.setDapiProxy(USDCUSDdAPI, ETHUSDdAPI)
+  await (await setProxy).wait()
+  console.log("dAPI Proxies Set!")
+
+  // Deploying the greeting contract
+  const greetingContractArtifact = await deployer.loadArtifact("Greeting");
+  const oldGreeting = "old greeting"
+  const deployGreeting = await deployer.deploy(greetingContractArtifact, [oldGreeting]);
+  console.log(`Greeting address: ${deployGreeting.address}`);
+
+  // Supplying the ERC20 tokens to the empty wallet:
+  await // We will give the empty wallet 5k mUSDC:
+  (await erc20.mint(emptyWallet.address, "5000000000000000000000")).wait();
+
+  console.log("Minted 5k mUSDC for the empty wallet");
+
+  console.log(`Done!`);
+}
+```
+
+2. Create a `.env` file and add your private key:
+
+```sh
+$ echo 'PRIVATE_KEY=' > .env
+```
+
+3. Compile and deploy the contracts from the project root:
+
+```sh
+yarn hardhat compile
+yarn hardhat deploy-zksync --script deploy-paymaster.ts
+```
+
+The output should be like this:
+
+```
+Empty wallet's address: 0x18e07977bea49dF2cD1F0EE520986E7F0EF8Bc6C
+Empty wallet's private key: 0x8128d0a1467b95da69ced6a5d565c43a9b0525d33534766145f65231c3a8c645
+ERC20 address: 0x9400DFBdACCB7A9C977957c2BE2A82167312470B
+Paymaster address: 0x3dF33D89e5f05e43589724701403088155307Ef5
+dAPI Proxies Set!
+Greeting address: 0x3bd5511ec73112EACD55fA867F0E62e675AA6008
+Minted 5k mUSDC for the empty wallet
+Done!
+```
+
+4. Edit the `.env` file again to populate the following variables from the output:
+
+```
+PRIVATE_KEY=
+PAYMASTER_ADDRESS=
+TOKEN_ADDRESS=
+EMPTY_WALLET_PRIVATE_KEY=
+GREETER_CONTRACT=
+```
+
+:::tip
+* Addresses and private keys are different on each run.
+* Make sure you delete the `artifacts-zk` and `cache-zk` folders before recompiling.
+:::
+
+## Using the paymaster
+
+1. Create the `use-paymaster.ts` script in the `deploy` folder. 
+
+```ts
+import { ContractFactory, Provider, utils, Wallet } from "zksync-web3";
+import * as ethers from "ethers";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
+import { getDeployedContracts } from "zksync-web3/build/src/utils";
+
+require('dotenv').config();
+
+// Put the address of the deployed paymaster here
+const PAYMASTER_ADDRESS = process.env.PAYMASTER_ADDRESS;
+const GREETER_CONTRACT_ADDRESS = process.env.GREETER_CONTRACT;
+
+// Put the address of the mockUSDC token here:
+const TOKEN_ADDRESS = process.env.TOKEN_ADDRESS;
+
+function getToken(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
+  const artifact = hre.artifacts.readArtifactSync("MyERC20");
+  return new ethers.Contract(TOKEN_ADDRESS, artifact.abi, wallet);
+}
+
+// Wallet private key
+// ⚠️ Never commit private keys to file tracking history, or your account could be compromised.
+const EMPTY_WALLET_PRIVATE_KEY = process.env.EMPTY_WALLET_PRIVATE_KEY;
+export default async function (hre: HardhatRuntimeEnvironment) {
+  const provider = new Provider("https://testnet.era.zksync.dev");
+  const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
+  
+  console.log(
+    `Balance of the user before mint: ${await emptyWallet.getBalance(
+      TOKEN_ADDRESS
+    )}`
+  );
+  
+  const erc20 = getToken(hre, emptyWallet);
+
+  const gasPrice = await provider.getGasPrice();
+
+  console.log()
+  const deployer = new Deployer(hre, emptyWallet);
+  const artifact = await deployer.loadArtifact("Greeting");
+
+  const GreetingFactory = new ContractFactory(artifact.abi, artifact.bytecode, deployer.zkWallet);
+  const GreetingContract = GreetingFactory.attach(GREETER_CONTRACT_ADDRESS);
+  
+  console.log(await GreetingContract.greet());
+  // Encoding the "ApprovalBased" paymaster flow's input
+  const paymasterParams = utils.getPaymasterParams(PAYMASTER_ADDRESS, {
+    type: "ApprovalBased",
+    token: TOKEN_ADDRESS,
+    // set minimalAllowance as we defined in the paymaster contract (100 mUSDC)
+    minimalAllowance: ethers.BigNumber.from("100000000000000000000"),
+    // empty bytes as testnet paymaster does not use innerInput
+    innerInput: new Uint8Array(),
+  });
+
+  // Estimate gas fee for update transaction
+  const gasLimit = await GreetingContract.estimateGas.setGreeting("new updated greeting", {
+    customData: {
+      gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
+      paymasterParams: paymasterParams,
+    },
+  });
+
+  // _transaction.gasLimit * _transaction.maxFeePerGas
+  console.log(gasLimit.toNumber())
+  const gasPriceInUnits = await provider.getGasPrice();
+  const finalGas = ethers.utils.formatUnits(gasLimit.mul(gasPriceInUnits))
+
+  console.log("getGasPrice: " + gasPriceInUnits)
+  console.log("Final Gas: " + finalGas);
+
+  const fee = gasPrice.mul(gasLimit.toString());
+  console.log(fee)
+
+  await (
+    await GreetingContract.connect(emptyWallet).setGreeting("new updated greeting", {
+      // paymaster info
+      customData: {
+        paymasterParams: paymasterParams,
+        gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
+      },
+    })
+  ).wait();
+
+  console.log(
+    `Balance of the user after mint: ${await emptyWallet.getBalance(
+      TOKEN_ADDRESS
+    )}`
+  );
+  console.log(await GreetingContract.greet())
+}
+
+```
+
+2. Run the script:
+
+```sh
+yarn hardhat deploy-zksync --script use-paymaster.ts
+```
+
+The output should look something like this:
+
+```
+old greeting
+512288
+getGasPrice: 250000000
+Final Gas: 0.000128072
+BigNumber { _hex: '0x747b1610d000', _isBigNumber: true }
+Balance of the user after mint: 4918904852957479293239
+new updated greeting
+```
+
+The wallet had 5000 mUSDC after running the deployment script. After sending the transaction to update the `Greeting` contract, we are now left with 4918 mUSDC. The script used mUSDC to cover the gas costs for the update transaction.
