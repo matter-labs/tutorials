@@ -27,7 +27,7 @@ contract Account is IAccount, IERC1271, SpendLimit {
     modifier onlyBootloader() {
         require(
             msg.sender == BOOTLOADER_FORMAL_ADDRESS,
-            "Only bootloader can call this function"
+            "Only bootloader can call this method"
         );
         // Continue execution if called from the bootloader.
         _;
