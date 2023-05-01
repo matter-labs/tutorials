@@ -1,23 +1,25 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.16;
 
 import "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IAccount.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
+
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
+
+// Used for signature validation
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
+// Access zkSync system contracts for nonce validation via NONCE_HOLDER_SYSTEM_CONTRACT
 import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
+// to call non-view function of system contracts
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContractsCaller.sol";
 import "./SpendLimit.sol";
 
-contract Account is
-    IAccount,
-    IERC1271,
-    SpendLimit // imports SpendLimit contract
-{
+contract TwoUserMultisig is IAccount, IERC1271, SpendLimit {
     // to get transaction hash
     using TransactionHelper for Transaction;
 
-    // state variables for account owner
+    // state variable for account owner
     address public owner;
 
     bytes4 constant EIP1271_SUCCESS_RETURN_VALUE = 0x1626ba7e;
@@ -25,9 +27,9 @@ contract Account is
     modifier onlyBootloader() {
         require(
             msg.sender == BOOTLOADER_FORMAL_ADDRESS,
-            "Only bootloader can call this method"
+            "Only bootloader can call this function"
         );
-        // Continure execution if called from the bootloader.
+        // Continue execution if called from the bootloader.
         _;
     }
 
@@ -63,7 +65,6 @@ contract Account is
         // While the suggested signed hash is usually provided, it is generally
         // not recommended to rely on it to be present, since in the future
         // there may be tx types with no suggested signed hash.
-
         if (_suggestedSignedHash == bytes32(0)) {
             txHash = _transaction.encodeHash();
         } else {
@@ -101,6 +102,11 @@ contract Account is
         address to = address(uint160(_transaction.to));
         uint128 value = Utils.safeCastToU128(_transaction.value);
         bytes memory data = _transaction.data;
+
+        // Call SpendLimit contract to ensure that ETH `value` doesn't exceed the daily spending limit
+        if (value > 0) {
+            _checkSpendingLimit(address(ETH_TOKEN_SYSTEM_CONTRACT), value);
+        }
 
         if (to == address(DEPLOYER_SYSTEM_CONTRACT)) {
             uint32 gas = Utils.safeCastToU32(gasleft());
@@ -143,38 +149,17 @@ contract Account is
     ) public view override returns (bytes4 magic) {
         magic = EIP1271_SUCCESS_RETURN_VALUE;
 
-        if (_signature.length != 130) {
+        if (_signature.length != 65) {
             // Signature is invalid anyway, but we need to proceed with the signature verification as usual
             // in order for the fee estimation to work correctly
-            _signature = new bytes(130);
+            _signature = new bytes(65);
 
             // Making sure that the signatures look like a valid ECDSA signature and are not rejected rightaway
             // while skipping the main verification process.
             _signature[64] = bytes1(uint8(27));
         }
 
-        bytes memory signature = extractECDSASignature(_signature);
-
-        if (!checkValidECDSASignatureFormat(signature)) {
-            magic = bytes4(0);
-        }
-
-        address recoveredAddr = ECDSA.recover(_hash, signature);
-
-        // Note, that we should abstain from using the require here in order to allow for fee estimation to work
-        if (recoveredAddr != owner) {
-            magic = bytes4(0);
-        }
-    }
-
-    // This function verifies that the ECDSA signature is both in correct format and non-malleable
-    function checkValidECDSASignatureFormat(
-        bytes memory _signature
-    ) internal pure returns (bool) {
-        if (_signature.length != 65) {
-            return false;
-        }
-
+        // extract ECDSA signature
         uint8 v;
         bytes32 r;
         bytes32 s;
@@ -187,8 +172,9 @@ contract Account is
             s := mload(add(_signature, 0x40))
             v := and(mload(add(_signature, 0x41)), 0xff)
         }
+
         if (v != 27 && v != 28) {
-            return false;
+            magic = bytes4(0);
         }
 
         // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature
@@ -204,29 +190,15 @@ contract Account is
             uint256(s) >
             0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0
         ) {
-            return false;
+            magic = bytes4(0);
         }
 
-        return true;
-    }
+        address recoveredAddr = ECDSA.recover(_hash, _signature);
+        address recoveredAddress = ecrecover(_hash, v, r, s);
 
-    function extractECDSASignature(
-        bytes memory _fullSignature
-    ) internal pure returns (bytes memory signature) {
-        require(_fullSignature.length == 130, "Invalid length");
-
-        signature = new bytes(65);
-
-        // Copying the first signature. Note, that we need an offset of 0x20
-        // since it is where the length of the `_fullSignature` is stored
-        assembly {
-            let r := mload(add(_fullSignature, 0x20))
-            let s := mload(add(_fullSignature, 0x40))
-            let v := and(mload(add(_fullSignature, 0x41)), 0xff)
-
-            mstore(add(signature, 0x20), r)
-            mstore(add(signature, 0x40), s)
-            mstore8(add(signature, 0x60), v)
+        // Note, that we should abstain from using the require here in order to allow for fee estimation to work
+        if (recoveredAddr != owner) {
+            magic = bytes4(0);
         }
     }
 
@@ -247,7 +219,15 @@ contract Account is
         _transaction.processPaymasterInput();
     }
 
-    receive() external payable {
+    fallback() external {
+        // fallback of default account shouldn't be called by bootloader under no circumstances
         assert(msg.sender != BOOTLOADER_FORMAL_ADDRESS);
+
+        // If the contract is called directly, behave like an EOA
+    }
+
+    receive() external payable {
+        // If the contract is called directly, behave like an EOA.
+        // Note, that is okay if the bootloader sends funds with no calldata as it may be used for refunds/operator payments
     }
 }
