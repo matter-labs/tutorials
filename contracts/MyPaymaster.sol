@@ -74,6 +74,7 @@ contract MyPaymaster is IPaymaster, Ownable {
                 userAddress,
                 thisAddress
             );
+            // Read values from the dAPIs
 
             (int224 ETHUSDCPrice, ) = IProxy(ETHdAPIProxy).read();
             (int224 USDCUSDPrice, ) = IProxy(USDCdAPIProxy).read();
@@ -82,6 +83,10 @@ contract MyPaymaster is IPaymaster, Ownable {
 
             requiredETH = _transaction.gasLimit *
                 _transaction.maxFeePerGas;
+
+            // Calculate the required ERC20 tokens to be sent to the paymaster
+            // (Equal to the value of requiredETH)
+
             uint256 requiredERC20 = (requiredETH * ETHUSDCUint256)/USDCUSDUint256;
             require(
                 providedAllowance >= requiredERC20,

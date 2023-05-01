@@ -408,7 +408,7 @@ require('dotenv').config();
 const PAYMASTER_ADDRESS = process.env.PAYMASTER_ADDRESS;
 const GREETER_CONTRACT_ADDRESS = process.env.GREETER_CONTRACT;
 
-// Put the address of the mockUSDC token here:
+// Put the address of the ERC20 token here:
 const TOKEN_ADDRESS = process.env.TOKEN_ADDRESS;
 
 function getToken(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
@@ -422,6 +422,12 @@ const EMPTY_WALLET_PRIVATE_KEY = process.env.EMPTY_WALLET_PRIVATE_KEY;
 export default async function (hre: HardhatRuntimeEnvironment) {
   const provider = new Provider("https://testnet.era.zksync.dev");
   const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
+
+  // // Obviously this step is not required, but it is here purely to demonstrate that indeed the wallet has no ether.
+  const ethBalance = await emptyWallet.getBalance();
+  if (!ethBalance.eq(0)) {
+     throw new Error("The wallet is not empty");
+   }
   
   console.log(
     `Balance of the user before mint: ${await emptyWallet.getBalance(
@@ -445,7 +451,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const paymasterParams = utils.getPaymasterParams(PAYMASTER_ADDRESS, {
     type: "ApprovalBased",
     token: TOKEN_ADDRESS,
-    // set minimalAllowance as we defined in the paymaster contract (100 mUSDC)
+    // set minimalAllowance as we defined in the paymaster contract
     minimalAllowance: ethers.BigNumber.from("100000000000000000000"),
     // empty bytes as testnet paymaster does not use innerInput
     innerInput: new Uint8Array(),
@@ -459,16 +465,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     },
   });
 
+  // Gas estimation:
   // _transaction.gasLimit * _transaction.maxFeePerGas
-  console.log(gasLimit.toNumber())
-  const gasPriceInUnits = await provider.getGasPrice();
-  const finalGas = ethers.utils.formatUnits(gasLimit.mul(gasPriceInUnits))
-
-  console.log("getGasPrice: " + gasPriceInUnits)
-  console.log("Final Gas: " + finalGas);
-
-  const fee = gasPrice.mul(gasLimit.toString());
-  console.log(fee)
+  // const gasPriceInUnits = await provider.getGasPrice();
+  // const finalGas = ethers.utils.formatUnits(gasLimit.mul(gasPriceInUnits))
+  // const fee = gasPrice.mul(gasLimit.toString());
 
   await (
     await GreetingContract.connect(emptyWallet).setGreeting("new updated greeting", {
@@ -499,12 +500,10 @@ yarn hardhat deploy-zksync --script use-paymaster.ts
 The output should look something like this:
 
 ```
+Balance of the user before mint: 4912976420826245159229
+
 old greeting
-512288
-getGasPrice: 250000000
-Final Gas: 0.000128072
-BigNumber { _hex: '0x747b1610d000', _isBigNumber: true }
-Balance of the user after mint: 4918904852957479293239
+Balance of the user after mint: 4907012645755481809644
 new updated greeting
 ```
 

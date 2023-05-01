@@ -26,10 +26,10 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
 
   // // Obviously this step is not required, but it is here purely to demonstrate that indeed the wallet has no ether.
-  // const ethBalance = await emptyWallet.getBalance();
-  // if (!ethBalance.eq(0)) {
-  //   throw new Error("The wallet is not empty");
-  // }
+  const ethBalance = await emptyWallet.getBalance();
+  if (!ethBalance.eq(0)) {
+     throw new Error("The wallet is not empty");
+   }
   
   console.log(
     `Balance of the user before mint: ${await emptyWallet.getBalance(
@@ -67,16 +67,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     },
   });
 
+  // Gas estimation:
   // _transaction.gasLimit * _transaction.maxFeePerGas
-  console.log(gasLimit.toNumber())
-  const gasPriceInUnits = await provider.getGasPrice();
-  const finalGas = ethers.utils.formatUnits(gasLimit.mul(gasPriceInUnits))
-
-  console.log("getGasPrice: " + gasPriceInUnits)
-  console.log("Final Gas: " + finalGas);
-
-  const fee = gasPrice.mul(gasLimit.toString());
-  console.log(fee)
+  // const gasPriceInUnits = await provider.getGasPrice();
+  // const finalGas = ethers.utils.formatUnits(gasLimit.mul(gasPriceInUnits))
+  // const fee = gasPrice.mul(gasLimit.toString());
 
   await (
     await GreetingContract.connect(emptyWallet).setGreeting("new updated greeting", {
