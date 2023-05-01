@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.16;
+pragma solidity ^0.8.0;
 
 import "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IAccount.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
@@ -15,7 +15,7 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContractsCaller.sol";
 import "./SpendLimit.sol";
 
-contract TwoUserMultisig is IAccount, IERC1271, SpendLimit {
+contract Account is IAccount, IERC1271, SpendLimit {
     // to get transaction hash
     using TransactionHelper for Transaction;
 
