@@ -10,13 +10,13 @@ import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
-const ACCOUNT_ADDRESS = "ACCOUNT_ADDRESS";
+const ACCOUNT_ADDRESS = "DEPLOYED_ACCOUNT_ADDRESS";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   // @ts-ignore target zkSyncTestnet in config file which can be testnet or local
   const provider = new Provider(hre.config.networks.zkSyncTestnet.url);
 
-  const owner = new Wallet("ACCOUNT_PRIVATE_KEY", provider);
+  const owner = new Wallet("DEPLOYED_ACCOUNT_PRIVATE_KEY", provider);
 
   const accountArtifact = await hre.artifacts.readArtifact("Account");
   const account = new Contract(ACCOUNT_ADDRESS, accountArtifact.abi, owner);
@@ -52,18 +52,14 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     customSignature: signature,
   };
 
-  console.log("setLimitTx :>> ", setLimitTx);
-
-  console.log("utils.serialize(setLimitTx) :>> ", utils.serialize(setLimitTx));
-
+  console.log("Setting limit for account...");
   const sentTx = await provider.sendTransaction(utils.serialize(setLimitTx));
 
-  console.log("sentTx :>> ", sentTx);
   await sentTx.wait();
 
   const limit = await account.limits(ETH_ADDRESS);
-  console.log("limit: ", limit.limit.toString());
-  console.log("available: ", limit.available.toString());
-  console.log("resetTime: ", limit.resetTime.toString());
-  console.log("Enabled: ", limit.isEnabled);
+  console.log("Account limit enabled?: ", limit.isEnabled);
+  console.log("Account limit: ", limit.limit.toString());
+  console.log("Available limit today: ", limit.available.toString());
+  console.log("Time to reset limit: ", limit.resetTime.toString());
 }

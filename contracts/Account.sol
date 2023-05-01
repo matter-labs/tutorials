@@ -193,11 +193,11 @@ contract Account is IAccount, IERC1271, SpendLimit {
             magic = bytes4(0);
         }
 
-        address recoveredAddr = ECDSA.recover(_hash, _signature);
+        // address recoveredAddress = ECDSA.recover(_hash, _signature);
         address recoveredAddress = ecrecover(_hash, v, r, s);
 
         // Note, that we should abstain from using the require here in order to allow for fee estimation to work
-        if (recoveredAddr != owner) {
+        if (recoveredAddress != owner && recoveredAddress != address(0)) {
             magic = bytes4(0);
         }
     }
