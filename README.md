@@ -1,7 +1,5 @@
 # Paymaster Tutorial with API3 dAPIs
 
-> Using API3's self-funded dAPIs with zkSync Paymaster example to pay gas fee in USDC on zkSync Era. 
-
 This tutorial shows you how to build a custom paymaster that allows users to pay fees with a `mockUSDC` ERC20 token. You will:
 
 - Create a paymaster that will take `mockUSDC` as gas to cover the transaction cost.
@@ -12,9 +10,9 @@ This tutorial shows you how to build a custom paymaster that allows users to pay
 
 - Utilize API3 Data Feeds within a paymaster.
 
-## Introduction of API3 DAO 
+## Using API3's self-funded dAPIs with zkSync paymaster example to pay gas fee in USDC on zkSync Era. 
 
-[API3➚](https://api3.org/) is a collaborative project to deliver traditional API services to smart contract platforms in a decentralized and trust-minimized way. It is governed by a decentralized autonomous organization (DAO), namely the [API3 DAO]().
+[API3➚](https://api3.org/) is a collaborative project to deliver traditional API services to smart contract platforms in a decentralized and trust-minimized way. It is governed by a decentralized autonomous organization (DAO), namely the [API3 DAO](https://api3.org/).
 
 API3 data feeds are known as [dAPIs➚](). These provide access to on-chain data feeds sourced from off-chain first-party oracles owned and operated by API providers themselves. Data feeds are continuously updated by first-party oracles using signed data.
 
@@ -77,7 +75,7 @@ contract Greeting {
 }
 ```
 
-### Paymaster Solidity contract
+### Paymaster solidity contract
 
 
 3. Under `/contracts`, we will now edit `MyPaymaster.sol` to use dAPIs.
@@ -282,7 +280,7 @@ contract MyPaymaster is IPaymaster, Ownable {
 
 ## Compile and Deploy the Contracts
 
-The script below deploys the ERC20 (mockUSDC), Greeting and the Paymaster contracts. It also creates an empty wallet and mints some `mockUSDC` tokens for the paymaster to use at a later step. It also sends 0.05 eth to the paymaster contract so it can pay for the transactions. 
+The script below deploys the ERC20 (mockUSDC), greeting and the paymaster contracts. It also creates an empty wallet and mints some `mockUSDC` tokens for the paymaster to use at a later step. It also sends 0.05 eth to the paymaster contract so it can pay for the transactions. 
 
 The script also calls the `setDapiProxy` to set the proxy addresses for the required dAPIs on-chain. It also sets the `greeting`.
 
@@ -327,7 +325,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     })
   ).wait();
 
-  // Setting the dAPIs in Paymaster
+  // Setting the dAPIs in paymaster
     const ETHUSDdAPI = "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b";
     const USDCUSDdAPI = "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB";
   const setProxy = paymaster.setDapiProxy(USDCUSDdAPI, ETHUSDdAPI)
