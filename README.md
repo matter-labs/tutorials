@@ -12,13 +12,13 @@ This tutorial shows you how to build a custom paymaster that allows users to pay
 
 ## Using API3's self-funded dAPIs with zkSync paymaster example to pay gas fee in USDC on zkSync Era. 
 
-[API3➚](https://api3.org/) is a collaborative project to deliver traditional API services to smart contract platforms in a decentralized and trust-minimized way. It is governed by a decentralized autonomous organization (DAO), namely the [API3 DAO](https://api3.org/).
+[API3➚](https://api3.org/) is a collaborative project to deliver traditional API services to smart contract platforms in a decentralized and trust-minimized way. It is governed by a decentralized autonomous organization (DAO), namely the [API3 DAO](https://api3.org/dao).
 
-API3 data feeds are known as [dAPIs➚](). These provide access to on-chain data feeds sourced from off-chain first-party oracles owned and operated by API providers themselves. Data feeds are continuously updated by first-party oracles using signed data.
+API3 data feeds are known as [dAPIs➚](https://docs.api3.org/guides/dapis/subscribing-self-funded-dapis/). These provide access to on-chain data feeds sourced from off-chain first-party oracles owned and operated by API providers themselves. Data feeds are continuously updated by first-party oracles using signed data.
 
-Within a Paymaster, price oracles can be used to provide price data on-chain for execution.
+Within a paymaster, price oracles can be used to provide price data on-chain for execution.
 
-**For this Paymaster tutorial, we will use dAPIs to get the price of ETH/USD and USDC/USD datafeeds and use it to calculate gas in USDC value so that users can pay for their transactions with USDC.**
+**For this paymaster tutorial, we will use dAPIs to get the price of ETH/USD and USDC/USD datafeeds and use it to calculate gas in USDC value so that users can pay for their transactions with USDC.**
 
 ## Project repo
 
@@ -26,7 +26,7 @@ The tutorial code is available [here](https://github.com/vanshwassan/zk-paymaste
 
 ## Set up the project
 
-1. Make an emptry project directory and clone the OG Paymaster project:
+1. Make an emptry project directory and clone the OG paymaster project:
 
 ```sh
 $ git clone https://github.com/matter-labs/custom-paymaster-tutorial.git .
@@ -498,10 +498,10 @@ yarn hardhat deploy-zksync --script use-paymaster.ts
 The output should look something like this:
 
 ```
-Balance of the user before mint: 4912976420826245159229
+Balance of the user before mint: 5000000000000000000000
 
 old greeting
-Balance of the user after mint: 4907012645755481809644
+Balance of the user after mint: 4918000000000000000000
 new updated greeting
 ```
 
