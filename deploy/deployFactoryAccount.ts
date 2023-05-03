@@ -1,14 +1,15 @@
-import { utils, Wallet, Provider } from 'zksync-web3';
-import * as ethers from 'ethers';
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
+import { utils, Wallet, Provider } from "zksync-web3";
+import * as ethers from "ethers";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider('https://zksync2-testnet.zksync.dev');
-  const wallet = new Wallet('<WALLET_PRIVATE_KEY>', provider);
+  // @ts-ignore target zkSyncTestnet in config file which can be testnet or local
+  const provider = new Provider(hre.config.networks.zkSyncTestnet.url);
+  const wallet = new Wallet("<DEPLOYER_PRIVATE_KEY>", provider);
   const deployer = new Deployer(hre, wallet);
-  const factoryArtifact = await deployer.loadArtifact('AAFactory');
-  const aaArtifact = await deployer.loadArtifact('Account');
+  const factoryArtifact = await deployer.loadArtifact("AAFactory");
+  const aaArtifact = await deployer.loadArtifact("Account");
 
   // Bridge funds if the wallet on zkSync doesn't have enough funds.
   // const depositAmount = ethers.utils.parseEther('0.1');
@@ -21,9 +22,9 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   const factory = await deployer.deploy(
     factoryArtifact,
-    [utils.hashBytecode(aaArtifact.bytecode)], 
+    [utils.hashBytecode(aaArtifact.bytecode)],
     undefined,
-    [aaArtifact.bytecode,], 
+    [aaArtifact.bytecode]
   );
 
   console.log(`AA factory address: ${factory.address}`);
@@ -35,7 +36,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   );
 
   const owner = Wallet.createRandom();
-  console.log("owner pk: ", owner.privateKey)
+  console.log("SC Account owner pk: ", owner.privateKey);
 
   const salt = ethers.constants.HashZero;
   const tx = await aaFactory.deployAccount(salt, owner.address);
@@ -46,15 +47,17 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     factory.address,
     await aaFactory.aaBytecodeHash(),
     salt,
-    abiCoder.encode(['address'], [owner.address])
+    abiCoder.encode(["address"], [owner.address])
   );
 
-  console.log(`Account deployed on address ${accountAddress}`);
+  console.log(`SC Account deployed on address ${accountAddress}`);
 
-  await (await wallet.sendTransaction({
+  console.log("Funding smart contract account with some ETH");
+  await (
+    await wallet.sendTransaction({
       to: accountAddress,
-      value: ethers.utils.parseEther('0.02')
+      value: ethers.utils.parseEther("0.02"),
     })
   ).wait();
-
+  console.log(`Done!`);
 }

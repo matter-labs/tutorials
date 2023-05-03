@@ -18,7 +18,7 @@ As for deployment and simple test on zkSync2.0 testnet, please take a look at th
 
 ### zkSync local network.
 
-`spend-limit.test.ts` in [the test folder](https://github.com/porco-rosso-j/daily-spendlimit-tutorial/tree/main/test) offers more detailed tests for each functionality of the SpendLimit contract.
+`spend-limit.test.ts` in [the test folder](./test/) offers more detailed tests for each functionality of the SpendLimit contract.
 
 ```shell
 git clone git@github.com:porco-rosso-j/daily-spendlimit-tutorial.git
@@ -57,3 +57,5 @@ Then run:
 ```shell
 yarn hardhat test
 ```
+
+**Some tests are not passing due to different error messages returned by the zkSync Era node.** This repo will be updated to fix the remaining tests.
