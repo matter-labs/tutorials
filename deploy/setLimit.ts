@@ -10,20 +10,20 @@ import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 const ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
-const ACCOUNT_ADDRESS = "DEPLOYED_ACCOUNT_ADDRESS";
+const ACCOUNT_ADDRESS = "<DEPLOYED_ACCOUNT_ADDRESS>";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   // @ts-ignore target zkSyncTestnet in config file which can be testnet or local
   const provider = new Provider(hre.config.networks.zkSyncTestnet.url);
 
-  const owner = new Wallet("DEPLOYED_ACCOUNT_PRIVATE_KEY", provider);
+  const owner = new Wallet("<DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY>", provider);
 
   const accountArtifact = await hre.artifacts.readArtifact("Account");
   const account = new Contract(ACCOUNT_ADDRESS, accountArtifact.abi, owner);
 
   let setLimitTx = await account.populateTransaction.setSpendingLimit(
     ETH_ADDRESS,
-    ethers.utils.parseEther("0.005")
+    ethers.utils.parseEther("0.0005")
   );
 
   setLimitTx = {

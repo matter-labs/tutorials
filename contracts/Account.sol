@@ -3,12 +3,9 @@ pragma solidity ^0.8.0;
 
 import "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IAccount.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
-
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
-
 // Used for signature validation
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-
 // Access zkSync system contracts for nonce validation via NONCE_HOLDER_SYSTEM_CONTRACT
 import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
 // to call non-view function of system contracts
@@ -193,7 +190,6 @@ contract Account is IAccount, IERC1271, SpendLimit {
             magic = bytes4(0);
         }
 
-        // address recoveredAddress = ECDSA.recover(_hash, _signature);
         address recoveredAddress = ecrecover(_hash, v, r, s);
 
         // Note, that we should abstain from using the require here in order to allow for fee estimation to work

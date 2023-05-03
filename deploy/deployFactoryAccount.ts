@@ -6,7 +6,7 @@ import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 export default async function (hre: HardhatRuntimeEnvironment) {
   // @ts-ignore target zkSyncTestnet in config file which can be testnet or local
   const provider = new Provider(hre.config.networks.zkSyncTestnet.url);
-  const wallet = new Wallet("DEPLOYER_PRIVATE_KEY", provider);
+  const wallet = new Wallet("<DEPLOYER_PRIVATE_KEY>", provider);
   const deployer = new Deployer(hre, wallet);
   const factoryArtifact = await deployer.loadArtifact("AAFactory");
   const aaArtifact = await deployer.loadArtifact("Account");
@@ -36,7 +36,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   );
 
   const owner = Wallet.createRandom();
-  console.log("owner pk: ", owner.privateKey);
+  console.log("SC Account owner pk: ", owner.privateKey);
 
   const salt = ethers.constants.HashZero;
   const tx = await aaFactory.deployAccount(salt, owner.address);
@@ -50,12 +50,14 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     abiCoder.encode(["address"], [owner.address])
   );
 
-  console.log(`Account deployed on address ${accountAddress}`);
+  console.log(`SC Account deployed on address ${accountAddress}`);
 
+  console.log("Funding smart contract account with some ETH");
   await (
     await wallet.sendTransaction({
       to: accountAddress,
       value: ethers.utils.parseEther("0.02"),
     })
   ).wait();
+  console.log(`Done!`);
 }
