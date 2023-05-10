@@ -26,13 +26,25 @@ The tutorial code is available [here](https://github.com/vanshwassan/zk-paymaste
 
 ## Set up the project
 
-1. Make an emptry project directory and clone the OG paymaster project:
+1. We're going to use zkSync CLI to set up an empty project. Install it globally:
 
 ```sh
-$ git clone https://github.com/matter-labs/custom-paymaster-tutorial.git .
+$ yarn add global zksync-cli@latest
 ```
 
-2. Add the project dependencies, including Hardhat, zkSync packages and API3 contracts:
+2. After installation, run the following command to create a new project:
+
+```sh
+$ yarn zksync-cli create paymaster-dapi
+```
+
+3. This will create a new zkSync project called `paymaster-dapi` with a basic `Greeter` contract. `cd` into the project directory:
+
+```sh
+$ cd paymaster-dapi
+```
+
+3. Add the project dependencies, including Hardhat, zkSync packages and API3 contracts:
 
 ```sh
 $ yarn add -D typescript ts-node ethers@^5.7.2 zksync-web3 hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy @matterlabs/zksync-contracts @openzeppelin/contracts @openzeppelin/contracts-upgradeable @api3/contracts dotenv
@@ -40,45 +52,45 @@ $ yarn add -D typescript ts-node ethers@^5.7.2 zksync-web3 hardhat @matterlabs/h
 
 ## Design
 
-The contract code defines an ERC20 token and allows it to be used to pay the fees for transactions. 
+For the sake of simplicity, we will use a modified OpenZeppelin ERC20 implementation. For that, we are going to code a basic ERC20 token `mockUSDC` which will be used to pay for the transactions.
 
-Here, we are naming it `mockUSDC` that will be used to pay for the transactions.
-
-We already have the `MyERC20.sol` token contract that will be used as `mockUSDC`
-
-1. `cd` to the `/contracts` directory and make a new `Greeting.sol` Contract:
-
-```sh
-$ code Greeting.sol
-```
-
-Add it in there
+1. Create a new contract `mockUSDC.sol` under `/contracts` directory and add the following code:
 
 ```solidity
-//SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: UNLICENSED
+
 pragma solidity ^0.8.8;
 
-contract Greeting {
-    string private greeting;
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-    constructor(string memory _greeting) {
-        greeting = _greeting;
+contract MyERC20 is ERC20 {
+    uint8 private _decimals;
+
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        uint8 decimals_
+    ) ERC20(name_, symbol_) {
+        _decimals = decimals_;
     }
 
-    function greet() public view returns (string memory) {
-        return greeting;
+    function mint(address _to, uint256 _amount) public returns (bool) {
+        _mint(_to, _amount);
+        return true;
     }
 
-    function setGreeting(string memory _greeting) public {
-        greeting = _greeting;
+    function decimals() public view override returns (uint8) {
+        return _decimals;
     }
 }
 ```
 
+Under contracts, you will find `Greeter.sol`. This is the contract that we will be using to test our paymaster to set a greeting message on-chain.
+
 ### Paymaster solidity contract
 
 
-3. Under `/contracts`, we will now edit `MyPaymaster.sol` to use dAPIs.
+2. We can now create our paymaster contract `MyPaymaster.sol` under `/contracts` directory. It is a custom implementation of the zkSync paymaster contract that uses dAPIs.
 
 - Add the following imports.
 
@@ -111,17 +123,31 @@ contract MyPaymaster is IPaymaster, Ownable {
     }
 ```
 
-- Under `validateAndPayForPaymasterTransaction()`, we will read from the dAPIs and add the logic to calculate the required USDC to be sent by the user.
+- Make a `public` `view` function to read the dAPI values. We will use this to read the price of ETH/USD and USDC/USD datafeeds.
+
+```
+    function readDapi(address _dapiProxy) public view returns (uint256) {
+        (int224 value, ) = IProxy(_dapiProxy).read();
+        uint256 price = uint224(value);
+        return price;
+    }
+```
+
+- Under `validateAndPayForPaymasterTransaction()`, we will call the `readDapi()` function and add the logic to calculate the required USDC to be sent by the user.
 
 ```solidity
-            (int224 ETHUSDCPrice, ) = IProxy(ETHdAPIProxy).read();
-            (int224 USDCUSDPrice, ) = IProxy(USDCdAPIProxy).read();
-            uint256 ETHUSDCUint256 = uint224(ETHUSDCPrice);
-            uint256 USDCUSDUint256 = uint224(USDCUSDPrice);
+            // Read values from the dAPIs
+
+            uint256 ETHUSDCPrice = readDapi(ETHdAPIProxy);
+            uint256 USDCUSDPrice = readDapi(USDCdAPIProxy);
 
             requiredETH = _transaction.gasLimit *
                 _transaction.maxFeePerGas;
-            uint256 requiredERC20 = (requiredETH * ETHUSDCUint256)/USDCUSDUint256;
+
+            // Calculate the required ERC20 tokens to be sent to the paymaster
+            // (Equal to the value of requiredETH)
+
+            uint256 requiredERC20 = (requiredETH * ETHUSDCPrice)/USDCUSDPrice;
             require(
                 providedAllowance >= requiredERC20,
                 "Min paying allowance too low"
@@ -139,6 +165,14 @@ contract MyPaymaster is IPaymaster, Ownable {
                 if (requiredERC20 > amount) {
                     revert("Not the required amount of tokens sent");
                 }
+                if (revertReason.length <= 4) {
+                    revert("Failed to transferFrom from users' account");
+                } else {
+                    assembly {
+                        revert(add(0x20, revertReason), mload(revertReason))
+                    }
+                }
+            }
 ```
 
 Here's the full code for `MyPaymaster.sol` that uses dAPIs. You can copy/paste it directly.
@@ -185,6 +219,12 @@ contract MyPaymaster is IPaymaster, Ownable {
         ETHdAPIProxy = _ETHproxy;
     }
 
+    function readDapi(address _dapiProxy) public view returns (uint256) {
+        (int224 value, ) = IProxy(_dapiProxy).read();
+        uint256 price = uint224(value);
+        return price;
+    }
+
     function validateAndPayForPaymasterTransaction (
         bytes32,
         bytes32,
@@ -220,15 +260,18 @@ contract MyPaymaster is IPaymaster, Ownable {
                 userAddress,
                 thisAddress
             );
+            // Read values from the dAPIs
 
-            (int224 ETHUSDCPrice, ) = IProxy(ETHdAPIProxy).read();
-            (int224 USDCUSDPrice, ) = IProxy(USDCdAPIProxy).read();
-            uint256 ETHUSDCUint256 = uint224(ETHUSDCPrice);
-            uint256 USDCUSDUint256 = uint224(USDCUSDPrice);
+            uint256 ETHUSDCPrice = readDapi(ETHdAPIProxy);
+            uint256 USDCUSDPrice = readDapi(USDCdAPIProxy);
 
             requiredETH = _transaction.gasLimit *
                 _transaction.maxFeePerGas;
-            uint256 requiredERC20 = (requiredETH * ETHUSDCUint256)/USDCUSDUint256;
+
+            // Calculate the required ERC20 tokens to be sent to the paymaster
+            // (Equal to the value of requiredETH)
+
+            uint256 requiredERC20 = (requiredETH * ETHUSDCPrice)/USDCUSDPrice;
             require(
                 providedAllowance >= requiredERC20,
                 "Min paying allowance too low"
@@ -280,7 +323,7 @@ contract MyPaymaster is IPaymaster, Ownable {
 
 ## Compile and Deploy the Contracts
 
-The script below deploys the ERC20 (mockUSDC), greeting and the paymaster contracts. It also creates an empty wallet and mints some `mockUSDC` tokens for the paymaster to use at a later step. It also sends 0.05 eth to the paymaster contract so it can pay for the transactions. 
+The script below deploys the ERC20 (mockUSDC), greeting and the paymaster contract. It also creates an empty wallet and mints 5k `mockUSDC` tokens for the paymaster to use at a later step. It also sends 0.05 eth to the paymaster contract so it can pay for the transactions.
 
 The script also calls the `setDapiProxy` to set the proxy addresses for the required dAPIs on-chain. It also sets the `greeting`.
 
@@ -361,7 +404,7 @@ yarn hardhat compile
 yarn hardhat deploy-zksync --script deploy-paymaster.ts
 ```
 
-The output should be like this:
+The output should be like this (Your values will be different):
 
 ```
 Empty wallet's address: 0x18e07977bea49dF2cD1F0EE520986E7F0EF8Bc6C
@@ -414,6 +457,12 @@ function getToken(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
   return new ethers.Contract(TOKEN_ADDRESS, artifact.abi, wallet);
 }
 
+// Greeting contract
+function getGreeter(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
+  const artifact = hre.artifacts.readArtifactSync("Greeting");
+  return new ethers.Contract(GREETER_CONTRACT_ADDRESS, artifact.abi, wallet);
+}
+
 // Wallet private key
 // ⚠️ Never commit private keys to file tracking history, or your account could be compromised.
 const EMPTY_WALLET_PRIVATE_KEY = process.env.EMPTY_WALLET_PRIVATE_KEY;
@@ -433,44 +482,78 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     )}`
   );
   
+  const greeter = getGreeter(hre, emptyWallet);
   const erc20 = getToken(hre, emptyWallet);
 
   const gasPrice = await provider.getGasPrice();
 
   console.log()
   const deployer = new Deployer(hre, emptyWallet);
-  const artifact = await deployer.loadArtifact("Greeting");
+  const paymasterArtifact = await deployer.loadArtifact("MyPaymaster");
 
-  const GreetingFactory = new ContractFactory(artifact.abi, artifact.bytecode, deployer.zkWallet);
-  const GreetingContract = GreetingFactory.attach(GREETER_CONTRACT_ADDRESS);
+  const PaymasterFactory = new ContractFactory(paymasterArtifact.abi, paymasterArtifact.bytecode, deployer.zkWallet);
+  const PaymasterContract = PaymasterFactory.attach(PAYMASTER_ADDRESS);
   
-  console.log(await GreetingContract.greet());
+  // Estimate gas fee for update transaction
+  const gasLimit = await greeter.estimateGas.setGreeting("new updated greeting", {
+    customData: {
+      gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
+      paymasterParams:  utils.getPaymasterParams(PAYMASTER_ADDRESS, {
+        type: "ApprovalBased",
+        token: TOKEN_ADDRESS,
+        // set minimalAllowance as we defined in the paymaster contract
+        minimalAllowance: ethers.BigNumber.from(`100000000000000000000`),
+        // empty bytes as testnet paymaster does not use innerInput
+        innerInput: new Uint8Array(),
+      })
+    },
+  });
+
+  // Gas estimation:
+  const fee = gasPrice.mul(gasLimit.toString());
+  console.log(`ETH FEE: ${fee}`)
+
+  // Calling the dAPI to get the ETH price
+  const ETHUSD = await PaymasterContract.readDapi("0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b");
+  const USDCUSD = await PaymasterContract.readDapi("0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB");
+
+  const checkSetAllowance = await erc20.allowance(emptyWallet.address, PAYMASTER_ADDRESS);
+  console.log(`Allownace : ${checkSetAllowance}`)
+
+  const checkBalance = await erc20.balanceOf(emptyWallet.address);
+  console.log(`Balance: ${checkBalance}`)
+
+  console.log(`ETHUSD dAPI Value: ${ETHUSD}`)
+  console.log(`USDCUSD dAPI Value: ${USDCUSD}`)
+
+  // Calculating the USD fee
+  const usdFee = (fee.mul(ETHUSD)).div(USDCUSD);
+  console.log(`USD FEE: ${usdFee}`)
+
+  console.log(await greeter.greet());
   // Encoding the "ApprovalBased" paymaster flow's input
   const paymasterParams = utils.getPaymasterParams(PAYMASTER_ADDRESS, {
     type: "ApprovalBased",
     token: TOKEN_ADDRESS,
     // set minimalAllowance as we defined in the paymaster contract
-    minimalAllowance: ethers.BigNumber.from("100000000000000000000"),
+    minimalAllowance: ethers.BigNumber.from(usdFee),
     // empty bytes as testnet paymaster does not use innerInput
     innerInput: new Uint8Array(),
   });
 
-  // Estimate gas fee for update transaction
-  const gasLimit = await GreetingContract.estimateGas.setGreeting("new updated greeting", {
-    customData: {
-      gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
-      paymasterParams: paymasterParams,
-    },
-  });
-
   // Gas estimation:
-  // _transaction.gasLimit * _transaction.maxFeePerGas
+  //_transaction.gasLimit * _transaction.maxFeePerGas
   // const gasPriceInUnits = await provider.getGasPrice();
-  // const finalGas = ethers.utils.formatUnits(gasLimit.mul(gasPriceInUnits))
-  // const fee = gasPrice.mul(gasLimit.toString());
+
+  // const finalGas = (gasLimit.mul(gasPriceInUnits))
+  // const fee = gasPrice.mul(gasLimit.toString()).mul(10);
+
+  console.log(`Gas limit: ${gasLimit.toString()}`);
+  console.log(`Gas price: ${gasPrice.toString()}`);
+  // console.log(`Fee: ${fee}`);
 
   await (
-    await GreetingContract.connect(emptyWallet).setGreeting("new updated greeting", {
+    await greeter.connect(emptyWallet).setGreeting("new updated greeting", {
       // paymaster info
       customData: {
         paymasterParams: paymasterParams,
@@ -484,9 +567,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
       TOKEN_ADDRESS
     )}`
   );
-  console.log(await GreetingContract.greet())
+  console.log(await greeter.greet())
 }
-
 ```
 
 2. Run the script:
@@ -500,9 +582,17 @@ The output should look something like this:
 ```
 Balance of the user before mint: 5000000000000000000000
 
+ETH FEE: 157778500000000
+Allownace : 0
+Balance: 5000000000000000000000
+ETHUSD dAPI Value: 1867395000000000000000
+USDCUSD dAPI Value: 999714508355390800
+USD FEE: 294718921797181327
 old greeting
-Balance of the user after mint: 4918000000000000000000
+Gas limit: 631114
+Gas price: 250000000
+Balance of the user after mint: 4976548058145296715645
 new updated greeting
 ```
 
-The wallet had 5000 mUSDC after running the deployment script. After sending the transaction to update the `Greeting` contract, we are now left with 4918 mUSDC. The script used mUSDC to cover the gas costs for the update transaction.
+The wallet had 5000 mUSDC after running the deployment script. After sending the transaction to update the `Greeting` contract, we are now left with 4976 mUSDC. The script used mUSDC to cover the gas costs for the update transaction.
