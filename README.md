@@ -323,7 +323,7 @@ contract MyPaymaster is IPaymaster, Ownable {
 
 ## Compile and Deploy the Contracts
 
-The script below deploys the ERC20 (mockUSDC), greeting and the paymaster contract. It also creates an empty wallet and mints 5k `mockUSDC` tokens for the paymaster to use at a later step. It also sends 0.05 eth to the paymaster contract so it can pay for the transactions.
+The script below deploys the ERC20 (mockUSDC), Greeter and the Paymaster contract. It also creates an empty wallet and mints 5k `mockUSDC` tokens for the paymaster to use at a later step. It also sends 0.05 eth to the paymaster contract so it can pay for the transactions.
 
 The script also calls the `setDapiProxy` to set the proxy addresses for the required dAPIs on-chain. It also sets the `greeting`.
 
@@ -368,18 +368,18 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     })
   ).wait();
 
-  // Setting the dAPIs in paymaster
+  // Setting the dAPIs in Paymaster
     const ETHUSDdAPI = "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b";
     const USDCUSDdAPI = "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB";
   const setProxy = paymaster.setDapiProxy(USDCUSDdAPI, ETHUSDdAPI)
   await (await setProxy).wait()
   console.log("dAPI Proxies Set!")
 
-  // Deploying the greeting contract
-  const greetingContractArtifact = await deployer.loadArtifact("Greeting");
+  // Deploying the Greeter contract
+  const greeterContractArtifact = await deployer.loadArtifact("Greeter");
   const oldGreeting = "old greeting"
-  const deployGreeting = await deployer.deploy(greetingContractArtifact, [oldGreeting]);
-  console.log(`Greeting address: ${deployGreeting.address}`);
+  const deployGreeter = await deployer.deploy(greeterContractArtifact, [oldGreeting]);
+  console.log(`Greeter contract address: ${deployGreeter.address}`);
 
   // Supplying the ERC20 tokens to the empty wallet:
   await // We will give the empty wallet 5k mUSDC:
@@ -407,12 +407,12 @@ yarn hardhat deploy-zksync --script deploy-paymaster.ts
 The output should be like this (Your values will be different):
 
 ```
-Empty wallet's address: 0x18e07977bea49dF2cD1F0EE520986E7F0EF8Bc6C
-Empty wallet's private key: 0x8128d0a1467b95da69ced6a5d565c43a9b0525d33534766145f65231c3a8c645
-ERC20 address: 0x9400DFBdACCB7A9C977957c2BE2A82167312470B
-Paymaster address: 0x3dF33D89e5f05e43589724701403088155307Ef5
+Empty wallet's address: 0xcc7527d2DCb86e5327C494b323af502aEFd76831
+Empty wallet's private key: 0x1d79f139605b82f3597654f274273220514ec0994fabd9f205a0a56e907d14a5
+ERC20 address: 0x4CbBd2FB4700a19A19d3be5b19609f8cA6187980
+Paymaster address: 0x991c592Cfc34406746b59eBA26E3D8e6f40c28bb
 dAPI Proxies Set!
-Greeting address: 0x3bd5511ec73112EACD55fA867F0E62e675AA6008
+Greeter contract address: 0xbCC6aF86Ca5BAFedDDe922a64765Cbb438698C57
 Minted 5k mUSDC for the empty wallet
 Done!
 ```
@@ -443,13 +443,13 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import { getDeployedContracts } from "zksync-web3/build/src/utils";
 
-require('dotenv').config();
+require("dotenv").config();
 
-// Put the address of the deployed paymaster here
+// Put the address of the deployed paymaster and the Greeter Contract in the .env file
 const PAYMASTER_ADDRESS = process.env.PAYMASTER_ADDRESS;
 const GREETER_CONTRACT_ADDRESS = process.env.GREETER_CONTRACT;
 
-// Put the address of the ERC20 token here:
+// Put the address of the ERC20 token in the .env file:
 const TOKEN_ADDRESS = process.env.TOKEN_ADDRESS;
 
 function getToken(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
@@ -457,9 +457,9 @@ function getToken(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
   return new ethers.Contract(TOKEN_ADDRESS, artifact.abi, wallet);
 }
 
-// Greeting contract
+// Greeter contract
 function getGreeter(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
-  const artifact = hre.artifacts.readArtifactSync("Greeting");
+  const artifact = hre.artifacts.readArtifactSync("Greeter");
   return new ethers.Contract(GREETER_CONTRACT_ADDRESS, artifact.abi, wallet);
 }
 
@@ -467,107 +467,113 @@ function getGreeter(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
 // ⚠️ Never commit private keys to file tracking history, or your account could be compromised.
 const EMPTY_WALLET_PRIVATE_KEY = process.env.EMPTY_WALLET_PRIVATE_KEY;
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider("https://testnet.era.zksync.dev");
-  const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
+    const provider = new Provider("https://testnet.era.zksync.dev");
+    const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
 
-  // // Obviously this step is not required, but it is here purely to demonstrate that indeed the wallet has no ether.
+  // Obviously this step is not required, but it is here purely to demonstrate that indeed the wallet has no ether.
   const ethBalance = await emptyWallet.getBalance();
-  if (!ethBalance.eq(0)) {
-     throw new Error("The wallet is not empty");
-   }
-  
-  console.log(
-    `Balance of the user before mint: ${await emptyWallet.getBalance(
-      TOKEN_ADDRESS
-    )}`
-  );
-  
+    if (!ethBalance.eq(0)) {
+      throw new Error("The wallet is not empty");
+    }
+
+  const erc20Balance = await emptyWallet.getBalance(TOKEN_ADDRESS);
+  console.log(`ERC20 balance of the user before tx: ${erc20Balance}`);
+
   const greeter = getGreeter(hre, emptyWallet);
   const erc20 = getToken(hre, emptyWallet);
 
   const gasPrice = await provider.getGasPrice();
 
-  console.log()
+  // Loading the Paymaster Contract
   const deployer = new Deployer(hre, emptyWallet);
   const paymasterArtifact = await deployer.loadArtifact("MyPaymaster");
 
-  const PaymasterFactory = new ContractFactory(paymasterArtifact.abi, paymasterArtifact.bytecode, deployer.zkWallet);
+  const PaymasterFactory = new ContractFactory(
+    paymasterArtifact.abi,
+    paymasterArtifact.bytecode,
+    deployer.zkWallet
+  );
   const PaymasterContract = PaymasterFactory.attach(PAYMASTER_ADDRESS);
-  
-  // Estimate gas fee for update transaction
-  const gasLimit = await greeter.estimateGas.setGreeting("new updated greeting", {
-    customData: {
-      gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
-      paymasterParams:  utils.getPaymasterParams(PAYMASTER_ADDRESS, {
-        type: "ApprovalBased",
-        token: TOKEN_ADDRESS,
-        // set minimalAllowance as we defined in the paymaster contract
-        minimalAllowance: ethers.BigNumber.from(`100000000000000000000`),
-        // empty bytes as testnet paymaster does not use innerInput
-        innerInput: new Uint8Array(),
-      })
-    },
-  });
+
+  // Estimate gas fee for the transaction
+  const gasLimit = await greeter.estimateGas.setGreeting(
+    "new updated greeting",
+    {
+      customData: {
+        gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
+        paymasterParams: utils.getPaymasterParams(PAYMASTER_ADDRESS, {
+          type: "ApprovalBased",
+          token: TOKEN_ADDRESS,
+          // Set a large allowance just for estimation
+          minimalAllowance: ethers.BigNumber.from(`100000000000000000000`),
+          // Empty bytes as testnet paymaster does not use innerInput
+          innerInput: new Uint8Array(),
+        }),
+      },
+    }
+  );
 
   // Gas estimation:
   const fee = gasPrice.mul(gasLimit.toString());
-  console.log(`ETH FEE: ${fee}`)
+  console.log(`Estimated ETH FEE (gasPrice * gasLimit): ${fee}`);
 
-  // Calling the dAPI to get the ETH price
-  const ETHUSD = await PaymasterContract.readDapi("0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b");
-  const USDCUSD = await PaymasterContract.readDapi("0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB");
+  // Calling the dAPI to get the ETH price:
+  const ETHUSD = await PaymasterContract.readDapi(
+    "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b"
+  );
+  const USDCUSD = await PaymasterContract.readDapi(
+    "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB"
+  );
 
-  const checkSetAllowance = await erc20.allowance(emptyWallet.address, PAYMASTER_ADDRESS);
-  console.log(`Allownace : ${checkSetAllowance}`)
+  // Checks old allowance (for testing purposes):
+  const checkSetAllowance = await erc20.allowance(
+    emptyWallet.address,
+    PAYMASTER_ADDRESS
+  );
+  console.log(`ERC20 allowance for paymaster : ${checkSetAllowance}`);
 
-  const checkBalance = await erc20.balanceOf(emptyWallet.address);
-  console.log(`Balance: ${checkBalance}`)
+  console.log(`ETH/USD dAPI Value: ${ETHUSD}`);
+  console.log(`USDC/USD dAPI Value: ${USDCUSD}`);
 
-  console.log(`ETHUSD dAPI Value: ${ETHUSD}`)
-  console.log(`USDCUSD dAPI Value: ${USDCUSD}`)
+  // Calculating the USD fee:
+  const usdFee = fee.mul(ETHUSD).div(USDCUSD);
+  console.log(`Estimated USD FEE: ${usdFee}`);
 
-  // Calculating the USD fee
-  const usdFee = (fee.mul(ETHUSD)).div(USDCUSD);
-  console.log(`USD FEE: ${usdFee}`)
+  console.log(`Current message is: ${await greeter.greet()}`);
 
-  console.log(await greeter.greet());
   // Encoding the "ApprovalBased" paymaster flow's input
   const paymasterParams = utils.getPaymasterParams(PAYMASTER_ADDRESS, {
     type: "ApprovalBased",
     token: TOKEN_ADDRESS,
-    // set minimalAllowance as we defined in the paymaster contract
+    // set minimalAllowance to the estimated fee in erc20
     minimalAllowance: ethers.BigNumber.from(usdFee),
     // empty bytes as testnet paymaster does not use innerInput
     innerInput: new Uint8Array(),
   });
 
-  // Gas estimation:
-  //_transaction.gasLimit * _transaction.maxFeePerGas
-  // const gasPriceInUnits = await provider.getGasPrice();
-
-  // const finalGas = (gasLimit.mul(gasPriceInUnits))
-  // const fee = gasPrice.mul(gasLimit.toString()).mul(10);
-
-  console.log(`Gas limit: ${gasLimit.toString()}`);
-  console.log(`Gas price: ${gasPrice.toString()}`);
-  // console.log(`Fee: ${fee}`);
-
   await (
-    await greeter.connect(emptyWallet).setGreeting("new updated greeting", {
-      // paymaster info
-      customData: {
-        paymasterParams: paymasterParams,
-        gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
-      },
-    })
+    await greeter
+      .connect(emptyWallet)
+      .setGreeting(`new greeting updated at ${new Date().toUTCString()}`, {
+        // specify gas values
+        maxFeePerGas: gasPrice,
+        maxPriorityFeePerGas: 0,
+        gasLimit: gasLimit,
+        // paymaster info
+        customData: {
+          paymasterParams: paymasterParams,
+          gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
+        },
+      })
   ).wait();
 
+  const newErc20Balance = await emptyWallet.getBalance(TOKEN_ADDRESS);
+
+  console.log(`ERC20 Balance of the user after tx: ${newErc20Balance}`);
   console.log(
-    `Balance of the user after mint: ${await emptyWallet.getBalance(
-      TOKEN_ADDRESS
-    )}`
+    `Transaction fee paid in ERC20 was ${erc20Balance.sub(newErc20Balance)}`
   );
-  console.log(await greeter.greet())
+  console.log(`Message in contract now is: ${await greeter.greet()}`);
 }
 ```
 
@@ -580,19 +586,16 @@ yarn hardhat deploy-zksync --script use-paymaster.ts
 The output should look something like this:
 
 ```
-Balance of the user before mint: 5000000000000000000000
-
-ETH FEE: 157778500000000
-Allownace : 0
-Balance: 5000000000000000000000
-ETHUSD dAPI Value: 1867395000000000000000
-USDCUSD dAPI Value: 999714508355390800
-USD FEE: 294718921797181327
-old greeting
-Gas limit: 631114
-Gas price: 250000000
-Balance of the user after mint: 4976548058145296715645
-new updated greeting
+ERC20 balance of the user before tx: 5000000000000000000000
+Estimated ETH FEE (gasPrice * gasLimit): 586134250000000
+ERC20 allowance for paymaster : 0
+ETH/USD dAPI Value: 1829590000000000000000
+USDC/USD dAPI Value: 999957462579468500
+Estimated USD FEE: 1072430980905125770
+Current message is: old greeting
+ERC20 Balance of the user after tx: 4998927569019094874230
+Transaction fee paid in ERC20 was 1072430980905125770
+Message in contract now is: new greeting updated at Thu, 18 May 2023 07:40:22 GMT
 ```
 
-The wallet had 5000 mUSDC after running the deployment script. After sending the transaction to update the `Greeting` contract, we are now left with 4976 mUSDC. The script used mUSDC to cover the gas costs for the update transaction.
+The wallet had 5000 mUSDC after running the deployment script. After sending the transaction to update the `Greeting` contract, we are now left with 4998.92 mUSDC. The script used mUSDC to cover the gas costs for the update transaction.

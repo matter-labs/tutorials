@@ -43,11 +43,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   await (await setProxy).wait()
   console.log("dAPI Proxies Set!")
 
-  // Deploying the greeting contract
-  const greetingContractArtifact = await deployer.loadArtifact("Greeting");
+  // Deploying the Greeter contract
+  const greeterContractArtifact = await deployer.loadArtifact("Greeter");
   const oldGreeting = "old greeting"
-  const deployGreeting = await deployer.deploy(greetingContractArtifact, [oldGreeting]);
-  console.log(`Greeting address: ${deployGreeting.address}`);
+  const deployGreeter = await deployer.deploy(greeterContractArtifact, [oldGreeting]);
+  console.log(`Greeter contract address: ${deployGreeter.address}`);
 
   // Supplying the ERC20 tokens to the empty wallet:
   await // We will give the empty wallet 5k mUSDC:

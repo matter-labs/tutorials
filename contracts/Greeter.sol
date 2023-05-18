@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.8;
 
-contract Greeting {
+contract Greeter {
     string private greeting;
 
     constructor(string memory _greeting) {
