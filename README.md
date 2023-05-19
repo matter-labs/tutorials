@@ -368,7 +368,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     })
   ).wait();
 
-  // Setting the dAPIs in Paymaster
+  // Setting the dAPIs in Paymaster. Head over to the API3 Market (https://market.api3.org) to verify dAPI proxy contract addresses and whether they're funded or not.
     const ETHUSDdAPI = "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b";
     const USDCUSDdAPI = "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB";
   const setProxy = paymaster.setDapiProxy(USDCUSDdAPI, ETHUSDdAPI)
