@@ -22,9 +22,14 @@
         "type": "bytes"
       },
       {
-        "internalType": "uint64",
-        "name": "ergsLimit",
-        "type": "uint64"
+        "internalType": "uint256",
+        "name": "gasLimit",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gasPerPubdataByteLimit",
+        "type": "uint256"
       }
     ],
     "name": "callZkSync",
