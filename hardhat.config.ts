@@ -5,8 +5,6 @@ import "@matterlabs/hardhat-zksync-solc";
 
 const config: HardhatUserConfig = {
   zksolc: {
-    version: "1.3.10", // Use latest available in https://github.com/matter-labs/zksolc-bin/
-    compilerSource: "binary",
     settings: {
       isSystem: true,
     },
@@ -23,7 +21,7 @@ const config: HardhatUserConfig = {
     },
   },
   solidity: {
-    version: "0.8.16",
+    version: "0.8.17",
   },
 };
 
