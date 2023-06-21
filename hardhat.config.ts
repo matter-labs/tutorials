@@ -24,6 +24,7 @@ const zkSyncTestnet =
 
 const config: HardhatUserConfig = {
   zksolc: {
+    version: "latest",
     settings: {
       isSystem: true,
     },
