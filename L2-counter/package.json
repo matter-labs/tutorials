@@ -8,11 +8,7 @@
   },
   "dependencies": {
     "@matterlabs/hardhat-zksync-deploy": "^0.6.3",
-<<<<<<< HEAD
     "@matterlabs/hardhat-zksync-solc": "^0.4.0",
-=======
-    "@matterlabs/hardhat-zksync-solc": "^0.3.16",
->>>>>>> 62d92432f414a3b286e4cc79019f2a48b4656429
     "ethers": "^5.7.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4",
