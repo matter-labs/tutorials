@@ -5,7 +5,7 @@
   "license": "MIT",
   "devDependencies": {
     "@matterlabs/hardhat-zksync-deploy": "^0.6.1",
-    "@matterlabs/hardhat-zksync-solc": "^0.3.16",
+    "@matterlabs/hardhat-zksync-solc": "^0.4.0",
     "@matterlabs/zksync-contracts": "^0.6.1",
     "@openzeppelin/contracts": "^4.7.3",
     "ethers": "^5.7.0",
