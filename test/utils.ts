@@ -10,7 +10,7 @@ async function deployContract(
   const artifact = await deployer.loadArtifact(contract);
   const deploymentFee = await deployer.estimateDeployFee(artifact, params);
   const parsedFee = ethers.utils.formatEther(deploymentFee.toString());
-  
+
   return await deployer.deploy(artifact, params);
 }
 

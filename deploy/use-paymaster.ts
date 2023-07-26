@@ -29,8 +29,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   console.log(
     `ERC20 token balance of the empty wallet before mint: ${await emptyWallet.getBalance(
-      TOKEN_ADDRESS
-    )}`
+      TOKEN_ADDRESS,
+    )}`,
   );
 
   let paymasterBalance = await provider.getBalance(PAYMASTER_ADDRESS);
@@ -74,8 +74,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   console.log(
     `Paymaster ERC20 token balance is now ${await erc20.balanceOf(
-      PAYMASTER_ADDRESS
-    )}`
+      PAYMASTER_ADDRESS,
+    )}`,
   );
 
   paymasterBalance = await provider.getBalance(PAYMASTER_ADDRESS);
@@ -83,7 +83,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   console.log(
     `ERC20 token balance of the empty wallet after mint: ${await emptyWallet.getBalance(
-      TOKEN_ADDRESS
-    )}`
+      TOKEN_ADDRESS,
+    )}`,
   );
 }

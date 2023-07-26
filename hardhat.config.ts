@@ -4,7 +4,7 @@ import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
 
 // dynamically changes endpoints for local tests
-const zkSyncTestnet =
+const zkSyncLocalTestnet =
   process.env.NODE_ENV == "test"
     ? {
         url: "http://localhost:3050",
@@ -22,7 +22,7 @@ const zkSyncTestnet =
 
 const config: HardhatUserConfig = {
   zksolc: {
-    version: "latest", // Uses latest available in https://github.com/matter-labs/zksolc-bin/
+    version: "latest",
     settings: {},
   },
   defaultNetwork: "zkSyncLocalTestnet",
@@ -30,11 +30,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       zksync: false,
     },
-    zkSyncLocalTestnet : {
-      url: "http://localhost:3050",
-      ethNetwork: "http://localhost:8545",
-      zksync: true,
-    }
+    zkSyncLocalTestnet
   },
   solidity: {
     version: "0.8.17",
