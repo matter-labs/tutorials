@@ -1,0 +1,11 @@
+{
+    "name": "Power Stone",
+    "description": "The Power Stone, contained within the Orb, can destroy entire planets when unleashed.",
+    "image": "https://ipfs.io/ipfs/QmTxy9zys87GE6fLhityMd9cVNqj6MRB1Q63ZATGibhY2Z?filename=purple_stone.png",
+    "attributes": [
+        {
+            "trait_type": "Color",
+            "value": "Purple"
+        }
+    ]
+}
