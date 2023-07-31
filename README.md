@@ -1,24 +1,55 @@
-# Custom paymaster tutorial
+# Custom Paymaster Tutorial 📖
 
-Code for the "Build a custom paymaster" tutorial from the [zkSync v2 documentation](https://v2-docs.zksync.io/dev/).
+Welcome aboard to the custom paymaster journey with zkSync! 🚀🌌
 
-You can find a full step-by-step guide to build this project [in this article](https://v2-docs.zksync.io/dev/tutorials/custom-paymaster-tutorial.html#prerequisite).
+This repository is crafted to guide you through the process of building a custom paymaster on zkSync Era. Coupled with this, you'll find a practical, easy-to-follow guide to implement and understand every step [here](https://era.zksync.io/docs/dev/tutorials/custom-paymaster-tutorial.html).
 
-## Installation and compilation
+## Need Assistance? 💡
 
-You need Node.js and Yarn.
+If you're stumbling upon any issues or uncertainties:
 
-Install all dependencies with `yarn add`.
+- 📖 Explore the [custom paymaster tutorial](https://era.zksync.io/docs/dev/tutorials/custom-paymaster-tutorial.html) for a comprehensive walkthrough of the code in this repository.
+- 🗣️ Or simply [reach out on Discord](https://join.zksync.dev/). We're always here to help!
 
-Compile contracts with `yarn hardhat compile`
+## Repository Overview 📂
 
-## Deployment and usage
+Dive into the key sections of this repository:
 
-To run the scripts that deploy, use the `zksync-deploy` command:
+- `/contracts`: All the essential smart contracts you need are neatly stored here.
 
-- `yarn hardhat deploy-zksync --script deploy-paymaster.ts`: deploys the contracts
-- `yarn hardhat deploy-zksync --script use-paymaster.ts`: executes the `use-paymaster.ts` script.
+- `/deploy`: Discover deployment and usage scripts tailored to assist your development process.
 
-## Support
+- `/test`: Unit tests for the provided contracts.
 
-Check out the [common errors section in the tutorial](https://v2-docs.zksync.io/dev/tutorials/custom-paymaster-tutorial.html#prerequisite), open an issue, or [contact us on Discord](https://discord.com/invite/px2aR7w).
+## Handy Commands 🛠️
+
+Here's a lineup of commands to assist you:
+
+- `yarn install`: Installs the required dependencies.
+- `yarn compile`: Compiles the contracts.
+- `yarn hardhat deploy-zksync --script deploy-paymaster.ts`: Deploys your contracts smoothly.
+- `yarn hardhat deploy-zksync --script use-paymaster.ts`: Executes the `use-paymaster.ts` script.
+- `yarn test`: Runs tests. **Make sure to check the test requirements below.**
+
+### Environment variables 🌳
+
+To prevent the leakage of private keys, we use the `dotenv` package to load environment variables. This is particularly used to load the wallet private key, which is required to run the deployment script.
+
+To use it, rename `.env.example` to `.env` and input your private key.
+
+```
+WALLET_PRIVATE_KEY=123cde574ccff....
+```
+
+### Local testing 🧪
+
+To run tests, you'll need to start the zkSync local environment. Please refer to [this section of the docs](https://era.zksync.io/docs/tools/testing/) for details. It can be run with either the Dockerized setup or the In-memory node.
+
+Without starting the zkSync local environment, the tests will fail with an error: `Error: could not detect network (event="noNetwork", code=NETWORK_ERROR, version=providers/5.7.2)`
+
+## Stay Connected 🌐
+
+- [zkSync's Documentation](https://era.zksync.io/docs/)
+- [GitHub](https://github.com/matter-labs)
+- [Twitter @zkSync](https://twitter.com/zksync)
+- [Join our Discord Community](https://join.zksync.dev)
