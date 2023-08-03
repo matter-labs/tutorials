@@ -4,17 +4,12 @@ This repository contains tutorials for developing on zkSync Era.
 
 ## Tutorials
 
-- [Cross Chain Governance](./cross_chain/README.md)
-- [Custom Account Abstraction](./custom_aa/README.md)
-- [Daily Spend Limit](./daily_spend_limit/README.md)
-- [Gated NFT](./gated_nft/README.md)
-- Paymasters
-  - [Custom Paymaster](./paymasters/custom_paymaster/README.md)
-  - [Gasless Paymaster](./paymasters/several/contracts/README.md)
-  - [Allowlist Paymaster](./paymasters/several/contracts/README.md)
-  - [ERC20 Fixed Paymaster](./paymasters/several/contracts/README.md)
-  - [ERC721 Gated Paymaster](./paymasters/several/contracts/README.md)
-  - [MockUSDC Paymaster](./paymasters/usdc_paymaster_w_api3_data_feeds/README.md)
+- [Cross Chain Governance](./cross-chain/README.md)
+- [Custom Account Abstraction](./custom-aa/README.md)
+- [Gated NFT](./gated-nft/README.md)
+- [Greeter](./greeter/README.md)
+- [Daily Spend Limit](./spend-limit/README.md)
+- [MockUSDC Paymaster](./usdc-paymaster-w-api3-data-feeds/README.md)
 
 ## Contributing
 
