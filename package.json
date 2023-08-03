@@ -1,0 +1,23 @@
+{
+  "name": "zksync-tutorials",
+  "private": true,
+  "workspaces": [
+    "cross-chain/L1-governance",
+    "cross-chain/L2-counter",
+    "custom-aa",
+    "custom-paymaster",
+    "spend-limit",
+    "gated-nft",
+    "greeter",
+    "usdc-paymaster-w-api3-data-feeds"
+  ],
+  "version": "0.1.0",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "3.0.0"
+  },
+  "scripts": {
+    "fix:fmt": "prettier --write .",
+    "lint:fmt": "prettier --check ."
+  }
+}
