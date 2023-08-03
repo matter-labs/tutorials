@@ -1,0 +1,7 @@
+/**/artifacts
+/**/artifacts-zk
+/**/node_modules
+/**/tmp
+/**/cache
+/**/cache-zk
+/**/typechain-types

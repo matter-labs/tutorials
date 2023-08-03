@@ -1,0 +1,44 @@
+{
+  "name": "cross-chain-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.5",
+    "@nomiclabs/hardhat-etherscan": "^3.0.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "@typechain/ethers-v5": "^10.0.0",
+    "@typechain/hardhat": "^6.0.0",
+    "@types/chai": "^4.3.1",
+    "@types/mocha": "^9.1.0",
+    "@types/node": "^17.0.24",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "chai": "^4.3.6",
+    "dotenv": "^16.0.0",
+    "eslint": "^8.13.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "ethereum-waffle": "^3.4.4",
+    "ethers": "^5.6.4",
+    "hardhat": "^2.12.0",
+    "prettier": "^2.6.2",
+    "prettier-plugin-solidity": "^1.0.0-beta.13",
+    "solhint": "^3.3.7",
+    "ts-node": "^10.7.0",
+    "typechain": "^8.0.0",
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "@matterlabs/zksync-contracts": "^0.5.1",
+    "@openzeppelin/contracts": "^4.8.3"
+  },
+  "scripts": {
+    "build": "hardhat compile",
+    "deploy-governance": "hardhat run --network goerli ./scripts/deploy.ts"
+  }
+}
