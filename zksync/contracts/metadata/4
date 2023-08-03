@@ -1,0 +1,11 @@
+{
+    "name": "Space Stone",
+    "description": "The Space Stone, contained within the Tesseract, grants the user control over space itself.",
+    "image": "https://ipfs.io/ipfs/QmQqMYPEBAABacEUFfVrbAuRWLCayXbqykpq9LWV1kbUJD?filename=blue_stone.png",
+    "attributes": [
+        {
+            "trait_type": "Color",
+            "value": "Blue"
+        }
+    ]
+}

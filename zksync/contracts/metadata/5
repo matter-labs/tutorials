@@ -1,0 +1,11 @@
+{
+    "name": "Time Stone",
+    "description": "The Time Stone, stored in the Eye of Agamotto, gives the user control over the past, present, and future.",
+    "image": "https://ipfs.io/ipfs/QmW2BNbR9vTFUaPUSYdxyfGScZuiBHL5p9gozE5xRPrmfC?filename=green_stone.png",
+    "attributes": [
+        {
+            "trait_type": "Color",
+            "value": "Green"
+        }
+    ]
+}
