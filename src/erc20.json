@@ -1,0 +1,26 @@
+[
+  {
+    "address": "0x0000000000000000000000000000000000000000",
+    "decimals": 18,
+    "name": "Ether",
+    "symbol": "ETH"
+  },
+  {
+    "address": "0x5C221E77624690fff6dd741493D735a17716c26B",
+    "decimals": 18,
+    "name": "DAI (goerli)",
+    "symbol": "DAI"
+  },
+  {
+    "address": "0xCA063A2AB07491eE991dCecb456D1265f842b568",
+    "decimals": 8,
+    "name": "Wrapped Bitcoin (goerli)",
+    "symbol": "wBTC"
+  },
+  {
+    "address": "0xd35CCeEAD182dcee0F148EbaC9447DA2c4D449c4",
+    "decimals": 6,
+    "name": "USD Coin (goerli)",
+    "symbol": "USDC"
+  }
+]
