@@ -1,3 +1,5 @@
+![Gradient Banner](https://github.com/matter-labs/tutorials/assets/10233439/8efffb9b-ad1f-4bf2-8f73-9cab8f7ccd22)
+
 # zkSync Turorials
 
 This repository contains tutorials for developing on zkSync Era.
