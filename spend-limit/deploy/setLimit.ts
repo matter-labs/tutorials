@@ -23,7 +23,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   let setLimitTx = await account.populateTransaction.setSpendingLimit(
     ETH_ADDRESS,
-    ethers.utils.parseEther("0.0005")
+    ethers.utils.parseEther("0.0005"),
   );
 
   setLimitTx = {
@@ -44,7 +44,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const signedTxHash = EIP712Signer.getSignedDigest(setLimitTx);
 
   const signature = ethers.utils.arrayify(
-    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash))
+    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash)),
   );
 
   setLimitTx.customData = {

@@ -28,14 +28,14 @@ function getGreeter(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
 // ⚠️ Never commit private keys to file tracking history, or your account could be compromised.
 const EMPTY_WALLET_PRIVATE_KEY = process.env.EMPTY_WALLET_PRIVATE_KEY;
 export default async function (hre: HardhatRuntimeEnvironment) {
-    const provider = new Provider("https://testnet.era.zksync.dev");
-    const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
+  const provider = new Provider("https://testnet.era.zksync.dev");
+  const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
 
   // Obviously this step is not required, but it is here purely to demonstrate that indeed the wallet has no ether.
   const ethBalance = await emptyWallet.getBalance();
-    if (!ethBalance.eq(0)) {
-      throw new Error("The wallet is not empty");
-    }
+  if (!ethBalance.eq(0)) {
+    throw new Error("The wallet is not empty");
+  }
 
   const erc20Balance = await emptyWallet.getBalance(TOKEN_ADDRESS);
   console.log(`ERC20 balance of the user before tx: ${erc20Balance}`);
@@ -52,7 +52,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const PaymasterFactory = new ContractFactory(
     paymasterArtifact.abi,
     paymasterArtifact.bytecode,
-    deployer.zkWallet
+    deployer.zkWallet,
   );
   const PaymasterContract = PaymasterFactory.attach(PAYMASTER_ADDRESS);
 
@@ -71,7 +71,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
           innerInput: new Uint8Array(),
         }),
       },
-    }
+    },
   );
 
   // Gas estimation:
@@ -80,16 +80,16 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   // Calling the dAPI to get the ETH price:
   const ETHUSD = await PaymasterContract.readDapi(
-    "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b"
+    "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b",
   );
   const USDCUSD = await PaymasterContract.readDapi(
-    "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB"
+    "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB",
   );
 
   // Checks old allowance (for testing purposes):
   const checkSetAllowance = await erc20.allowance(
     emptyWallet.address,
-    PAYMASTER_ADDRESS
+    PAYMASTER_ADDRESS,
   );
   console.log(`ERC20 allowance for paymaster : ${checkSetAllowance}`);
 
@@ -132,7 +132,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   console.log(`ERC20 Balance of the user after tx: ${newErc20Balance}`);
   console.log(
-    `Transaction fee paid in ERC20 was ${erc20Balance.sub(newErc20Balance)}`
+    `Transaction fee paid in ERC20 was ${erc20Balance.sub(newErc20Balance)}`,
   );
   console.log(`Message in contract now is: ${await greeter.greet()}`);
 }

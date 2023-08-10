@@ -14,7 +14,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const aaFactory = new ethers.Contract(
     AA_FACTORY_ADDRESS,
     factoryArtifact.abi,
-    wallet
+    wallet,
   );
 
   // The two owners of the multisig
@@ -28,7 +28,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const tx = await aaFactory.deployAccount(
     salt,
     owner1.address,
-    owner2.address
+    owner2.address,
   );
   await tx.wait();
 
@@ -38,7 +38,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     AA_FACTORY_ADDRESS,
     await aaFactory.aaBytecodeHash(),
     salt,
-    abiCoder.encode(["address", "address"], [owner1.address, owner2.address])
+    abiCoder.encode(["address", "address"], [owner1.address, owner2.address]),
   );
   console.log(`Multisig account deployed on address ${multisigAddress}`);
 
@@ -61,7 +61,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     salt,
     // These are accounts that will own the newly deployed account
     Wallet.createRandom().address,
-    Wallet.createRandom().address
+    Wallet.createRandom().address,
   );
 
   const gasLimit = await provider.estimateGas(aaTx);
@@ -97,8 +97,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   console.log(
     `The multisig's nonce before the first tx is ${await provider.getTransactionCount(
-      multisigAddress
-    )}`
+      multisigAddress,
+    )}`,
   );
   const sentTx = await provider.sendTransaction(utils.serialize(aaTx));
   await sentTx.wait();
@@ -106,8 +106,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   // Checking that the nonce for the account has increased
   console.log(
     `The multisig's nonce after the first tx is ${await provider.getTransactionCount(
-      multisigAddress
-    )}`
+      multisigAddress,
+    )}`,
   );
 
   multisigBalance = await provider.getBalance(multisigAddress);

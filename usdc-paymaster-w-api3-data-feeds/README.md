@@ -10,9 +10,7 @@ This tutorial shows you how to build a custom paymaster that allows users to pay
 
 - Utilize API3 Data Feeds within a paymaster.
 
-You can also find [this tutorial in our docs](https://era.zksync.io/docs/dev/tutorials/api3-usd-paymaster-tutorial.html).
-
-## Using API3's self-funded dAPIs with zkSync paymaster example to pay gas fee in USDC on zkSync Era. 
+## Using API3's self-funded dAPIs with zkSync paymaster example to pay gas fee in USDC on zkSync Era.
 
 [API3➚](https://api3.org/) is a collaborative project to deliver traditional API services to smart contract platforms in a decentralized and trust-minimized way. It is governed by a decentralized autonomous organization (DAO), namely the [API3 DAO](https://api3.org/dao).
 
@@ -91,7 +89,6 @@ Under contracts, you will find `Greeter.sol`. This is the contract that we will 
 
 ### Paymaster solidity contract
 
-
 2. We can now create our paymaster contract `MyPaymaster.sol` under `/contracts` directory. It is a custom implementation of the zkSync paymaster contract that uses dAPIs.
 
 - Add the following imports.
@@ -118,7 +115,7 @@ contract MyPaymaster is IPaymaster, Ownable {
 
 ```solidity
     // Set dapi proxies for the allowed token/s
-    function setDapiProxy(address _USDCproxy, address _ETHproxy) 
+    function setDapiProxy(address _USDCproxy, address _ETHproxy)
     public onlyOwner {
         USDCdAPIProxy = _USDCproxy;
         ETHdAPIProxy = _ETHproxy;
@@ -185,7 +182,7 @@ pragma solidity ^0.8.8;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import {IPaymaster, ExecutionResult, PAYMASTER_VALIDATION_SUCCESS_MAGIC} 
+import {IPaymaster, ExecutionResult, PAYMASTER_VALIDATION_SUCCESS_MAGIC}
 from  "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IPaymaster.sol";
 import {IPaymasterFlow} from  "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IPaymasterFlow.sol";
 import {TransactionHelper, Transaction} from "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
@@ -215,7 +212,7 @@ contract MyPaymaster is IPaymaster, Ownable {
     }
 
     // Set dapi proxies for the allowed token/s
-    function setDapiProxy(address _USDCproxy, address _ETHproxy) 
+    function setDapiProxy(address _USDCproxy, address _ETHproxy)
     public onlyOwner {
         USDCdAPIProxy = _USDCproxy;
         ETHdAPIProxy = _ETHproxy;
@@ -337,7 +334,7 @@ import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
-require('dotenv').config();
+require("dotenv").config();
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   // The wallet that will deploy the token and the paymaster
@@ -371,16 +368,18 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   ).wait();
 
   // Setting the dAPIs in Paymaster. Head over to the API3 Market (https://market.api3.org) to verify dAPI proxy contract addresses and whether they're funded or not.
-    const ETHUSDdAPI = "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b";
-    const USDCUSDdAPI = "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB";
-  const setProxy = paymaster.setDapiProxy(USDCUSDdAPI, ETHUSDdAPI)
-  await (await setProxy).wait()
-  console.log("dAPI Proxies Set!")
+  const ETHUSDdAPI = "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b";
+  const USDCUSDdAPI = "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB";
+  const setProxy = paymaster.setDapiProxy(USDCUSDdAPI, ETHUSDdAPI);
+  await (await setProxy).wait();
+  console.log("dAPI Proxies Set!");
 
   // Deploying the Greeter contract
   const greeterContractArtifact = await deployer.loadArtifact("Greeter");
-  const oldGreeting = "old greeting"
-  const deployGreeter = await deployer.deploy(greeterContractArtifact, [oldGreeting]);
+  const oldGreeting = "old greeting";
+  const deployGreeter = await deployer.deploy(greeterContractArtifact, [
+    oldGreeting,
+  ]);
   console.log(`Greeter contract address: ${deployGreeter.address}`);
 
   // Supplying the ERC20 tokens to the empty wallet:
@@ -430,13 +429,14 @@ GREETER_CONTRACT=
 ```
 
 :::tip
-* Addresses and private keys are different on each run.
-* Make sure you delete the `artifacts-zk` and `cache-zk` folders before recompiling.
-:::
+
+- Addresses and private keys are different on each run.
+- Make sure you delete the `artifacts-zk` and `cache-zk` folders before recompiling.
+  :::
 
 ## Using the paymaster
 
-1. Create the `use-paymaster.ts` script in the `deploy` folder. 
+1. Create the `use-paymaster.ts` script in the `deploy` folder.
 
 ```ts
 import { ContractFactory, Provider, utils, Wallet } from "zksync-web3";
@@ -469,14 +469,14 @@ function getGreeter(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
 // ⚠️ Never commit private keys to file tracking history, or your account could be compromised.
 const EMPTY_WALLET_PRIVATE_KEY = process.env.EMPTY_WALLET_PRIVATE_KEY;
 export default async function (hre: HardhatRuntimeEnvironment) {
-    const provider = new Provider("https://testnet.era.zksync.dev");
-    const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
+  const provider = new Provider("https://testnet.era.zksync.dev");
+  const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
 
   // Obviously this step is not required, but it is here purely to demonstrate that indeed the wallet has no ether.
   const ethBalance = await emptyWallet.getBalance();
-    if (!ethBalance.eq(0)) {
-      throw new Error("The wallet is not empty");
-    }
+  if (!ethBalance.eq(0)) {
+    throw new Error("The wallet is not empty");
+  }
 
   const erc20Balance = await emptyWallet.getBalance(TOKEN_ADDRESS);
   console.log(`ERC20 balance of the user before tx: ${erc20Balance}`);
@@ -493,7 +493,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const PaymasterFactory = new ContractFactory(
     paymasterArtifact.abi,
     paymasterArtifact.bytecode,
-    deployer.zkWallet
+    deployer.zkWallet,
   );
   const PaymasterContract = PaymasterFactory.attach(PAYMASTER_ADDRESS);
 
@@ -512,7 +512,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
           innerInput: new Uint8Array(),
         }),
       },
-    }
+    },
   );
 
   // Gas estimation:
@@ -521,16 +521,16 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   // Calling the dAPI to get the ETH price:
   const ETHUSD = await PaymasterContract.readDapi(
-    "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b"
+    "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b",
   );
   const USDCUSD = await PaymasterContract.readDapi(
-    "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB"
+    "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB",
   );
 
   // Checks old allowance (for testing purposes):
   const checkSetAllowance = await erc20.allowance(
     emptyWallet.address,
-    PAYMASTER_ADDRESS
+    PAYMASTER_ADDRESS,
   );
   console.log(`ERC20 allowance for paymaster : ${checkSetAllowance}`);
 
@@ -573,7 +573,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   console.log(`ERC20 Balance of the user after tx: ${newErc20Balance}`);
   console.log(
-    `Transaction fee paid in ERC20 was ${erc20Balance.sub(newErc20Balance)}`
+    `Transaction fee paid in ERC20 was ${erc20Balance.sub(newErc20Balance)}`,
   );
   console.log(`Message in contract now is: ${await greeter.greet()}`);
 }

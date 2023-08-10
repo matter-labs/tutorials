@@ -598,7 +598,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     factoryArtifact,
     [utils.hashBytecode(aaArtifact.bytecode)],
     undefined,
-    [aaArtifact.bytecode]
+    [aaArtifact.bytecode],
   );
 
   console.log(`AA factory address: ${factory.address}`);
@@ -606,7 +606,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const aaFactory = new ethers.Contract(
     factory.address,
     factoryArtifact.abi,
-    wallet
+    wallet,
   );
 
   const owner = Wallet.createRandom();
@@ -623,7 +623,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     factory.address,
     await aaFactory.aaBytecodeHash(),
     salt,
-    abiCoder.encode(["address"], [owner.address])
+    abiCoder.encode(["address"], [owner.address]),
   );
 
   console.log(`Account deployed on address ${accountAddress}`);
@@ -686,7 +686,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   let setLimitTx = await account.populateTransaction.setSpendingLimit(
     ETH_ADDRESS,
-    ethers.utils.parseEther("0.005")
+    ethers.utils.parseEther("0.005"),
   );
 
   setLimitTx = {
@@ -706,7 +706,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   const signedTxHash = EIP712Signer.getSignedDigest(setLimitTx);
   const signature = ethers.utils.arrayify(
-    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash))
+    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash)),
   );
 
   setLimitTx.customData = {
@@ -774,7 +774,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   };
   const signedTxHash = EIP712Signer.getSignedDigest(ethTransferTx);
   const signature = ethers.utils.arrayify(
-    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash))
+    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash)),
   );
 
   ethTransferTx.customData = {
@@ -788,7 +788,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   // L1 timestamp tends to be undefined in the latest blocks. So should find the latest L1 Batch first.
   let l1BatchRange = await provider.getL1BatchBlockRange(
-    await provider.getL1BatchNumber()
+    await provider.getL1BatchNumber(),
   );
   let l1TimeStamp = (await provider.getBlock(l1BatchRange[1])).l1BatchTimestamp;
 
@@ -802,7 +802,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     limit.limit == limit.available
   ) {
     const sentTx = await provider.sendTransaction(
-      utils.serialize(ethTransferTx)
+      utils.serialize(ethTransferTx),
     );
     await sentTx.wait();
 
@@ -818,7 +818,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     console.log(
       "Tx would fail due to approx ",
       wait,
-      " mins difference in timestamp between resetTime and l1 batch"
+      " mins difference in timestamp between resetTime and l1 batch",
     );
   }
 }

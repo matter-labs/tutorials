@@ -13,7 +13,7 @@ Please take a moment to review this document in order to make the contribution p
 - **Clone the repository.** Once forked, clone the repository to your local machine.
 
 ```bash
-git clone https://github.com/<your-github-username>/paymaster-examples.git
+git clone https://github.com/<your-github-username>/tutorials.git
 ```
 
 - **Create a new branch.** Branches should have descriptive names to help track the feature, bugfix, or enhancement you're working on. Use the following format:
@@ -43,7 +43,7 @@ git push origin feature/description-of-your-feature
 
 ## Submitting a Pull Request
 
-- **Create a pull request (PR).** Navigate to the main Paymaster Examples Repository, and you should see your recently pushed branch highlighted with a "Compare & pull request" button. Fill in the PR title and provide a clear, detailed description of your changes.
+- **Create a pull request (PR).** Navigate to the main [Tutorials repository](https://github.com/matter-labs/tutorials), and you should see your recently pushed branch highlighted with a "Compare & pull request" button. Fill in the PR title and provide a clear, detailed description of your changes.
 
 - **Wait for a review.** Your PR will be reviewed by our maintainers. They may ask for changes or clarifications, so be prepared to address any feedback.
 
@@ -67,4 +67,4 @@ Remember, the best way to contribute is to have fun, be respectful, and keep lea
 
 ---
 
-_Last updated: August 2, 2023_
+_Last updated: August 10, 2023_

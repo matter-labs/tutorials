@@ -1,9 +1,9 @@
 import { BigNumber, Contract, ethers, Wallet } from "ethers";
 import { Provider, utils } from "zksync-web3";
-const GOVERNANCE_ABI = require('./governance.json');
-const GOVERNANCE_ADDRESS = '<GOVERNANCE-ADDRESS>';
-const COUNTER_ABI = require('./counter.json');
-const COUNTER_ADDRESS = '<COUNTER-ADDRESS>';
+const GOVERNANCE_ABI = require("./governance.json");
+const GOVERNANCE_ADDRESS = "<GOVERNANCE-ADDRESS>";
+const COUNTER_ABI = require("./counter.json");
+const COUNTER_ADDRESS = "<COUNTER-ADDRESS>";
 
 async function main() {
   // Enter your Ethereum L1 provider RPC URL.
@@ -18,7 +18,11 @@ async function main() {
   // Get the current address of the zkSync L1 bridge.
   const zkSyncAddress = await l2Provider.getMainContractAddress();
   // Get the `Contract` object of the zkSync bridge.
-  const zkSyncContract = new Contract(zkSyncAddress, utils.ZKSYNC_MAIN_ABI, wallet);
+  const zkSyncContract = new Contract(
+    zkSyncAddress,
+    utils.ZKSYNC_MAIN_ABI,
+    wallet,
+  );
 
   // Encoding the L1 transaction is done in the same way as it is done on Ethereum.
   // Use an Interface which gives access to the contract functions.
@@ -33,18 +37,29 @@ async function main() {
   const gasLimit = await l2Provider.estimateL1ToL2Execute({
     contractAddress: COUNTER_ADDRESS,
     calldata: data,
-    caller: utils.applyL1ToL2Alias(GOVERNANCE_ADDRESS) 
+    caller: utils.applyL1ToL2Alias(GOVERNANCE_ADDRESS),
   });
   // baseCost takes the price and limit and formats the total in wei.
   // For more information on `REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT` see the [fee model documentation](../developer-guides/transactions/fee-model.md).
-  const baseCost = await zkSyncContract.l2TransactionBaseCost(gasPrice, gasLimit, utils.REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT);
+  const baseCost = await zkSyncContract.l2TransactionBaseCost(
+    gasPrice,
+    gasLimit,
+    utils.REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT,
+  );
 
   // !! If you don't include the gasPrice and baseCost in the transaction, a re-estimation of fee may generate errors.
-  const tx = await govcontract.callZkSync(zkSyncAddress, COUNTER_ADDRESS, data, gasLimit, utils.REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT, {
-    // Pass the necessary ETH `value` to cover the fee for the operation
-    value: baseCost,
-    gasPrice,
-  });
+  const tx = await govcontract.callZkSync(
+    zkSyncAddress,
+    COUNTER_ADDRESS,
+    data,
+    gasLimit,
+    utils.REQUIRED_L1_TO_L2_GAS_PER_PUBDATA_LIMIT,
+    {
+      // Pass the necessary ETH `value` to cover the fee for the operation
+      value: baseCost,
+      gasPrice,
+    },
+  );
 
   // Wait until the L1 tx is complete.
   await tx.wait();

@@ -58,7 +58,7 @@ describe("Deployment, Setup & Transfer", function () {
     let tx = await account.populateTransaction.setSpendingLimit(
       ETH_ADDRESS,
       toBN("10"),
-      { value: toBN("0") }
+      { value: toBN("0") },
     );
 
     const txReceipt = await sendTx(provider, account, user, tx);
@@ -69,7 +69,7 @@ describe("Deployment, Setup & Transfer", function () {
     expect(limit.available).to.eq(toBN("10"));
     expect(limit.resetTime.toNumber()).to.closeTo(
       Math.floor(Date.now() / 1000),
-      5
+      5,
     );
     expect(limit.isEnabled).to.eq(true);
 
@@ -86,10 +86,10 @@ describe("Deployment, Setup & Transfer", function () {
 
     expect(await provider.getBalance(account.address)).to.be.closeTo(
       balances.AccountETHBal.sub(toBN("5")),
-      toBN("0.01")
+      toBN("0.01"),
     );
     expect(await provider.getBalance(user.address)).to.eq(
-      balances.UserETHBal.add(toBN("5"))
+      balances.UserETHBal.add(toBN("5")),
     );
 
     const limit = await account.limits(ETH_ADDRESS);
@@ -112,7 +112,7 @@ describe("Deployment, Setup & Transfer", function () {
 
     expect(await provider.getBalance(account.address)).to.be.closeTo(
       balances.AccountETHBal,
-      toBN("0.01")
+      toBN("0.01"),
     );
     expect(await provider.getBalance(user.address)).to.eq(balances.UserETHBal);
 
@@ -149,10 +149,10 @@ describe("Deployment, Setup & Transfer", function () {
 
     expect(await provider.getBalance(account.address)).to.be.closeTo(
       balances.AccountETHBal.sub(toBN("6")),
-      toBN("0.01")
+      toBN("0.01"),
     );
     expect(await provider.getBalance(user.address)).to.eq(
-      balances.UserETHBal.add(toBN("6"))
+      balances.UserETHBal.add(toBN("6")),
     );
 
     const limit = await account.limits(ETH_ADDRESS);
@@ -174,7 +174,7 @@ describe("Spending Limit Updates to make a transfer", function () {
     let tx = await account.populateTransaction.setSpendingLimit(
       ETH_ADDRESS,
       toBN("10"),
-      { value: toBN("0") }
+      { value: toBN("0") },
     );
 
     const txReceipt = await sendTx(provider, account, user, tx);
@@ -194,7 +194,7 @@ describe("Spending Limit Updates to make a transfer", function () {
     const tx2 = await account.populateTransaction.setSpendingLimit(
       ETH_ADDRESS,
       toBN("20"),
-      { value: toBN("0") }
+      { value: toBN("0") },
     );
 
     const txReceipt2 = await sendTx(provider, account, user, tx2);
@@ -205,10 +205,10 @@ describe("Spending Limit Updates to make a transfer", function () {
 
     expect(await provider.getBalance(account.address)).to.be.closeTo(
       balances.AccountETHBal.sub(toBN("15")),
-      toBN("0.01")
+      toBN("0.01"),
     );
     expect(await provider.getBalance(user.address)).to.eq(
-      balances.UserETHBal.add(toBN("15"))
+      balances.UserETHBal.add(toBN("15")),
     );
 
     const limit = await account.limits(ETH_ADDRESS);
@@ -234,7 +234,7 @@ describe("Spending Limit Updates to make a transfer", function () {
     // Remove Limit
     const tx2 = await account.populateTransaction.removeSpendingLimit(
       ETH_ADDRESS,
-      { value: toBN("0") }
+      { value: toBN("0") },
     );
 
     const txReceipt2 = await sendTx(provider, account, user, tx2);
@@ -245,10 +245,10 @@ describe("Spending Limit Updates to make a transfer", function () {
 
     expect(await provider.getBalance(account.address)).to.be.closeTo(
       balances.AccountETHBal.sub(toBN("30")),
-      toBN("0.01")
+      toBN("0.01"),
     );
     expect(await provider.getBalance(user.address)).to.eq(
-      balances.UserETHBal.add(toBN("30"))
+      balances.UserETHBal.add(toBN("30")),
     );
 
     const limit = await account.limits(ETH_ADDRESS);
@@ -270,7 +270,7 @@ describe("Spending Limit Updates", function () {
     let tx = await account.populateTransaction.setSpendingLimit(
       ETH_ADDRESS,
       toBN("10"),
-      { value: toBN("0"), gasLimit: ethers.utils.hexlify(600000) }
+      { value: toBN("0"), gasLimit: ethers.utils.hexlify(600000) },
     );
 
     const txReceipt = await sendTx(provider, account, user, tx);
@@ -285,7 +285,7 @@ describe("Spending Limit Updates", function () {
     const tx = await account.populateTransaction.setSpendingLimit(
       ETH_ADDRESS,
       toBN("100"),
-      { value: toBN("0"), gasLimit: ethers.utils.hexlify(600000) }
+      { value: toBN("0"), gasLimit: ethers.utils.hexlify(600000) },
     );
 
     const txReceipt = await sendTx(provider, account, user, tx);
@@ -303,7 +303,7 @@ describe("Spending Limit Updates", function () {
   it("Should revert. Invalid update for removeSpendingLimit", async function () {
     const tx2 = await account.populateTransaction.removeSpendingLimit(
       ETH_ADDRESS,
-      { value: toBN("0"), gasLimit: ethers.utils.hexlify(600000) }
+      { value: toBN("0"), gasLimit: ethers.utils.hexlify(600000) },
     );
 
     const txReceipt = await sendTx(provider, account, user, tx2);
