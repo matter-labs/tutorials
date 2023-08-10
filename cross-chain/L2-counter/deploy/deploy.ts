@@ -17,7 +17,9 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const artifact = await deployer.loadArtifact("Counter");
 
   // Deposit some funds to L2 to be able to perform deposits.
-  const deploymentFee = await deployer.estimateDeployFee(artifact, [utils.applyL1ToL2Alias(GOVERNANCE_ADDRESS)]);
+  const deploymentFee = await deployer.estimateDeployFee(artifact, [
+    utils.applyL1ToL2Alias(GOVERNANCE_ADDRESS),
+  ]);
   const depositHandle = await deployer.zkWallet.deposit({
     to: deployer.zkWallet.address,
     token: utils.ETH_ADDRESS,
@@ -28,7 +30,9 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   // Deploy this contract. The returned object will be of a `Contract` type, similar to the ones in `ethers`.
   // The address of the governance is an argument for contract constructor.
-  const counterContract = await deployer.deploy(artifact, [utils.applyL1ToL2Alias(GOVERNANCE_ADDRESS)]);
+  const counterContract = await deployer.deploy(artifact, [
+    utils.applyL1ToL2Alias(GOVERNANCE_ADDRESS),
+  ]);
 
   // Show the contract info.
   const contractAddress = counterContract.address;

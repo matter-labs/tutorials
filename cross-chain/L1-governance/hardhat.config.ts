@@ -8,13 +8,13 @@ const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.19",
   },
-    networks: {
-      // Göerli network
-      goerli: {
-        url: goerli.nodeUrl,
-        accounts: [goerli.deployerPrivateKey],
-      },
+  networks: {
+    // Göerli network
+    goerli: {
+      url: goerli.nodeUrl,
+      accounts: [goerli.deployerPrivateKey],
     },
+  },
 };
 
 export default config;

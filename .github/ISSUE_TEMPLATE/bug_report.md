@@ -3,8 +3,7 @@ name: Bug report
 about: Use this template for reporting issues
 title: ""
 labels: bug
-assignees: ''
-
+assignees: ""
 ---
 
 ### 🐛 Bug Report for zkSync Era In-Memory Node

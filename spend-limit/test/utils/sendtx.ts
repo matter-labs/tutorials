@@ -12,7 +12,7 @@ export async function sendTx(
   provider: Provider,
   account: Contract,
   user: Wallet,
-  tx: any
+  tx: any,
 ) {
   tx = {
     ...tx,
@@ -32,7 +32,7 @@ export async function sendTx(
 
   const signedTxHash = EIP712Signer.getSignedDigest(tx);
   const signature = ethers.utils.arrayify(
-    ethers.utils.joinSignature(user._signingKey().signDigest(signedTxHash))
+    ethers.utils.joinSignature(user._signingKey().signDigest(signedTxHash)),
   );
 
   tx.customData = {

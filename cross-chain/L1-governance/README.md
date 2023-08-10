@@ -27,4 +27,4 @@ yarn build
 yarn deploy-governance
 ```
 
-The last command will output the deployed governance smart contract address. 
+The last command will output the deployed governance smart contract address.

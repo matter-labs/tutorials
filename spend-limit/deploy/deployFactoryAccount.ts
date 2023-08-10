@@ -24,7 +24,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     factoryArtifact,
     [utils.hashBytecode(aaArtifact.bytecode)],
     undefined,
-    [aaArtifact.bytecode]
+    [aaArtifact.bytecode],
   );
 
   console.log(`AA factory address: ${factory.address}`);
@@ -32,7 +32,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const aaFactory = new ethers.Contract(
     factory.address,
     factoryArtifact.abi,
-    wallet
+    wallet,
   );
 
   const owner = Wallet.createRandom();
@@ -47,7 +47,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     factory.address,
     await aaFactory.aaBytecodeHash(),
     salt,
-    abiCoder.encode(["address"], [owner.address])
+    abiCoder.encode(["address"], [owner.address]),
   );
 
   console.log(`SC Account deployed on address ${accountAddress}`);

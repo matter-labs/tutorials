@@ -8,7 +8,7 @@ Deployed Account contract that has the daily spending limit feature: [0x6b6B8ea1
 
 ## Credits
 
-Forked from [this original repository](https://github.com/porco-rosso-j/daily-spendlimit-tutorial) by [porco-rosso](https://linktr.ee/porcorossoj) 
+Forked from [this original repository](https://github.com/porco-rosso-j/daily-spendlimit-tutorial) by [porco-rosso](https://linktr.ee/porcorossoj)
 
 ## Deployment & Test
 

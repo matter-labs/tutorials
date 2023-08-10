@@ -3,7 +3,7 @@ import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
-require('dotenv').config();
+require("dotenv").config();
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   // The wallet that will deploy the token and the paymaster
@@ -37,16 +37,18 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   ).wait();
 
   // Setting the dAPIs in Paymaster. Head over to the API3 Market (https://market.api3.org) to verify dAPI proxy contract addresses and whether they're funded or not.
-    const ETHUSDdAPI = "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b";
-    const USDCUSDdAPI = "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB";
-  const setProxy = paymaster.setDapiProxy(USDCUSDdAPI, ETHUSDdAPI)
-  await (await setProxy).wait()
-  console.log("dAPI Proxies Set!")
+  const ETHUSDdAPI = "0x28ce555ee7a3daCdC305951974FcbA59F5BdF09b";
+  const USDCUSDdAPI = "0x946E3232Cc18E812895A8e83CaE3d0caA241C2AB";
+  const setProxy = paymaster.setDapiProxy(USDCUSDdAPI, ETHUSDdAPI);
+  await (await setProxy).wait();
+  console.log("dAPI Proxies Set!");
 
   // Deploying the Greeter contract
   const greeterContractArtifact = await deployer.loadArtifact("Greeter");
-  const oldGreeting = "old greeting"
-  const deployGreeter = await deployer.deploy(greeterContractArtifact, [oldGreeting]);
+  const oldGreeting = "old greeting";
+  const deployGreeter = await deployer.deploy(greeterContractArtifact, [
+    oldGreeting,
+  ]);
   console.log(`Greeter contract address: ${deployGreeter.address}`);
 
   // Supplying the ERC20 tokens to the empty wallet:

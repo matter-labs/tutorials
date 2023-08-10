@@ -171,7 +171,7 @@ export default {
       this.retreivingFee = true;
       this.retreivingBalance = true;
       const l1Token = this.tokens.filter(
-        (t) => t.address == this.selectedTokenAddress
+        (t) => t.address == this.selectedTokenAddress,
       )[0];
       this.provider
         .l2TokenAddress(l1Token.address)

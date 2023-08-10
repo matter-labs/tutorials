@@ -40,7 +40,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   };
   const signedTxHash = EIP712Signer.getSignedDigest(ethTransferTx);
   const signature = ethers.utils.arrayify(
-    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash))
+    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash)),
   );
 
   ethTransferTx.customData = {
@@ -59,14 +59,14 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   // L1 timestamp tends to be undefined in latest blocks. So it should find the latest L1 Batch first.
   let l1BatchRange = await provider.getL1BatchBlockRange(
-    await provider.getL1BatchNumber()
+    await provider.getL1BatchNumber(),
   );
   let l1TimeStamp = (await provider.getBlock(l1BatchRange[1])).l1BatchTimestamp;
 
   console.log("L1 timestamp: ", l1TimeStamp);
   console.log(
     "Limit will reset on timestamp: ",
-    limitData.resetTime.toString()
+    limitData.resetTime.toString(),
   );
 
   // actually do the ETH transfer
@@ -82,7 +82,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   console.log("Available today: ", newLimitData.available.toString());
   console.log(
     "Limit will reset on timestamp:",
-    newLimitData.resetTime.toString()
+    newLimitData.resetTime.toString(),
   );
 
   if (newLimitData.resetTime.toString() == limitData.resetTime.toString()) {
