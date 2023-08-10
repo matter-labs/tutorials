@@ -10,6 +10,8 @@ This tutorial shows you how to build a custom paymaster that allows users to pay
 
 - Utilize API3 Data Feeds within a paymaster.
 
+You can also find [this tutorial in our docs](https://era.zksync.io/docs/dev/tutorials/api3-usd-paymaster-tutorial.html).
+
 ## Using API3's self-funded dAPIs with zkSync paymaster example to pay gas fee in USDC on zkSync Era. 
 
 [API3➚](https://api3.org/) is a collaborative project to deliver traditional API services to smart contract platforms in a decentralized and trust-minimized way. It is governed by a decentralized autonomous organization (DAO), namely the [API3 DAO](https://api3.org/dao).

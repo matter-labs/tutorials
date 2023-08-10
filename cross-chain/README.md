@@ -1,6 +1,6 @@
 # Cross-chain governance full example
 
-This is the full example for the zkSync "Cross-chain governance" tutorial.
+This is the full example for the [zkSync "Cross-chain governance" tutorial](https://era.zksync.io/docs/dev/tutorials/cross-chain-tutorial.html).
 
 It consists of two folders:
 

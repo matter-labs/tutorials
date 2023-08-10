@@ -1,17 +1,19 @@
 ![Gradient Banner](https://github.com/matter-labs/tutorials/assets/10233439/8efffb9b-ad1f-4bf2-8f73-9cab8f7ccd22)
 
-# zkSync Turorials
+# zkSync Tutorials
 
 This repository contains tutorials for developing on zkSync Era.
 
 ## Tutorials
 
-- [Cross Chain Governance](./cross-chain/README.md)
-- [Custom Account Abstraction](./custom-aa/README.md)
-- [Gated NFT](./gated-nft/README.md)
-- [Greeter](./greeter/README.md)
-- [Daily Spend Limit](./spend-limit/README.md)
-- [MockUSDC Paymaster](./usdc-paymaster-w-api3-data-feeds/README.md)
+| Name                          | Time-to-complete | Difficulty |
+|-------------------------------|------------------|------------|
+| [Cross Chain Governance](./cross-chain/README.md)       | 3-4 Hours              | Moderate        |
+| [Custom Account Abstraction](./custom-aa/README.md)     | 3-5 Hours              | Hard        |
+| [Gated NFT](./gated-nft/README.md)                      | 3-5 Hours             | Hard        |
+| [Greeter](./greeter/README.md)                          | 3-4 Hours              | Easy        |
+| [Daily Spend Limit](./spend-limit/README.md)            | 2-4 Hours              | Moderate        |
+| [MockUSDC Paymaster](./usdc-paymaster-w-api3-data-feeds/README.md) | 3-4 Hours  | Hard        |
 
 ## Contributing
 
