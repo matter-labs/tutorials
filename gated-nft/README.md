@@ -3,7 +3,7 @@
 This repository serves as a starter template for developing a dApp that interacts with a
 gated NFT paymaster contract.
 
-Read the tutorial [here](https://era.zksync.io/docs/dev/tutorials/gated-nft-paymaster-tutorial.html). 
+Read the tutorial [here](https://era.zksync.io/docs/dev/tutorials/gated-nft-paymaster-tutorial.html).
 
 ## Official Links 🔗
 
