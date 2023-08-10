@@ -1,5 +1,7 @@
 # greeter-front-end
 
+Make sure to check out the [tutorial here](https://era.zksync.io/docs/dev/building-on-zksync/hello-world.html).
+
 ## Project setup
 
 ```
