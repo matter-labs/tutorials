@@ -30,7 +30,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       zksync: false,
     },
-    zkSyncLocalTestnet
+    zkSyncLocalTestnet,
   },
   solidity: {
     version: "0.8.17",

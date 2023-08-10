@@ -9,7 +9,7 @@ This folder contains the hardhat project for the `Counter` L2 smart contract. It
 - `scripts/counter.json` contains the ABI of the counter smart contract.
 - `scripts/governance.json` contains the ABI of the L1 governance smart contract.
 - `scripts/display-counter.ts` contains the code for displaying the counter's value.
-- `scripts/increment-counter.ts` contains the code for incrementing the counter 
+- `scripts/increment-counter.ts` contains the code for incrementing the counter
 
 ## Usage
 
@@ -23,7 +23,7 @@ yarn
 
 1. Make sure to deploy the L1 governance smart contract first. The instructions for that can be found in the [deploy-governance](../deploy-governance) folder.
 
-2. Open `deploy/counter.ts`. 
+2. Open `deploy/counter.ts`.
 
 3. Replace the `<WALLET-PRIVATE-KEY>` and the `<GOVERNANCE-ADDRESS>` with the `0x`-prefixed private key of the Ethereum wallet with some ETH balance on Görli and the address of the L1 governance contract respectively
 
@@ -37,7 +37,7 @@ The script will output the address of the deployed counter contract.
 
 ### Displaying counter value
 
-1. Open `scripts/display-value.ts`. 
+1. Open `scripts/display-value.ts`.
 
 2. Replace `<COUNTER-ADDRESS>` with the address of the deployed counter contract.
 

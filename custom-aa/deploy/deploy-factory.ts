@@ -21,7 +21,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
       // Since the factory requires the code of the multisig to be available,
       // we should pass it here as well.
       aaArtifact.bytecode,
-    ]
+    ],
   );
 
   console.log(`AA factory address: ${factory.address}`);

@@ -6,9 +6,9 @@ module.exports = {
     version: "latest",
     settings: {},
   },
-  defaultNetwork: 'zkSyncTestnet',
+  defaultNetwork: "zkSyncTestnet",
   networks: {
-     hardhat: {
+    hardhat: {
       zksync: true,
     },
     zkSyncTestnet: {
@@ -18,6 +18,6 @@ module.exports = {
     },
   },
   solidity: {
-    version: '0.8.19',
+    version: "0.8.19",
   },
 };
