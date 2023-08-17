@@ -1,6 +1,4 @@
-# zkSync Hardhat project
-
-This project was scaffolded with [zksync-cli](https://github.com/matter-labs/zksync-cli).
+# Hello World Tutorial
 
 ## Project structure
 
