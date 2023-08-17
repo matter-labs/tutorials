@@ -11,7 +11,7 @@ This repository contains tutorials for developing on zkSync Era.
 | [Cross Chain Governance](./cross-chain/README.md)                  | 3-4 Hours        | Moderate   |
 | [Custom Account Abstraction](./custom-aa/README.md)                | 3-5 Hours        | Hard       |
 | [Gated NFT](./gated-nft/README.md)                                 | 3-5 Hours        | Hard       |
-| [Greeter](./greeter/README.md)                                     | 3-4 Hours        | Easy       |
+| [Hello World](./hello-world/README.md)                             | 3-4 Hours        | Easy       |
 | [Daily Spend Limit](./spend-limit/README.md)                       | 2-4 Hours        | Moderate   |
 | [MockUSDC Paymaster](./usdc-paymaster-w-api3-data-feeds/README.md) | 3-4 Hours        | Hard       |
 

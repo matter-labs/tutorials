@@ -1,9 +1,8 @@
-# zkSync Hardhat project
-
-This project was scaffolded with [zksync-cli](https://github.com/matter-labs/zksync-cli).
+# Hello World Tutorial
 
 ## Project structure
 
+- `/frontend`: frontend application.
 - `/contracts`: smart contracts.
 - `/deploy`: deployment and contract interaction scripts.
 - `/test`: test files
