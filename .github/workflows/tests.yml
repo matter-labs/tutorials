@@ -16,8 +16,8 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        node-version: [ '18.15.0' ]
-        test-pattern: ['cd hello-world && yarn run test']
+        node-version: ["18.15.0"]
+        test-pattern: ["cd hello-world && yarn run test"]
 
     steps:
       - name: Checkout code
