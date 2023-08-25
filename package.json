@@ -19,6 +19,7 @@
   },
   "scripts": {
     "fix:fmt": "prettier --write .",
-    "lint:fmt": "prettier --check ."
+    "lint:fmt": "prettier --check .",
+    "install:dependencies": "find . -maxdepth 2 -name \"package.json\" -execdir yarn install \\;\n"
   }
 }
