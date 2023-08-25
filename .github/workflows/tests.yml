@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         node-version: [ '18.15.0' ]
-        test-pattern: 'cd hello-world && yarn run test'
+        test-pattern: ['cd hello-world && yarn run test']
 
     steps:
       - name: Checkout code
@@ -53,7 +53,7 @@ jobs:
         run: |
           # Add your installation steps here
 
-      - name: Test run
+      - name: Launch tests
         run: |
           ${{ matrix.test-pattern }}
 
