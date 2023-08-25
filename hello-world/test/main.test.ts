@@ -1,31 +1,41 @@
 import { expect } from 'chai';
-import { Wallet, Provider, Contract } from 'zksync-web3';
-import * as hre from 'hardhat';
-import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
-
-const RICH_WALLET_PK =
-  '0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110';
-
-async function deployGreeter(deployer: Deployer): Promise<Contract> {
-  const artifact = await deployer.loadArtifact('Greeter');
-  return await deployer.deploy(artifact, ['Hi']);
-}
+import {deploy} from "./utils/utils";
 
 describe('Greeter', function () {
+
+  let contract: any;
+  let result: string;
+
+  beforeEach(async function () {
+    contract = await deploy();
+  });
+
+  it("Should be deployed and have address", async function () {
+    result = typeof (await contract.address);
+
+    expect(result).to.be.a('string');
+  });
+
+  it("Should be deployed and have tx hash", async function () {
+    result = await contract.deployTransaction.hash
+
+    expect(result).to.be.a('string');
+  });
+
+  it("Should return 'Hi' as expected message", async function () {
+      result = await contract.greet();
+
+      expect(result).to.eq('Hi');
+  });
+
   it("Should return the new greeting once it's changed", async function () {
-    const provider = Provider.getDefaultProvider();
 
-    const wallet = new Wallet(RICH_WALLET_PK, provider);
-    const deployer = new Deployer(hre, wallet);
+    const setGreetingTx = await contract.setGreeting('Hola, mundo!');
 
-    const greeter = await deployGreeter(deployer);
+    await setGreetingTx.wait(1); // wait until the transaction is mined
 
-    expect(await greeter.greet()).to.eq('Hi');
+    result = await contract.greet();
 
-    const setGreetingTx = await greeter.setGreeting('Hola, mundo!');
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
-
-    expect(await greeter.greet()).to.equal('Hola, mundo!');
+    expect(result).to.equal('Hola, mundo!');
   });
 });
