@@ -7,6 +7,7 @@
     "custom-aa",
     "custom-paymaster",
     "spend-limit",
+    "tests",
     "gated-nft",
     "greeter",
     "usdc-paymaster-w-api3-data-feeds"

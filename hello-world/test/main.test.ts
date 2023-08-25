@@ -1,8 +1,7 @@
-import { expect } from 'chai';
-import {deploy} from "./utils/utils";
+import { expect } from "chai";
+import { deploy } from "./utils/utils";
 
-describe('Greeter', function () {
-
+describe("Greeter", function () {
   let contract: any;
   let result: string;
 
@@ -13,29 +12,28 @@ describe('Greeter', function () {
   it("Should be deployed and have address", async function () {
     result = typeof (await contract.address);
 
-    expect(result).to.be.a('string');
+    expect(result).to.be.a("string");
   });
 
   it("Should be deployed and have tx hash", async function () {
-    result = await contract.deployTransaction.hash
+    result = await contract.deployTransaction.hash;
 
-    expect(result).to.be.a('string');
+    expect(result).to.be.a("string");
   });
 
   it("Should return 'Hi' as expected message", async function () {
-      result = await contract.greet();
+    result = await contract.greet();
 
-      expect(result).to.eq('Hi');
+    expect(result).to.eq("Hi");
   });
 
   it("Should return the new greeting once it's changed", async function () {
-
-    const setGreetingTx = await contract.setGreeting('Hola, mundo!');
+    const setGreetingTx = await contract.setGreeting("Hola, mundo!");
 
     await setGreetingTx.wait(1); // wait until the transaction is mined
 
     result = await contract.greet();
 
-    expect(result).to.equal('Hola, mundo!');
+    expect(result).to.equal("Hola, mundo!");
   });
 });
