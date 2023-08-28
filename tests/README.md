@@ -8,7 +8,7 @@ This document contains an instruction of the test infrastructure preparation/run
 
 To have a possibility of test execution there needs to install a local node (L2) based on the next repository https://github.com/matter-labs/era-test-node.
 
-1. Rust: era-test-node is written in Rust. Ensure you have Rust installed on your machine. Download Rust here.
+1. Rust: era-test-node is written in Rust. Ensure you have Rust installed on your machine. [Download Rust here](https://www.rust-lang.org/tools/install).
 2. Install package:
 
 ```bash
