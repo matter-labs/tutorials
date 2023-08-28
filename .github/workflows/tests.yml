@@ -23,12 +23,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      #      - name: Build the era_test_node
-      #        run: docker build -t era-test-node-image .
-      #
-      #      - name: Start the era_test_node
-      #        run: docker run -d -p 8011:8011 -e PORT=8011 -e NETWORK=testnet era-test-node-image
-
       - name: Generate Dockerfile
         uses: 1arp/create-a-file-action@0.2
         with:
