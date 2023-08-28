@@ -15,11 +15,15 @@ RUN wget https://github.com/matter-labs/era-test-node/releases/download/v0.1.0/e
     && mv era_test_node /usr/local/bin/ \
     && rm era_test_node-v0.1.0-x86_64-unknown-linux-gnu.tar.gz
 
-# Copy the start script
-COPY start_script.sh /start_script.sh
+# Define ARG1_DEFAULT and ARG2_DEFAULT
+ARG ARG1_DEFAULT="8011"
+ARG ARG2_DEFAULT="testnet"
 
-# Make the start script executable
-RUN chmod +x /start_script.sh
+# Define PORT and NETWORK
+ENV PORT=${PORT:-$ARG1_DEFAULT}
+ENV NETWORK=${NETWORK:-$ARG2_DEFAULT}
 
-# Set the start script as the entry point
-ENTRYPOINT ["/start_script.sh"]
+# Run the socat and era_test_node commands
+CMD socat TCP-LISTEN:"$PORT",fork,reuseaddr TCP:127.0.0.1:3051 </dev/null & \
+    && era_test_node --port "$PORT" fork "$NETWORK" & \
+    && wait
