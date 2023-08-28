@@ -31,8 +31,7 @@ jobs:
       - name: Start the era_test_node
         id: start_node
         run: |
-#          docker run -d -t -p 8011:8011 era-test-node-image
-          docker run -e PORT=8022 -e NETWORK=testnet era-test-node-image
+          docker run -d -t -e PORT=8022 -e NETWORK=testnet era-test-node-image
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
