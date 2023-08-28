@@ -29,7 +29,7 @@ jobs:
         id: start_node
         run: |
           docker build -t era-test-node-image .
-          docker run -d -t era-test-node-image
+          docker run -d -t -p 8011:8011 era-test-node-image
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
