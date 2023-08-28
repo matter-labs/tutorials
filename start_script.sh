@@ -7,5 +7,5 @@ PORT="${1:-$ARG1_DEFAULT}"
 NETWORK="${2:-$ARG2_DEFAULT}"
 
 socat TCP-LISTEN:"$PORT",fork,reuseaddr TCP:127.0.0.1:3051 </dev/null &
-era_test_node --port 3051 fork "$NETWORK" &
+era_test_node --port "$PORT" fork "$NETWORK" &
 wait
