@@ -24,12 +24,10 @@ jobs:
           fetch-depth: 0
 
       - name: Build the era_test_node
-        id: start_node
         run:
           docker build -t era-test-node-image .
 
       - name: Start the era_test_node
-        id: start_node
         run:
           docker run -d -t -e PORT=8022 -e NETWORK=testnet era-test-node-image
 
