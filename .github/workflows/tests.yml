@@ -17,19 +17,22 @@ jobs:
     strategy:
       matrix:
         node-version: ["18.15.0"]
-        test-pattern: ["cd hello-world && yarn run test"]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Start the era_test_node
+      - name: Build the era_test_node
         id: start_node
         run: |
           docker build -t era-test-node-image .
-          docker run -d -t -p 8011:8011 era-test-node-image
+
+      - name: Start the era_test_node
+        id: start_node
+        run: |
+#          docker run -d -t -p 8011:8011 era-test-node-image
+          docker run -e PORT=8022 -e NETWORK=testnet era-test-node-image
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -40,6 +43,6 @@ jobs:
         run: |
           yarn run install:dependencies
 
-      - name: Launch tests
+      - name: Hello World tests
         run: |
-          ${{ matrix.test-pattern }}
+          cd hello-world && yarn run test
