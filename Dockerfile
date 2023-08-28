@@ -27,4 +27,3 @@ ENV NETWORK=${NETWORK:-$ARG2_DEFAULT}
 CMD socat TCP-LISTEN:"$PORT",fork,reuseaddr TCP:127.0.0.1:"$PORT" </dev/null & \
     && era_test_node --port "$PORT" fork "$NETWORK" & \
     && wait
-    
