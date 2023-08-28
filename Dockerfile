@@ -47,6 +47,4 @@ ENV PORT=8011
 ENV NETWORK=testnet
 
 # Run the socat and era_test_node commands
-CMD socat TCP-LISTEN:'$PORT',fork,reuseaddr TCP:127.0.0.1:3051 </dev/null & \
-    && era_test_node --port 3051 fork "$NETWORK" \
-    && wait
+CMD socat TCP-LISTEN:'$PORT',fork,reuseaddr TCP:127.0.0.1:3051 & era_test_node --port 3051 run & wait
