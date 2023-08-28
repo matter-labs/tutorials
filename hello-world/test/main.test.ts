@@ -21,7 +21,7 @@ describe("Greeter", function () {
     expect(result).to.be.a("string");
   });
 
-  it("Should return 'Hi' as expected message", async function () {
+  it("Should return 'Hi' as an expected message", async function () {
     result = await contract.greet();
 
     expect(result).to.eq("Hi");
@@ -35,5 +35,45 @@ describe("Greeter", function () {
     result = await contract.greet();
 
     expect(result).to.equal("Hola, mundo!");
+  });
+
+  it("Should return an empty string value if a parameter has a number type", async function () {
+    const setGreetingTx = await contract.setGreeting(1);
+
+    await setGreetingTx.wait(1); // wait until the transaction is mined
+
+    result = await contract.greet();
+
+    expect(result).to.equal("");
+  });
+
+  it("Should return an empty string value if a parameter has an object type", async function () {
+    const setGreetingTx = await contract.setGreeting({});
+
+    await setGreetingTx.wait(1); // wait until the transaction is mined
+
+    result = await contract.greet();
+
+    expect(result).to.equal("");
+  });
+
+  it("Should return an empty string value if a parameter has an array type", async function () {
+    const setGreetingTx = await contract.setGreeting([]);
+
+    await setGreetingTx.wait(1); // wait until the transaction is mined
+
+    result = await contract.greet();
+
+    expect(result).to.equal("");
+  });
+
+  it("Should return an empty string value if a parameter has an empty string type", async function () {
+    const setGreetingTx = await contract.setGreeting("");
+
+    await setGreetingTx.wait(1); // wait until the transaction is mined
+
+    result = await contract.greet();
+
+    expect(result).to.equal("");
   });
 });
