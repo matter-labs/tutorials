@@ -2,7 +2,7 @@
 
 # zkSync Tutorials
 
-This document contains an instruction of the test infrastructure preparation/running tests locally.
+This document provides instructions for preparing the test infrastructure and running tests locally.
 
 ## The environment preparation
 
