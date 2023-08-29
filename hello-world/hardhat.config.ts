@@ -1,3 +1,4 @@
+import { localConfig } from "../tests/testConfig";
 import { HardhatUserConfig } from "hardhat/config";
 
 import "@matterlabs/hardhat-zksync-deploy";
@@ -6,21 +7,11 @@ import "@matterlabs/hardhat-zksync-solc";
 import "@matterlabs/hardhat-zksync-verify";
 
 // dynamically changes endpoints for local tests
-const zkSyncTestnet =
-  process.env.NODE_ENV == "test"
-    ? {
-        url: "http://localhost:3050",
-        ethNetwork: "http://localhost:8545",
-        zksync: true,
-      }
-    : {
-        url: "https://zksync2-testnet.zksync.dev",
-        ethNetwork: "goerli",
-        zksync: true,
-        // contract verification endpoint
-        verifyURL:
-          "https://zksync2-testnet-explorer.zksync.dev/contract_verification",
-      };
+const zkSyncTestnet = {
+  url: localConfig.L2Network,
+  ethNetwork: localConfig.L1Network,
+  zksync: true,
+};
 
 const config: HardhatUserConfig = {
   zksolc: {
@@ -36,6 +27,13 @@ const config: HardhatUserConfig = {
   },
   solidity: {
     version: "0.8.17",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+      viaIR: true,
+    },
   },
 };
 

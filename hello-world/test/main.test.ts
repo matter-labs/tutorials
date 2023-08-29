@@ -1,31 +1,79 @@
-import { expect } from 'chai';
-import { Wallet, Provider, Contract } from 'zksync-web3';
-import * as hre from 'hardhat';
-import { Deployer } from '@matterlabs/hardhat-zksync-deploy';
+import { expect } from "chai";
+import { deploy } from "./utils/utils";
 
-const RICH_WALLET_PK =
-  '0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110';
+describe("Greeter", function () {
+  let contract: any;
+  let result: string;
 
-async function deployGreeter(deployer: Deployer): Promise<Contract> {
-  const artifact = await deployer.loadArtifact('Greeter');
-  return await deployer.deploy(artifact, ['Hi']);
-}
+  beforeEach(async function () {
+    contract = await deploy();
+  });
 
-describe('Greeter', function () {
+  it("Should be deployed and have address", async function () {
+    result = typeof (await contract.address);
+
+    expect(result).to.be.a("string");
+  });
+
+  it("Should be deployed and have tx hash", async function () {
+    result = await contract.deployTransaction.hash;
+
+    expect(result).to.be.a("string");
+  });
+
+  it("Should return 'Hi' as an expected message", async function () {
+    result = await contract.greet();
+
+    expect(result).to.eq("Hi");
+  });
+
   it("Should return the new greeting once it's changed", async function () {
-    const provider = Provider.getDefaultProvider();
+    const setGreetingTx = await contract.setGreeting("Hola, mundo!");
 
-    const wallet = new Wallet(RICH_WALLET_PK, provider);
-    const deployer = new Deployer(hre, wallet);
+    await setGreetingTx.wait(1); // wait until the transaction is mined
 
-    const greeter = await deployGreeter(deployer);
+    result = await contract.greet();
 
-    expect(await greeter.greet()).to.eq('Hi');
+    expect(result).to.equal("Hola, mundo!");
+  });
 
-    const setGreetingTx = await greeter.setGreeting('Hola, mundo!');
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
+  it("Should return an empty string value if a parameter has a number type", async function () {
+    const setGreetingTx = await contract.setGreeting(1);
 
-    expect(await greeter.greet()).to.equal('Hola, mundo!');
+    await setGreetingTx.wait(1); // wait until the transaction is mined
+
+    result = await contract.greet();
+
+    expect(result).to.equal("");
+  });
+
+  it("Should return an empty string value if a parameter has an object type", async function () {
+    const setGreetingTx = await contract.setGreeting({});
+
+    await setGreetingTx.wait(1); // wait until the transaction is mined
+
+    result = await contract.greet();
+
+    expect(result).to.equal("");
+  });
+
+  it("Should return an empty string value if a parameter has an array type", async function () {
+    const setGreetingTx = await contract.setGreeting([]);
+
+    await setGreetingTx.wait(1); // wait until the transaction is mined
+
+    result = await contract.greet();
+
+    expect(result).to.equal("");
+  });
+
+  it("Should return an empty string value if a parameter has an empty string type", async function () {
+    const setGreetingTx = await contract.setGreeting("");
+
+    await setGreetingTx.wait(1); // wait until the transaction is mined
+
+    result = await contract.greet();
+
+    expect(result).to.equal("");
   });
 });

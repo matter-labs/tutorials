@@ -7,6 +7,7 @@
     "custom-aa",
     "custom-paymaster",
     "spend-limit",
+    "tests",
     "gated-nft",
     "greeter",
     "usdc-paymaster-w-api3-data-feeds"
@@ -18,6 +19,9 @@
   },
   "scripts": {
     "fix:fmt": "prettier --write .",
-    "lint:fmt": "prettier --check ."
+    "lint:fmt": "prettier --check .",
+    "install:dependencies": "find . -maxdepth 2 -name \"package.json\" -execdir yarn install \\;\n",
+    "install:local:node": "cargo install --git https://github.com/matter-labs/era-test-node.git --locked",
+    "launch:local:node": "era_test_node run"
   }
 }

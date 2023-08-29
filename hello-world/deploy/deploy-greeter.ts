@@ -47,7 +47,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   //obtain the Constructor Arguments
   console.log(
-    "Constructor args:" + greeterContract.interface.encodeDeploy([greeting])
+    "Constructor args:" + greeterContract.interface.encodeDeploy([greeting]),
   );
 
   // Show the contract info.
