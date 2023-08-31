@@ -38,6 +38,7 @@
     "@openzeppelin/contracts": "^4.8.3"
   },
   "scripts": {
+    "test": "hardhat test",
     "build": "hardhat compile",
     "deploy-governance": "hardhat run --network goerli ./scripts/deploy.ts"
   }

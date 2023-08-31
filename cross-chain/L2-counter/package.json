@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
-    "hardhat": "^2.12.0"
+    "hardhat": "^2.12.0",
+    "@types/mocha": "^9.1.0"
   },
   "dependencies": {
     "@matterlabs/hardhat-zksync-deploy": "^0.6.3",
@@ -15,7 +16,8 @@
     "zksync-web3": "^0.14.3"
   },
   "scripts": {
-    "start": "hardhat deploy-zksync",
-    "build": "yarn hardhat compile"
+    "test": "hardhat test",
+    "build": "yarn hardhat compile",
+    "start": "hardhat deploy-zksync"
   }
 }

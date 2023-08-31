@@ -1,5 +1,6 @@
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
+import { localConfig } from "../../tests/testConfig";
 
 module.exports = {
   zksolc: {
@@ -12,8 +13,8 @@ module.exports = {
       zksync: true,
     },
     zkSyncTestnet: {
-      url: "https://testnet.era.zksync.dev",
-      ethNetwork: "<GOERLI RPC URL>",
+      url: localConfig.L2Network,
+      ethNetwork: localConfig.L1Network,
       zksync: true,
     },
   },
