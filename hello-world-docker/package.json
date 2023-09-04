@@ -1,5 +1,5 @@
 {
-  "name": "zksync-hardhat-template",
+  "name": "hello-world-docker",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Antonio <aug@matterlabs.dev>",
