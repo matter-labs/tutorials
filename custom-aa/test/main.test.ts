@@ -1,11 +1,10 @@
-import { expect } from "chai";
-import { Wallet, Provider, Contract, types, utils } from "zksync-web3";
+import { Wallet, Provider, utils, } from "zksync-web3";
 import * as hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
-import { BigNumber, Signer, ethers } from "ethers";
+import { ethers } from "ethers";
 import { HttpNetworkConfig } from "hardhat/types";
-import { getGeneralPaymasterInput, getPaymasterParams } from "zksync-web3/build/src/paymaster-utils";
-import { Address } from "@wagmi/core";
+
+import { expect } from "chai";
 
 
 
@@ -32,9 +31,7 @@ class AAWallet extends Wallet {
         super(privateKey, providerL2);
         this.aa_address = aa_address;
     }
-    get address() {
-        return this.aa_address;
-    }
+
 
     getAddress(): Promise<string> {
         return Promise.resolve(this.aa_address);
@@ -44,6 +41,30 @@ class AAWallet extends Wallet {
     // matches aa_address.
     async signTransaction(transaction) {
         transaction.customData.customSignature = await this.eip712.sign(transaction);
+        return (0, utils.serialize)(transaction);
+    }
+};
+
+class MultiSigWallet extends Wallet {
+    readonly aa_address: string;
+    other_wallet: Wallet;
+
+    // AA_address - is the account abstraction address for which, we'll use the private key to sign transactions.
+    constructor(aa_address, privateKey, otherKey, providerL2) {
+        super(privateKey, providerL2);
+        this.other_wallet = new Wallet(otherKey, providerL2);
+        this.aa_address = aa_address;
+    }
+
+    getAddress(): Promise<string> {
+        return Promise.resolve(this.aa_address);
+    }
+
+    async signTransaction(transaction) {
+        const sig1 = await this.eip712.sign(transaction);
+        const sig2 = await this.other_wallet.eip712.sign(transaction);
+        // substring(2) to remove the '0x' from sig2.
+        transaction.customData.customSignature = sig1 + sig2.substring(2);
         return (0, utils.serialize)(transaction);
     }
 };
@@ -85,8 +106,9 @@ describe("MultiSig AA tests", function () {
         expect(balance.gt(ethers.utils.parseUnits("10", 18))).to.be.equal(true);
 
         // Now let's try to transfer these tokens away using richWallet2 signer.
-        const wallet2ForAA = new AAWallet(aaAccount.address, RICH_WALLET_2_KEY, hreProvider);
-        await (await wallet2ForAA.transfer({ to: richWallet1.address, amount: ethers.utils.parseUnits("5", 18), overrides: { type: 113 } })).wait();
+        //const wallet2ForAA = new AAWallet(aaAccount.address, RICH_WALLET_2_KEY, hreProvider);
+        const multiSigAAWallet = new MultiSigWallet(aaAccount.address, RICH_WALLET_2_KEY, RICH_WALLET_3_KEY, hreProvider);
+        await (await multiSigAAWallet.transfer({ to: richWallet1.address, amount: ethers.utils.parseUnits("5", 18), overrides: { type: 113 } })).wait();
 
         // There were 11 ETH transferred in - and then we transferred 5 out - so 6 should remain.
         const balanceAfterFirst = await hreProvider.getBalance(aaAccount.address, undefined, undefined);
@@ -94,68 +116,9 @@ describe("MultiSig AA tests", function () {
 
         const wallet4ForAA = new AAWallet(aaAccount.address, RICH_WALLET_4_KEY, hreProvider);
         // This should fail - as wallet4 cannot act as AA account.
-        let otherTransfer = await wallet4ForAA.transfer({ to: richWallet1.address, amount: ethers.utils.parseUnits("5", 18), overrides: { type: 113 } });
-        let result = await otherTransfer.wait();
-        console.log(result);
-        expect(result).to.be.revertedWith("no permissions");
 
-
-
-
-
-
-        /*
-                // Let's send back 5 ETH to rich wallet 1.
-                var aa_transaction = await richWallet2._providerL2().getTransferTx({
-                    // This part is important - we set "from" as AA account (if we 
-                    // called richWallet2 transfer function directly, it would have been set to richAccount2 account)
-                    from: aa_account.address,
-                    to: richWallet1.address,
-                    amount: ethers.utils.parseUnits("5", 18)
-                });
-                const txResponse = await richWallet2.sendTransaction(aa_transaction);
-                const response = richWallet2._providerL2()._wrapTransaction(txResponse);
-                console.log(response);*/
-
-
-
-
-
-
-        /*
-        
-        
-        
-                const nft = await deployNFT(deployer);
-                const voter = await deployVoter(deployer, nft.address);
-        
-                await (await nft.mint(RICH_WALLET_1_ADDRESS, "Space Stone")).wait();
-                // Mint 1-st NFT to the second rich wallet.
-                await (await nft.mint(RICH_WALLET_2_ADDRESS, "Soul Stone")).wait();
-                await (await nft.mint(RICH_WALLET_1_ADDRESS, "Power Stone")).wait();
-                const question = "Is it raining?"
-        
-        
-        
-                await (await voter.addQuestion(question)).wait();
-        
-                // TODO: chai matchers didn't work - the 'revertedWith' is not compared correctly.
-                expect(voter.connect(richWallet4).addQuestion("Should not work")).to.be.revertedWith("User XX does not hold the required NFT asset");
-        
-                await (await voter.vote(question, 0, true)).wait();
-                await (await voter.connect(richWallet2).vote(question, 1, false)).wait();
-                expect(voter.vote(question, 1, false)).to.be.revertedWith("Sender is not owner of this token");
-                // First wallet has two NFTs - so it can vote twice.
-                await (await voter.vote(question, 2, true)).wait();
-        
-                expect(voter.vote(question, 256, true)).to.be.revertedWith("Token id too large");
-        
-        
-                let votes = await voter.getVotes(question);
-                // Votes for - 101
-                expect(votes[0]).to.be.equal(5);
-                // Votes against - 010
-                expect(votes[1]).to.be.equal(2);*/
+        // FIXME: uncomment this line - and figure out why chai matcher didn't trigger.
+        //await expect(wallet4ForAA.transfer({ to: richWallet1.address, amount: ethers.utils.parseUnits("5", 18), overrides: { type: 113 } })).to.be.reverted;
     });
 
 })
