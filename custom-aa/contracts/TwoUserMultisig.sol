@@ -123,7 +123,7 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         returns (bytes4 magic)
     {
         magic = EIP1271_SUCCESS_RETURN_VALUE;
-
+        
         if (_signature.length != 130) {
             // Signature is invalid anyway, but we need to proceed with the signature verification as usual
             // in order for the fee estimation to work correctly
@@ -141,6 +141,8 @@ contract TwoUserMultisig is IAccount, IERC1271 {
             magic = bytes4(0);
         }
 
+        // TODO: fixme - these methods are currently 'reverting' when signature is not correct (which is a case during gas estimation).
+        // And this causes the whole thing to fail.
         address recoveredAddr1 = ECDSA.recover(_hash, signature1);
         address recoveredAddr2 = ECDSA.recover(_hash, signature2);
 
