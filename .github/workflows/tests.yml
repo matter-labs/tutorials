@@ -82,3 +82,7 @@ jobs:
       - name: Hello World tests
         run: |
           cd hello-world && yarn hardhat compile && yarn run test
+
+      - name: Custom-aa tests
+        run: |
+          cd custom-aa && yarn hardhat compile && yarn run test
