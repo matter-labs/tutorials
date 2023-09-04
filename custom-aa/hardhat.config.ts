@@ -1,4 +1,5 @@
 import { HardhatUserConfig } from "hardhat/config";
+import { localConfig } from "../tests/testConfig";
 
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
@@ -16,8 +17,8 @@ const config: HardhatUserConfig = {
       zksync: true,
     },
     zkSyncTestnet: {
-      url: "https://zksync2-testnet.zksync.dev",
-      ethNetwork: "goerli", // Can also be the RPC URL of the network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
+      url: localConfig.L2Network,
+      ethNetwork: localConfig.L2Network, // Can also be the RPC URL of the network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
       zksync: true,
     },
   },
