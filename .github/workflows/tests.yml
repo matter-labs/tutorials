@@ -114,4 +114,4 @@ jobs:
 
       - name: Hello World tests
         run: |
-          cd hello-world && yarn hardhat compile && yarn run test
+          cd hello-world && yarn run test
