@@ -31,9 +31,9 @@ jobs:
         uses: docker/setup-buildx-action@v1
       - name: Git Clone Local Repo
         run: git clone https://github.com/matter-labs/local-setup
-      - name: Install dependencies
+      - name: Install dependencies ci
         run: |
-          yarn run install:dependencies
+          yarn install --frozen-lockfile
       - name: Run Docker Compose Daemon
         run: cd local-setup && mkdir -p ./volumes && mkdir -p ./volumes/postgres ./volumes/geth ./volumes/zksync/env/dev ./volumes/zksync/data && touch ./volumes/zksync/env.env && docker compose up -d && cd ..
       - name: Wait for Docker containers to start
