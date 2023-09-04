@@ -8,6 +8,9 @@ on:
       - synchronize
   # schedule:
   #   - cron: '0 21 * * *'
+  push:
+    branches:
+      - main
 
 jobs:
   runTests:
