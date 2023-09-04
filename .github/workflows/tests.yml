@@ -13,36 +13,35 @@ on:
   #   - cron: '0 21 * * *'
 
 jobs:
-  # TODO: uncomment when local-setup repo fix rich wallets with insufficient balances
-  # run-docker-tests:
-  #   name: Run Docker Test
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 30
-  #   strategy:
-  #     matrix:
-  #       node-version: ["18.15.0"]
-  #   steps:
-  #     - name: Checkout branch
-  #       uses: actions/checkout@v2
-  #     - name: Install Node
-  #       uses: actions/setup-node@v2
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - name: Install Docker
-  #       uses: docker/setup-buildx-action@v1
-  #     - name: Git Clone Local Repo
-  #       run: git clone https://github.com/matter-labs/local-setup
-  #     - name: Install dependencies
-  #       run: |
-  #         yarn run install:dependencies
-  #     - name: Run Docker Compose Daemon
-  #       run: cd local-setup && mkdir -p ./volumes && mkdir -p ./volumes/postgres ./volumes/geth ./volumes/zksync/env/dev ./volumes/zksync/data && touch ./volumes/zksync/env.env && docker compose up -d && cd ..
-  #     - name: Wait for Docker containers to start
-  #       run: sleep 300
-  #     - name: Print Docker logs
-  #       run: cd local-setup && docker compose logs && cd ..
-  #     - name: Hello World Docker tests
-  #       run: cd hello-world-docker && docker ps && yarn test
+  run-docker-tests:
+    name: Run Docker Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        node-version: ["18.15.0"]
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Docker
+        uses: docker/setup-buildx-action@v1
+      - name: Git Clone Local Repo
+        run: git clone https://github.com/matter-labs/local-setup
+      - name: Install dependencies
+        run: |
+          yarn run install:dependencies
+      - name: Run Docker Compose Daemon
+        run: cd local-setup && mkdir -p ./volumes && mkdir -p ./volumes/postgres ./volumes/geth ./volumes/zksync/env/dev ./volumes/zksync/data && touch ./volumes/zksync/env.env && docker compose up -d && cd ..
+      - name: Wait for Docker containers to start
+        run: sleep 300
+      - name: Print Docker logs
+        run: cd local-setup && docker compose logs && cd ..
+      - name: Hello World Docker tests
+        run: cd hello-world-docker && docker ps && yarn test
   run-im-tests:
     name: Run IM Node Tests
     runs-on: ubuntu-latest
