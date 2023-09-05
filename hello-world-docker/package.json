@@ -1,12 +1,12 @@
 {
-  "name": "hello-world",
+  "name": "hello-world-docker",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Antonio <aug@matterlabs.dev>",
   "license": "MIT",
   "devDependencies": {
     "@matterlabs/hardhat-zksync-deploy": "^0.6.3",
-    "@matterlabs/hardhat-zksync-solc": "^0.4.1",
+    "@matterlabs/hardhat-zksync-solc": "^0.4.0",
     "@matterlabs/hardhat-zksync-verify": "^0.1.8",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@types/chai": "^4.3.4",
@@ -21,7 +21,7 @@
     "zksync-web3": "^0.14.3"
   },
   "scripts": {
-    "test": "hardhat test",
+    "test": "NODE_ENV=test hardhat test --network zkSyncTestnet",
     "deploy": "yarn hardhat deploy-zksync --script deploy-greeter.ts",
     "greet": "yarn hardhat deploy-zksync --script use-greeter.ts"
   }
