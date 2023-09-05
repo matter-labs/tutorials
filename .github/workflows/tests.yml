@@ -6,15 +6,46 @@ on:
       - edited
       - reopened
       - synchronize
-  # schedule:
-  #   - cron: '0 21 * * *'
   push:
     branches:
       - main
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '0 21 * * *'
 
 jobs:
-  runTests:
-    name: Run tests
+  run-docker-tests:
+    name: Docker Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        node-version: ["18.15.0"]
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Docker
+        uses: docker/setup-buildx-action@v1
+      - name: Git Clone Local Repo
+        run: git clone https://github.com/matter-labs/local-setup
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+      - name: Run Docker Compose Daemon
+        run: cd local-setup && mkdir -p ./volumes && mkdir -p ./volumes/postgres ./volumes/geth ./volumes/zksync/env/dev ./volumes/zksync/data && touch ./volumes/zksync/env.env && docker compose up -d && cd ..
+      - name: Wait until node is ready
+        run: |
+          while ! curl -s -X POST -d '{"jsonrpc":"2.0","method":"net_version","id":1}' -H 'Content-Type: application/json' 0.0.0.0:3050; do sleep 1; done
+      - name: Print Docker logs
+        run: cd local-setup && docker compose logs && cd ..
+      - name: Hello World Docker tests
+        run: cd hello-world-docker && docker ps && yarn test
+  run-im-tests:
+    name: IM Node Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -22,7 +53,7 @@ jobs:
         node-version: ["18.15.0"]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
@@ -80,12 +111,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn run install:dependencies
+          yarn install --frozen-lockfile
 
       - name: Hello World tests
         run: |
-          cd hello-world && yarn hardhat compile && yarn run test
+          cd hello-world && yarn run test
 
       - name: Custom-aa tests
         run: |
-          cd custom-aa && yarn hardhat compile && yarn run test
+          cd custom-aa && yarn run test

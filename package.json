@@ -4,6 +4,8 @@
   "workspaces": [
     "cross-chain/L1-governance",
     "cross-chain/L2-counter",
+    "hello-world",
+    "hello-world-docker",
     "custom-aa",
     "custom-paymaster",
     "spend-limit",
@@ -20,7 +22,6 @@
   "scripts": {
     "fix:fmt": "prettier --write .",
     "lint:fmt": "prettier --check .",
-    "install:dependencies": "find . -maxdepth 2 -name \"package.json\" -execdir yarn install \\;\n",
     "install:local:node": "cargo install --git https://github.com/matter-labs/era-test-node.git --locked",
     "launch:local:node": "era_test_node run"
   }
