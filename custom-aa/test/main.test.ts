@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { deployFactory } from "./utils/utils";
-import { deployMultisig } from "./utils/utils";
+import {Utils} from "./utils/utils";
 import { localConfig } from "../../tests/testConfig";
 import { Contract } from "ethers";
 import { Helper } from "../../tests/helper";
@@ -11,11 +10,12 @@ describe("Custom aa", function () {
   let factory: Contract;
   let multiSig: any;
   const helper = new Helper();
+  const utils = new Utils();
 
   describe("Factory", function () {
     before(async function () {
       this.timeout(10000);
-      factory = await deployFactory(localConfig.privateKey);
+      factory = await utils.deployFactory(localConfig.privateKey);
     });
 
     it("Should have a correct address", async function () {
@@ -46,7 +46,8 @@ describe("Custom aa", function () {
 
   describe("Multisig", function () {
     before(async function () {
-      multiSig = await deployMultisig(factory.address);
+      await utils.deployMultisig(factory.address);
+      multiSig = await utils.executeMultiSig();
     });
 
     it("Should be deployed and have a address", async function () {
