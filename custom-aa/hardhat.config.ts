@@ -18,7 +18,7 @@ const config: HardhatUserConfig = {
     },
     zkSyncTestnet: {
       url: localConfig.L2Network,
-      ethNetwork: localConfig.L2Network, // Can also be the RPC URL of the network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
+      ethNetwork: localConfig.L1Network, // Can also be the RPC URL of the network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
       zksync: true,
     },
   },

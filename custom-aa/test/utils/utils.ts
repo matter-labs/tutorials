@@ -80,6 +80,7 @@ export class Utils {
     const salt = ethers.constants.HashZero;
 
     this.salt = salt;
+    //try-catch needs to be used for stack trace extraction during negative test execution
     try {
       // deploy account owned by owner1 & owner2
       const tx = await aaFactory.deployAccount(
@@ -179,7 +180,7 @@ export class Utils {
     };
 
     signedTxHash = await EIP712Signer.getSignedDigest(aaTx);
-
+    //try-catch needs to be used for stack trace extraction during negative test execution
     try {
       signedTxHash;
     } catch (e) {
@@ -211,7 +212,7 @@ export class Utils {
     );
 
     const sentTx = await provider.sendTransaction(utils.serialize(aaTx));
-
+    //try-catch needs to be used for stack trace extraction during negative test execution
     try {
       await sentTx.wait(0);
     } catch (e) {

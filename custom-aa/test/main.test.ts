@@ -113,7 +113,7 @@ describe("Custom aa", function () {
       expect(result.code).to.equal("CALL_EXCEPTION");
     });
 
-    it("Should fail when the deployed account balance is higher than balance on the main wallet ", async function () {
+    it("Should fail when the deployed account balance is higher than balance on the main wallet", async function () {
       await utils.deployMultisig(factory.address);
       await utils.fundingMultiSigAccount();
       result = await utils.performSignedMultiSigTx(10000000000000);
@@ -122,7 +122,7 @@ describe("Custom aa", function () {
       expect(result.code).to.equal("CALL_EXCEPTION");
     });
 
-    it("Should fail when the deploing MultiSign contract with incorrect Factory contract", async function () {
+    it("Should fail when the deploing MultiSign contract with incorrect Factory contract address", async function () {
       result = await utils.deployMultisig("111212");
 
       expect(result.reason).to.equal("network does not support ENS");
