@@ -4,9 +4,11 @@ import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import { EIP712Signer, Provider, types, utils, Wallet } from "zksync-web3";
 import { localConfig } from "../../../tests/testConfig";
 import { Contract, ethers } from "ethers";
+import { Helper } from "../../../tests/helper";
 
 export class Utils {
   private multisigAddress: any;
+  private initialBalance: any;
   private owner1: any;
   private owner2: any;
   private salt: any;
@@ -16,6 +18,7 @@ export class Utils {
 
   constructor() {
     this.multisigAddress = undefined;
+    this.initialBalance = undefined;
     this.owner1 = undefined;
     this.owner2 = undefined;
     this.salt = undefined;
@@ -77,18 +80,19 @@ export class Utils {
     const salt = ethers.constants.HashZero;
 
     this.salt = salt;
-
-    // deploy account owned by owner1 & owner2
-    const tx = await aaFactory.deployAccount(
-      salt,
-      owner1.address,
-      owner2.address,
-      { gasLimit: 10000000 },
-    );
-    await tx.wait(1);
-
-    this.txHash = tx.hash;
-
+    try {
+      // deploy account owned by owner1 & owner2
+      const tx = await aaFactory.deployAccount(
+        salt,
+        owner1.address,
+        owner2.address,
+        { gasLimit: 10000000 },
+      );
+      await tx.wait(1);
+      this.txHash = tx.hash;
+    } catch (e) {
+      return e;
+    }
     // Getting the address of the deployed contract account
     const abiCoder = new ethers.utils.AbiCoder();
     let multisigAddress = utils.create2Address(
@@ -99,13 +103,40 @@ export class Utils {
     );
 
     this.multisigAddress = multisigAddress;
-
     console.log(`Multisig account deployed on address ${multisigAddress}`);
 
     return multisigAddress;
   }
 
-  async executeMultiSig(sum: string = "0.008") {
+  async fundingMultiSigAccount(fundingMultiSigSum: string = "0.008") {
+    const provider = new Provider(localConfig.L2Network);
+    // Private key of the account used to deploy
+    const wallet = new Wallet(localConfig.privateKey).connect(provider);
+    const multisigAddress = this.multisigAddress;
+
+    console.log("Sending funds to multisig account");
+    // Send funds to the multisig account we just deployed
+    await (
+      await wallet.sendTransaction({
+        to: multisigAddress,
+        // You can increase the amount of ETH sent to the multisig
+        value: ethers.utils.parseEther(fundingMultiSigSum),
+        gasLimit: 10000000,
+      })
+    ).wait(2);
+
+    const multisigBalanceBefore = await provider.getBalance(multisigAddress);
+
+    this.initialBalance = multisigBalanceBefore;
+
+    console.log(
+      `Multisig account balance is ${multisigBalanceBefore.toString()}`,
+    );
+  }
+
+  async performSignedMultiSigTx(deployedAccountBalance: number = 0) {
+    let signedTxHash: ethers.utils.BytesLike;
+    const helper = new Helper();
     const provider = new Provider(localConfig.L2Network);
     // Private key of the account used to deploy
     const wallet = new Wallet(localConfig.privateKey).connect(provider);
@@ -114,23 +145,6 @@ export class Utils {
     const txHash = this.txHash;
     const factoryArtifact = await hre.artifacts.readArtifact("AAFactory");
 
-    console.log("Sending funds to multisig account");
-    // Send funds to the multisig account we just deployed
-    await (
-      await wallet.sendTransaction({
-        to: multisigAddress,
-        // You can increase the amount of ETH sent to the multisig
-        value: ethers.utils.parseEther(sum),
-        gasLimit: 10000000,
-      })
-    ).wait(2);
-
-    const multisigBalanceBefore = await provider.getBalance(multisigAddress);
-
-    console.log(
-      `Multisig account balance is ${multisigBalanceBefore.toString()}`,
-    );
-
     const aaFactory = new ethers.Contract(
       AA_FACTORY_ADDRESS,
       factoryArtifact.abi,
@@ -138,6 +152,7 @@ export class Utils {
     );
 
     // Transaction to deploy a new account using the multisig we just deployed
+
     let aaTx = await aaFactory.populateTransaction.deployAccount(
       this.salt,
       // These are accounts that will own the newly deployed account
@@ -160,9 +175,16 @@ export class Utils {
       customData: {
         gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
       } as types.Eip712Meta,
-      value: ethers.BigNumber.from(0),
+      value: ethers.BigNumber.from(deployedAccountBalance),
     };
-    const signedTxHash = EIP712Signer.getSignedDigest(aaTx);
+
+    signedTxHash = await EIP712Signer.getSignedDigest(aaTx);
+
+    try {
+      signedTxHash;
+    } catch (e) {
+      return e;
+    }
 
     const signature = ethers.utils.concat([
       // Note, that `signMessage` wouldn't work here, since we don't want
@@ -187,8 +209,15 @@ export class Utils {
     console.log(
       `The multisig's nonce before the first tx is ${multiSigNonceBeforeTx}`,
     );
+
     const sentTx = await provider.sendTransaction(utils.serialize(aaTx));
-    await sentTx.wait(0);
+
+    try {
+      await sentTx.wait(0);
+    } catch (e) {
+      return e;
+    }
+    // await helper.getErrorMessage(await sentTx.wait(0))
 
     const multiSigNonceAfterTx = await provider.getTransactionCount(
       multisigAddress,
@@ -198,6 +227,7 @@ export class Utils {
       `The multisig's nonce after the first tx is ${multiSigNonceAfterTx}`,
     );
 
+    const multisigBalanceBefore = this.initialBalance;
     const multisigBalanceAfter = await provider.getBalance(multisigAddress);
 
     console.log(

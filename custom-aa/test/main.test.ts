@@ -47,7 +47,9 @@ describe("Custom aa", function () {
   describe("Multisig", function () {
     before(async function () {
       await utils.deployMultisig(factory.address);
-      multiSig = await utils.executeMultiSig();
+      await utils.fundingMultiSigAccount();
+
+      multiSig = await utils.performSignedMultiSigTx();
     });
 
     it("Should be deployed and have a address", async function () {
@@ -100,6 +102,31 @@ describe("Custom aa", function () {
     it("Should have the Signature format with the Uint8Array", async function () {
       result = multiSig[5];
       expect(result instanceof Uint8Array).to.true;
+    });
+
+    it("Should fail when the deployed account balance is higher than 0", async function () {
+      await utils.deployMultisig(factory.address);
+      await utils.fundingMultiSigAccount();
+      result = await utils.performSignedMultiSigTx(1);
+
+      expect(result.reason).to.equal("transaction failed");
+      expect(result.code).to.equal("CALL_EXCEPTION");
+    });
+
+    it("Should fail when the deployed account balance is higher than balance on the main wallet ", async function () {
+      await utils.deployMultisig(factory.address);
+      await utils.fundingMultiSigAccount();
+      result = await utils.performSignedMultiSigTx(10000000000000);
+
+      expect(result.reason).to.equal("transaction failed");
+      expect(result.code).to.equal("CALL_EXCEPTION");
+    });
+
+    it("Should fail when the deploing MultiSign contract with incorrect Factory contract", async function () {
+      result = await utils.deployMultisig("111212");
+
+      expect(result.reason).to.equal("network does not support ENS");
+      expect(result.code).to.equal("UNSUPPORTED_OPERATION");
     });
   });
 });
