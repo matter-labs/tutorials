@@ -18,8 +18,8 @@ Install all dependencies with `yarn`.
 
 Compile contracts with `yarn hardhat compile`
 
-
 ## Testing
+
 Tests are located in `test/main.test.ts` - and we recommend running them against the in-memory node:
 https://github.com/matter-labs/era-test-node
 
@@ -28,7 +28,6 @@ You can run the tests using:
 ```shell
 yarn test
 ```
-
 
 ## Deployment and usage
 
