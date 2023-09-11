@@ -116,3 +116,7 @@ jobs:
       - name: Hello World tests
         run: |
           cd hello-world && yarn run test
+
+      - name: Custom-aa tests
+        run: |
+          cd custom-aa && yarn run test

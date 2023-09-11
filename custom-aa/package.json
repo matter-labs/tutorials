@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "test": "hardhat test",
+    "deploy:factory": "yarn hardhat deploy-zksync --script deploy-factory.ts",
+    "deploy:multisig": "yarn hardhat deploy-zksync --script deploy-multisig.ts"
+  },
   "devDependencies": {
     "ethers": "^5.7.0",
     "ts-node": "^10.9.1",
