@@ -10,19 +10,17 @@ import { expect } from "chai";
 
 // These are the wallets that are pre-seeded with tokens in the in-memory node
 // You can see the full list, after starting the node.
-const RICH_WALLET_1_ADDRESS = "0xa61464658AfeAf65CccaaFD3a512b69A83B77618";
 const RICH_WALLET_1_KEY = "0xac1e735be8536c6534bb4f17f06f6afc73b2b5ba84ac2cfb12f7461b20c0bbe3";
 const RICH_WALLET_2_ADDRESS = "0x0D43eB5B8a47bA8900d84AA36656c92024e9772e";
 const RICH_WALLET_2_KEY = "0xd293c684d884d56f8d6abd64fc76757d3664904e309a0645baf8522ab6366d9e";
 const RICH_WALLET_3_ADDRESS = "0xA13c10C0D5bd6f79041B9835c63f91de35A15883";
 const RICH_WALLET_3_KEY = "0x850683b40d4a740aa6e745f889a6fdc8327be76e122f5aba645a5b02d0248db8";
-const RICH_WALLET_4_ADDRESS = "0x8002cD98Cfb563492A6fB3E7C8243b7B9Ad4cc92";
 const RICH_WALLET_4_KEY = "0xf12e28c0eb1ef4ff90478f6805b68d63737b7f33abfa091601140805da450d93";
 
 
 // Temporary wallet to help with AccountAbstraction.
 // In the future, we plan to extend the zksync web3js wallet with these features - so this class
-// woudl not be needed.
+// would not be needed.
 class AAWallet extends Wallet {
     readonly aa_address: string;
 
@@ -45,6 +43,7 @@ class AAWallet extends Wallet {
     }
 };
 
+// Temporary wallet for testing - that is accepting two private keys - and signs the transaction with both.
 class MultiSigWallet extends Wallet {
     readonly aa_address: string;
     other_wallet: Wallet;
@@ -71,14 +70,11 @@ class MultiSigWallet extends Wallet {
 
 
 describe("MultiSig AA tests", function () {
-    it("Basic tests", async function () {
+    it("Basic tests on LocalNet", async function () {
+        // This test will work only against the local node (as it assumes that RICH_WALLETS have enough tokens).
         // Get the connection (provider) for the network from our config.
         const hreProvider = new Provider((hre.network.config as HttpNetworkConfig).url);
         const richWallet1 = new Wallet(RICH_WALLET_1_KEY, hreProvider);
-        const richWallet2 = new Wallet(RICH_WALLET_2_KEY, hreProvider);
-        const richWallet3 = new Wallet(RICH_WALLET_3_KEY, hreProvider);
-        const richWallet4 = new Wallet(RICH_WALLET_4_KEY, hreProvider);
-
 
         // Deployer is used to deploy new contracts.
         // We pass richWallet1 - so this is the signer that will be used to 
