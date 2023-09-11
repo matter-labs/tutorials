@@ -117,8 +117,7 @@ describe("MultiSig AA tests", function () {
         const wallet4ForAA = new AAWallet(aaAccount.address, RICH_WALLET_4_KEY, hreProvider);
         // This should fail - as wallet4 cannot act as AA account.
 
-        // FIXME: uncomment this line - and figure out why chai matcher didn't trigger.
-        //await expect(wallet4ForAA.transfer({ to: richWallet1.address, amount: ethers.utils.parseUnits("5", 18), overrides: { type: 113 } })).to.be.reverted;
+        await expect(wallet4ForAA.transfer({ to: richWallet1.address, amount: ethers.utils.parseUnits("5", 18), overrides: { type: 113 } })).to.be.reverted;
     });
 
 })
