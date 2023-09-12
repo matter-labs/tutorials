@@ -10,12 +10,10 @@ on:
     branches:
       - main
   workflow_dispatch:
-  # schedule:
-  #   - cron: '0 21 * * *'
 
 jobs:
-  run-docker-tests:
-    name: Docker Test
+  docker-hello-world-tests:
+    name: Docker Hello World Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -24,29 +22,38 @@ jobs:
     steps:
       - name: Checkout branch
         uses: actions/checkout@v2
+
       - name: Install Node
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: Install Docker
         uses: docker/setup-buildx-action@v1
+
       - name: Git Clone Local Repo
         run: git clone https://github.com/matter-labs/local-setup
+
       - name: Install dependencies
         run: |
           yarn install --frozen-lockfile
+
       - name: Run Docker Compose Daemon
         run: cd local-setup && mkdir -p ./volumes && mkdir -p ./volumes/postgres ./volumes/geth ./volumes/zksync/env/dev ./volumes/zksync/data && touch ./volumes/zksync/env.env && docker compose up -d && cd ..
+
       - name: Wait until node is ready
         run: |
           while ! curl -s -X POST -d '{"jsonrpc":"2.0","method":"net_version","id":1}' -H 'Content-Type: application/json' 0.0.0.0:3050; do sleep 1; done
+
       - name: Print Docker logs
         run: cd local-setup && docker compose logs && cd ..
+
       - name: Hello World Docker tests
         run: cd hello-world-docker && docker ps && yarn test
-  run-im-tests:
+
+  im-node-tests:
     name: IM Node Tests
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 30
     strategy:
       matrix:
@@ -57,53 +64,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Generate Dockerfile
-        uses: 1arp/create-a-file-action@0.2
-        with:
-          file: "Dockerfile"
-          content: |
-            # Use Ubuntu 18.04 as the base image with x86_64
-            FROM ubuntu:18.04@sha256:dca176c9663a7ba4c1f0e710986f5a25e672842963d95b960191e2d9f7185ebe
-
-            # Install necessary dependencies
-            RUN apt-get update && \
-                apt-get install -y wget curl gnupg2 && \
-                echo "deb http://security.ubuntu.com/ubuntu bionic-security main" >> /etc/apt/sources.list && \
-                apt-get update && \
-                apt-get install -y libssl1.0.0 && \
-                apt-get install -y cmake pkg-config clang socat
-
-            # Fetch and extract the era_test_node binary
-            RUN wget https://github.com/matter-labs/era-test-node/releases/download/v0.1.0/era_test_node-v0.1.0-x86_64-unknown-linux-gnu.tar.gz \
-                && tar -xzf era_test_node-v0.1.0-x86_64-unknown-linux-gnu.tar.gz \
-                && mv era_test_node /usr/local/bin/ \
-                && rm era_test_node-v0.1.0-x86_64-unknown-linux-gnu.tar.gz
-
-            # Copy the start script
-            COPY start_script.sh /start_script.sh
-
-            # Make the start script executable
-            RUN chmod +x /start_script.sh
-
-            # Set the start script as the entry point
-            ENTRYPOINT ["/start_script.sh"]
-
-      - name: Generate start_script
-        uses: 1arp/create-a-file-action@0.2
-        with:
-          file: "start_script.sh"
-          content: |
-            #!/bin/bash
-            socat TCP-LISTEN:'8011',fork,reuseaddr TCP:127.0.0.1:3051 &
-            era_test_node --port 3051 run &
-            wait
-
-      - name: Build era_test_node_image Docker image
-        run: docker build -t era_test_node_image .
-
-      - name: Run era_test_node_image Docker container
-        run: docker run -d --name era_test_node_container -p 8011:8011 era_test_node_image
-
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
@@ -113,10 +73,23 @@ jobs:
         run: |
           yarn install --frozen-lockfile
 
+      - name: Download and extract era_test_node binary
+        run: |
+          wget https://github.com/matter-labs/era-test-node/releases/download/v0.1.0-alpha.2/era_test_node-v0.1.0-alpha.2-x86_64-apple-darwin.tar.gz
+          tar -xzf era_test_node-v0.1.0-alpha.2-x86_64-apple-darwin.tar.gz
+          chmod +x era_test_node
+
+      - name: Run era_test_node binary
+        run: ./era_test_node run &
+
+      - name: Wait for era_test_node to be ready
+        run: |
+          while ! curl -s -X POST -d '{"jsonrpc":"2.0","method":"net_version","id":1}' -H 'Content-Type: application/json' http://127.0.0.1:8011; do sleep 1; done
+
+      - name: Custom AA tests
+        run: |
+          cd custom-aa && yarn test
+
       - name: Hello World tests
         run: |
-          cd hello-world && yarn run test
-
-      - name: Custom-aa tests
-        run: |
-          cd custom-aa && yarn run test
+          cd hello-world && yarn test
