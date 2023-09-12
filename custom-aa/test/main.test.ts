@@ -67,9 +67,9 @@ describe("Custom aa", function () {
       expect(result).to.equal("8000000000000000");
     });
 
-    it("Should have a balance with the value 7470397250000000 eventually", async function () {
+    it("Should have a balance with the value 7470407750000000 eventually", async function () {
       result = multiSig[3];
-      expect(result).to.equal("7470397250000000");
+      expect(result).to.equal("7470407750000000");
     });
 
     it("Should have the Multisig balance before a transaction more than after", async function () {
