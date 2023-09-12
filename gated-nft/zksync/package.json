@@ -5,8 +5,8 @@
   "author": "Antonio <aug@matterlabs.dev>",
   "license": "MIT",
   "devDependencies": {
-    "@matterlabs/hardhat-zksync-deploy": "^0.6.3",
-    "@matterlabs/hardhat-zksync-solc": "^0.4.0",
+    "@matterlabs/hardhat-zksync-deploy": "^0.6.5",
+    "@matterlabs/hardhat-zksync-solc": "^0.4.2",
     "@matterlabs/hardhat-zksync-verify": "^0.2.0",
     "@matterlabs/zksync-contracts": "^0.6.1",
     "@nomicfoundation/hardhat-verify": "^1.0.3",
