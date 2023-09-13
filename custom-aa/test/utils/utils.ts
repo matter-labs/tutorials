@@ -16,7 +16,7 @@ export class MultiSigWallet extends Wallet {
     aaAddress: string,
     privateKey1: string,
     privateKey2: string,
-    providerL2: zks.Provider,
+    providerL2: Provider,
   ) {
     super(privateKey1, providerL2);
     this.otherWallet = new Wallet(privateKey2, providerL2);
