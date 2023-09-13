@@ -141,8 +141,17 @@ contract TwoUserMultisig is IAccount, IERC1271 {
             magic = bytes4(0);
         }
 
-        address recoveredAddr1 = ECDSA.recover(_hash, signature1);
-        address recoveredAddr2 = ECDSA.recover(_hash, signature2);
+        (address recoveredAddr1, ECDSA.RecoverError error) = ECDSA.tryRecover(_hash, signature1);
+        if (error != ECDSA.RecoverError.NoError)  {
+            magic = bytes4(0);
+            return magic;
+        }
+
+        (address recoveredAddr2, ECDSA.RecoverError error2) = ECDSA.tryRecover(_hash, signature2);
+        if (error2 != ECDSA.RecoverError.NoError)  {
+            magic = bytes4(0);
+            return magic;
+        }
 
         // Note, that we should abstain from using the require here in order to allow for fee estimation to work
         if(recoveredAddr1 != owner1 || recoveredAddr2 != owner2) {

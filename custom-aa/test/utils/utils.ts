@@ -6,23 +6,68 @@ import { localConfig } from "../../../tests/testConfig";
 import { Contract, ethers } from "ethers";
 import { Helper } from "../../../tests/helper";
 
+// Temporary wallet for testing - that is accepting two private keys - and signs the transaction with both.
+export class MultiSigWallet extends Wallet {
+  readonly aaAddress: string;
+  otherWallet: Wallet;
+
+  // AA_address - is the account abstraction address for which, we'll use the private key to sign transactions.
+  constructor(
+    aaAddress: string,
+    privateKey1: string,
+    privateKey2: string,
+    providerL2: Provider,
+  ) {
+    super(privateKey1, providerL2);
+    this.otherWallet = new Wallet(privateKey2, providerL2);
+    this.aaAddress = aaAddress;
+  }
+
+  getAddress(): Promise<string> {
+    return Promise.resolve(this.aaAddress);
+  }
+
+  async signTransaction(transaction: types.TransactionRequest) {
+    const sig1 = await this.eip712.sign(transaction);
+    const sig2 = await this.otherWallet.eip712.sign(transaction);
+    // substring(2) to remove the '0x' from sig2.
+    if (transaction.customData === undefined) {
+      throw new Error("Transaction customData is undefined");
+    }
+    transaction.customData.customSignature = sig1 + sig2.substring(2);
+    return (0, utils.serialize)(transaction);
+  }
+}
+
+export class MultiSigResult {
+  txHash: string;
+  address: string;
+  balanceBefore: string;
+  balanceAfter: string;
+  signedTxHash: ethers.utils.BytesLike;
+  signature: Uint8Array;
+  nonceBeforeTx: string;
+  nonceAfterTx: string;
+  owner1: Wallet;
+  owner2: Wallet;
+  provider: Provider;
+}
+
 export class Utils {
   private multisigAddress: any;
   private initialBalance: any;
-  private owner1: any;
-  private owner2: any;
+  private owner1: Wallet;
+  private owner2: Wallet;
   private salt: any;
-  private aaFactory: Contract | undefined;
+  private aaFactory: Contract;
   private factoryAddress: any;
   private txHash: any;
+  private provider: Provider;
 
   constructor() {
     this.multisigAddress = undefined;
     this.initialBalance = undefined;
-    this.owner1 = undefined;
-    this.owner2 = undefined;
     this.salt = undefined;
-    this.aaFactory = undefined;
     this.factoryAddress = undefined;
     this.txHash = undefined;
   }
@@ -59,6 +104,7 @@ export class Utils {
     const AA_FACTORY_ADDRESS = factoryAddress;
 
     const provider = new Provider(localConfig.L2Network);
+    this.provider = provider;
     // Private key of the account used to deploy
     const wallet = new Wallet(localConfig.privateKey).connect(provider);
     const factoryArtifact = await hre.artifacts.readArtifact("AAFactory");
@@ -109,7 +155,7 @@ export class Utils {
     return multisigAddress;
   }
 
-  async fundingMultiSigAccount(fundingMultiSigSum: string = "0.008") {
+  async fundingMultiSigAccount(fundingMultiSigSum: string = "100") {
     const provider = new Provider(localConfig.L2Network);
     // Private key of the account used to deploy
     const wallet = new Wallet(localConfig.privateKey).connect(provider);
@@ -135,7 +181,9 @@ export class Utils {
     );
   }
 
-  async performSignedMultiSigTx(deployedAccountBalance: number = 0) {
+  async performSignedMultiSigTx(
+    deployedAccountBalance: number = 0,
+  ): Promise<MultiSigResult> {
     let signedTxHash: ethers.utils.BytesLike;
     const helper = new Helper();
     const provider = new Provider(localConfig.L2Network);
@@ -235,15 +283,19 @@ export class Utils {
       `Multisig account balance is now ${multisigBalanceAfter.toString()}`,
     );
 
-    return [
-      txHash,
-      multisigAddress,
-      multisigBalanceBefore.toString(),
-      multisigBalanceAfter.toString(),
-      signedTxHash,
-      signature,
-      multiSigNonceBeforeTx,
-      multiSigNonceAfterTx,
-    ];
+    let result = new MultiSigResult();
+    result.txHash = txHash;
+    result.address = multisigAddress;
+    result.balanceBefore = multisigBalanceBefore.toString();
+    result.balanceAfter = multisigBalanceAfter.toString();
+    result.signedTxHash = signedTxHash;
+    result.signature = signature;
+    result.nonceBeforeTx = multiSigNonceBeforeTx.toString();
+    result.nonceAfterTx = multiSigNonceAfterTx.toString();
+    result.owner1 = this.owner1;
+    result.owner2 = this.owner2;
+    result.provider = this.provider;
+
+    return result;
   }
 }
