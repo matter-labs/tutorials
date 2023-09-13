@@ -160,6 +160,30 @@ describe("Custom AA Tests", function () {
       expect(difference / BigInt(10 ** 18) < 5.1).to.be.true;
     });
 
+    it("Should fail to send ETH for a multisig wallet of random keys", async function () {
+      const random1 = zks.Wallet.createRandom();
+      const random2 = zks.Wallet.createRandom();
+      const randomWallet = new MultiSigWallet(
+        multiSigResult.address,
+        random1.privateKey,
+        random2.privateKey,
+        multiSigResult.provider,
+      );
+      try {
+        await (
+          await randomWallet.transfer({
+            to: richWallet.address,
+            amount: eth.utils.parseUnits("5", 18),
+            overrides: { type: 113 },
+          })
+        ).wait();
+        expect.fail("Should fail");
+      } catch (e) {
+        const expectedMessage = "Execution error: Failed to execute next transaction: Account validation error: Account validation returned invalid magic value. Most often this means that the signature is incorrect"
+        expect(e.message).to.contains(expectedMessage);
+      }
+    });
+
     it("Should fail when the deployed account balance is higher than 0", async function () {
       await utils.deployMultisig(factory.address);
       await utils.fundingMultiSigAccount();
