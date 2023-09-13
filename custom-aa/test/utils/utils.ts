@@ -6,23 +6,35 @@ import { localConfig } from "../../../tests/testConfig";
 import { Contract, ethers } from "ethers";
 import { Helper } from "../../../tests/helper";
 
+export class MultiSigResult {
+  txHash: string;
+  address: string;
+  balanceBefore: string;
+  balanceAfter: string;
+  signedTxHash: ethers.utils.BytesLike;
+  signature: Uint8Array;
+  nonceBeforeTx: string;
+  nonceAfterTx: string;
+  owner1: Wallet;
+  owner2: Wallet;
+  provider: Provider;
+}
+
 export class Utils {
   private multisigAddress: any;
   private initialBalance: any;
-  private owner1: any;
-  private owner2: any;
+  private owner1: Wallet;
+  private owner2: Wallet;
   private salt: any;
-  private aaFactory: Contract | undefined;
+  private aaFactory: Contract;
   private factoryAddress: any;
   private txHash: any;
+  private provider: Provider;
 
   constructor() {
     this.multisigAddress = undefined;
     this.initialBalance = undefined;
-    this.owner1 = undefined;
-    this.owner2 = undefined;
     this.salt = undefined;
-    this.aaFactory = undefined;
     this.factoryAddress = undefined;
     this.txHash = undefined;
   }
@@ -59,6 +71,7 @@ export class Utils {
     const AA_FACTORY_ADDRESS = factoryAddress;
 
     const provider = new Provider(localConfig.L2Network);
+    this.provider = provider;
     // Private key of the account used to deploy
     const wallet = new Wallet(localConfig.privateKey).connect(provider);
     const factoryArtifact = await hre.artifacts.readArtifact("AAFactory");
@@ -109,7 +122,7 @@ export class Utils {
     return multisigAddress;
   }
 
-  async fundingMultiSigAccount(fundingMultiSigSum: string = "0.008") {
+  async fundingMultiSigAccount(fundingMultiSigSum: string = "100") {
     const provider = new Provider(localConfig.L2Network);
     // Private key of the account used to deploy
     const wallet = new Wallet(localConfig.privateKey).connect(provider);
@@ -135,7 +148,7 @@ export class Utils {
     );
   }
 
-  async performSignedMultiSigTx(deployedAccountBalance: number = 0) {
+  async performSignedMultiSigTx(deployedAccountBalance: number = 0): Promise<MultiSigResult> {
     let signedTxHash: ethers.utils.BytesLike;
     const helper = new Helper();
     const provider = new Provider(localConfig.L2Network);
@@ -235,15 +248,19 @@ export class Utils {
       `Multisig account balance is now ${multisigBalanceAfter.toString()}`,
     );
 
-    return [
-      txHash,
-      multisigAddress,
-      multisigBalanceBefore.toString(),
-      multisigBalanceAfter.toString(),
-      signedTxHash,
-      signature,
-      multiSigNonceBeforeTx,
-      multiSigNonceAfterTx,
-    ];
+    let result = new MultiSigResult();
+    result.txHash = txHash;
+    result.address = multisigAddress;
+    result.balanceBefore = multisigBalanceBefore.toString();
+    result.balanceAfter = multisigBalanceAfter.toString();
+    result.signedTxHash = signedTxHash;
+    result.signature = signature;
+    result.nonceBeforeTx = multiSigNonceBeforeTx.toString();
+    result.nonceAfterTx = multiSigNonceAfterTx.toString();
+    result.owner1 = this.owner1;
+    result.owner2 = this.owner2;
+    result.provider = this.provider;
+
+    return result;
   }
 }

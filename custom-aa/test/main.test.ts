@@ -1,16 +1,51 @@
 import { expect } from "chai";
-import { Utils } from "./utils/utils";
+import { Utils, MultiSigResult } from "./utils/utils";
 import { localConfig } from "../../tests/testConfig";
-import { Contract } from "ethers";
+import * as eth from "ethers";
 import { Helper } from "../../tests/helper";
 import { Wallets } from "../../tests/testData";
+import * as zks from "zksync-web3";
 
-describe("Custom aa", function () {
+// Temporary wallet for testing - that is accepting two private keys - and signs the transaction with both.
+class MultiSigWallet extends zks.Wallet {
+  readonly aaAddress: string;
+  otherWallet: zks.Wallet;
+
+  // AA_address - is the account abstraction address for which, we'll use the private key to sign transactions.
+  constructor(aaAddress: string, privateKey1: string, privateKey2: string, providerL2: zks.Provider) {
+    super(privateKey1, providerL2);
+    this.otherWallet = new zks.Wallet(privateKey2, providerL2);
+    this.aaAddress = aaAddress;
+  }
+
+  getAddress(): Promise<string> {
+    return Promise.resolve(this.aaAddress);
+  }
+
+  async signTransaction(transaction: zks.types.TransactionRequest) {
+    const sig1 = await this.eip712.sign(transaction);
+    const sig2 = await this.otherWallet.eip712.sign(transaction);
+    // substring(2) to remove the '0x' from sig2.
+    if (transaction.customData === undefined) {
+      throw new Error("Transaction customData is undefined");
+    }
+    transaction.customData.customSignature = sig1 + sig2.substring(2);
+    return (0, zks.utils.serialize)(transaction);
+  }
+}
+
+describe("Custom AA Tests", function () {
   let result: any;
-  let factory: Contract;
-  let multiSig: any;
+  let factory: eth.Contract;
+  let multiSigResult: MultiSigResult;
+  let richWallet: zks.Wallet;
+  let multiSigWallet: zks.Wallet;
   const helper = new Helper();
   const utils = new Utils();
+
+  before(async function () {
+    richWallet = new zks.Wallet(localConfig.privateKey);
+  });
 
   describe("Factory", function () {
     before(async function () {
@@ -48,60 +83,81 @@ describe("Custom aa", function () {
     before(async function () {
       await utils.deployMultisig(factory.address);
       await utils.fundingMultiSigAccount();
-
-      multiSig = await utils.performSignedMultiSigTx();
+      multiSigResult = await utils.performSignedMultiSigTx();
     });
 
     it("Should be deployed and have a address", async function () {
-      result = await helper.isValidEthFormat(multiSig[1]);
+      result = await helper.isValidEthFormat(multiSigResult.address);
       expect(result).to.be.true;
     });
 
     it("Should have a tx hash that starts from 0x", async function () {
-      result = multiSig[0];
+      result = multiSigResult.txHash;
       expect(result).to.contains("0x");
     });
 
-    it("Should have a balance with the 8000000000000000 value initially", async function () {
-      result = multiSig[2];
-      expect(result).to.equal("8000000000000000");
+    it("Should have a balance with the 100000000000000000000 value initially", async function () {
+      result = multiSigResult.balanceBefore;
+      expect(result).to.equal("100000000000000000000");
     });
 
-    it("Should have a balance with the value 7470407750000000 eventually", async function () {
-      result = multiSig[3];
-      expect(result).to.equal("7470407750000000");
+    it("Should have a balance with the value 99999470411250000000 eventually", async function () {
+      result = multiSigResult.balanceAfter;
+      expect(result).to.equal("99999470411250000000");
     });
 
     it("Should have the Multisig balance before a transaction more than after", async function () {
-      const multiSigBalanceBeforeTx = Number(multiSig[2]);
-      const multiSigBalanceAfterTx = Number(multiSig[3]);
+      const multiSigBalanceBeforeTx = Number(multiSigResult.balanceBefore);
+      const multiSigBalanceAfterTx = Number(multiSigResult.balanceAfter);
       expect(multiSigBalanceBeforeTx).to.be.greaterThan(multiSigBalanceAfterTx);
     });
 
     it("Should have the Signed tx hash that starts from 0x", async function () {
-      result = multiSig[4];
+      result = multiSigResult.signedTxHash;
       expect(result).to.contains("0x");
     });
 
     it("Should have the Multisig nonce as 0 initially", async function () {
-      result = multiSig[6];
+      result = Number(multiSigResult.nonceBeforeTx);
       expect(result).to.equal(0);
     });
 
     it("Should have the Multisig nonce as 1 eventualy", async function () {
-      result = multiSig[7];
+      result = Number(multiSigResult.nonceAfterTx);
       expect(result).to.equal(1);
     });
 
     it("Should have the Multisig nonce less than after", async function () {
-      const multiSigNonceBefore = multiSig[6];
-      const multiSigNonceAfter = multiSig[7];
+      const multiSigNonceBefore = Number(multiSigResult.nonceBeforeTx);
+      const multiSigNonceAfter = Number(multiSigResult.nonceAfterTx);
       expect(multiSigNonceBefore).to.be.lessThan(multiSigNonceAfter);
     });
 
     it("Should have the Signature format with the Uint8Array", async function () {
-      result = multiSig[5];
+      result = multiSigResult.signature;
       expect(result instanceof Uint8Array).to.true;
+    });
+
+    it("Should be able to send 10 ETH to the main wallet", async function () {
+      multiSigWallet = new MultiSigWallet(
+        multiSigResult.address,
+        multiSigResult.owner1.privateKey,
+        multiSigResult.owner2.privateKey,
+        multiSigResult.provider,
+      );
+      const balanceBefore = (await multiSigResult.provider.getBalance(multiSigResult.address)).toBigInt();
+      await (
+        await multiSigWallet.transfer({
+          to: richWallet.address,
+          amount: eth.utils.parseUnits("5", 18),
+          overrides: { type: 113 },
+        })
+      ).wait();
+      const balance = (await multiSigResult.provider.getBalance(multiSigResult.address)).toBigInt();
+      const difference = balanceBefore - balance;
+      // expect to be slightly higher than 5
+      expect(difference / BigInt(10 ** 18) > 4.9).to.be.true;
+      expect(difference / BigInt(10 ** 18) < 5.1).to.be.true;
     });
 
     it("Should fail when the deployed account balance is higher than 0", async function () {
