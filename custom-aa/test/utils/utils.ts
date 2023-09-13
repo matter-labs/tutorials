@@ -6,6 +6,39 @@ import { localConfig } from "../../../tests/testConfig";
 import { Contract, ethers } from "ethers";
 import { Helper } from "../../../tests/helper";
 
+// Temporary wallet for testing - that is accepting two private keys - and signs the transaction with both.
+export class MultiSigWallet extends Wallet {
+  readonly aaAddress: string;
+  otherWallet: Wallet;
+
+  // AA_address - is the account abstraction address for which, we'll use the private key to sign transactions.
+  constructor(
+    aaAddress: string,
+    privateKey1: string,
+    privateKey2: string,
+    providerL2: zks.Provider,
+  ) {
+    super(privateKey1, providerL2);
+    this.otherWallet = new Wallet(privateKey2, providerL2);
+    this.aaAddress = aaAddress;
+  }
+
+  getAddress(): Promise<string> {
+    return Promise.resolve(this.aaAddress);
+  }
+
+  async signTransaction(transaction: types.TransactionRequest) {
+    const sig1 = await this.eip712.sign(transaction);
+    const sig2 = await this.otherWallet.eip712.sign(transaction);
+    // substring(2) to remove the '0x' from sig2.
+    if (transaction.customData === undefined) {
+      throw new Error("Transaction customData is undefined");
+    }
+    transaction.customData.customSignature = sig1 + sig2.substring(2);
+    return (0, utils.serialize)(transaction);
+  }
+}
+
 export class MultiSigResult {
   txHash: string;
   address: string;
@@ -148,7 +181,9 @@ export class Utils {
     );
   }
 
-  async performSignedMultiSigTx(deployedAccountBalance: number = 0): Promise<MultiSigResult> {
+  async performSignedMultiSigTx(
+    deployedAccountBalance: number = 0,
+  ): Promise<MultiSigResult> {
     let signedTxHash: ethers.utils.BytesLike;
     const helper = new Helper();
     const provider = new Provider(localConfig.L2Network);

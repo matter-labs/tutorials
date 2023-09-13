@@ -1,38 +1,10 @@
 import { expect } from "chai";
-import { Utils, MultiSigResult } from "./utils/utils";
+import { Utils, MultiSigResult, MultiSigWallet } from "./utils/utils";
 import { localConfig } from "../../tests/testConfig";
 import * as eth from "ethers";
 import { Helper } from "../../tests/helper";
 import { Wallets } from "../../tests/testData";
 import * as zks from "zksync-web3";
-
-// Temporary wallet for testing - that is accepting two private keys - and signs the transaction with both.
-class MultiSigWallet extends zks.Wallet {
-  readonly aaAddress: string;
-  otherWallet: zks.Wallet;
-
-  // AA_address - is the account abstraction address for which, we'll use the private key to sign transactions.
-  constructor(aaAddress: string, privateKey1: string, privateKey2: string, providerL2: zks.Provider) {
-    super(privateKey1, providerL2);
-    this.otherWallet = new zks.Wallet(privateKey2, providerL2);
-    this.aaAddress = aaAddress;
-  }
-
-  getAddress(): Promise<string> {
-    return Promise.resolve(this.aaAddress);
-  }
-
-  async signTransaction(transaction: zks.types.TransactionRequest) {
-    const sig1 = await this.eip712.sign(transaction);
-    const sig2 = await this.otherWallet.eip712.sign(transaction);
-    // substring(2) to remove the '0x' from sig2.
-    if (transaction.customData === undefined) {
-      throw new Error("Transaction customData is undefined");
-    }
-    transaction.customData.customSignature = sig1 + sig2.substring(2);
-    return (0, zks.utils.serialize)(transaction);
-  }
-}
 
 describe("Custom AA Tests", function () {
   let result: any;
@@ -145,7 +117,9 @@ describe("Custom AA Tests", function () {
         multiSigResult.owner2.privateKey,
         multiSigResult.provider,
       );
-      const balanceBefore = (await multiSigResult.provider.getBalance(multiSigResult.address)).toBigInt();
+      const balanceBefore = (
+        await multiSigResult.provider.getBalance(multiSigResult.address)
+      ).toBigInt();
       await (
         await multiSigWallet.transfer({
           to: richWallet.address,
@@ -153,7 +127,9 @@ describe("Custom AA Tests", function () {
           overrides: { type: 113 },
         })
       ).wait();
-      const balance = (await multiSigResult.provider.getBalance(multiSigResult.address)).toBigInt();
+      const balance = (
+        await multiSigResult.provider.getBalance(multiSigResult.address)
+      ).toBigInt();
       const difference = balanceBefore - balance;
       // expect to be slightly higher than 5
       expect(difference / BigInt(10 ** 18) > 4.9).to.be.true;
@@ -179,7 +155,8 @@ describe("Custom AA Tests", function () {
         ).wait();
         expect.fail("Should fail");
       } catch (e) {
-        const expectedMessage = "Execution error: Failed to execute next transaction: Account validation error: Account validation returned invalid magic value. Most often this means that the signature is incorrect"
+        const expectedMessage =
+          "Execution error: Failed to execute next transaction: Account validation error: Account validation returned invalid magic value. Most often this means that the signature is incorrect";
         expect(e.message).to.contains(expectedMessage);
       }
     });
