@@ -160,7 +160,7 @@ export class Utils {
     // Private key of the account used to deploy
     const wallet = new Wallet(localConfig.privateKey).connect(provider);
     const multisigAddress = this.multisigAddress;
-
+    console.log("Multisig address is: " + multisigAddress);
     console.log("Sending funds to multisig account");
     // Send funds to the multisig account we just deployed
     await (
@@ -168,10 +168,9 @@ export class Utils {
         to: multisigAddress,
         // You can increase the amount of ETH sent to the multisig
         value: ethers.utils.parseEther(fundingMultiSigSum),
-        gasLimit: 10000000,
       })
-    ).wait(2);
-
+    ).wait();
+    console.log("Funds sent to multisig account");
     const multisigBalanceBefore = await provider.getBalance(multisigAddress);
 
     this.initialBalance = multisigBalanceBefore;
