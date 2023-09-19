@@ -21,15 +21,15 @@ jobs:
         node-version: ["18.15.0"]
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Docker
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
 
       - name: Git Clone Local Repo
         run: git clone https://github.com/matter-labs/local-setup
@@ -53,38 +53,28 @@ jobs:
 
   im-node-tests:
     name: IM Node Tests
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       matrix:
         node-version: ["18.15.0"]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Run Era Test Node
+        uses: dutterbutter/era-test-node-action@latest
 
       - name: Install dependencies
         run: |
           yarn install --frozen-lockfile
-
-      - name: Download and extract era_test_node binary
-        run: |
-          wget https://github.com/matter-labs/era-test-node/releases/download/v0.1.0-alpha.2/era_test_node-v0.1.0-alpha.2-x86_64-apple-darwin.tar.gz
-          tar -xzf era_test_node-v0.1.0-alpha.2-x86_64-apple-darwin.tar.gz
-          chmod +x era_test_node
-
-      - name: Run era_test_node binary
-        run: ./era_test_node run &
-
-      - name: Wait for era_test_node to be ready
-        run: |
-          while ! curl -s -X POST -d '{"jsonrpc":"2.0","method":"net_version","id":1}' -H 'Content-Type: application/json' http://127.0.0.1:8011; do sleep 1; done
 
       - name: Custom AA tests
         run: |
