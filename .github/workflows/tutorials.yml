@@ -12,7 +12,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  hello-world:
+  hello-world-contract:
+    name: Hello World Contract Tutorial
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -26,11 +27,29 @@ jobs:
         with:
           node-version: 'lts/*'
 
+      - name: Install yarn
+        run: npm install -g yarn
+
       - name: Install patch-package globally
         run: npm install -g patch-package
 
       - name: Install zksync-cli globally
         run: npm install -g zksync-cli
 
-      - name: Check zksync-cli version
-        run: zksync-cli --version
+      - name: Create new project called greeter-example
+        run: zksync-cli create-project greeter-example
+
+      - name: Change dir to greeter-example
+        run: cd greeter-example
+
+      - name: Add private key to WALLET_PRIVATE_KEY variable in .env.example file
+        run: sed -i 's/WALLET_PRIVATE_KEY=/WALLET_PRIVATE_KEY=ac7de7276038f2c181c541331f38d5913a8d63414752295e0011b3a2863870' .env.example
+      
+      - name: Rename .env.example to .env
+        run: mv .env.example .env
+
+      - name: Compile contracts with hardhat
+        run: yarn hardhat compile
+
+      - name: Deploy contract
+        run: yarn hardhat deploy-zksync --script deploy-greeter.ts
