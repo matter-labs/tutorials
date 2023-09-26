@@ -55,7 +55,7 @@ jobs:
 
       - name: Deploy contract
         run: cd greeter-example && yarn hardhat deploy-zksync --script deploy-greeter.ts
-  
+
   hello-world-contract-windows:
     name: Hello World Contract Tutorial Windows
     runs-on: windows-latest
@@ -79,7 +79,7 @@ jobs:
 
       - name: Create new project called greeter-example
         run: echo "" | zksync-cli create-project greeter-example
-      
+
       - name: Add private key to WALLET_PRIVATE_KEY variable in .env.example file (Windows)
         run: |
           cd greeter-example
@@ -87,10 +87,10 @@ jobs:
           $content = $content -replace 'WALLET_PRIVATE_KEY=', 'WALLET_PRIVATE_KEY=ac7de7276038f2c181c541331f38d5913a8d63414752295e0011b3a286387043'
           Set-Content .env.example $content
         shell: pwsh
-      
+
       - name: Rename .env.example to .env
         run: cd greeter-example && mv .env.example .env
-      
+
       - name: Compile contracts with hardhat
         run: cd greeter-example && yarn hardhat compile
 
