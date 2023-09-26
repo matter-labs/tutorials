@@ -1,15 +1,12 @@
 name: Tutorials
 on:
-  pull_request:
-    types:
-      - opened
-      - edited
-      - reopened
-      - synchronize
   push:
     branches:
       - main
   workflow_dispatch:
+  # cron for every two weeks
+  schedule:
+    - cron: "0 0 * * 1"
 
 jobs:
   hello-world-contract-unix:
