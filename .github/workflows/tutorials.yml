@@ -12,12 +12,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  hello-world-contract:
-    name: Hello World Contract Tutorial
+  hello-world-contract-unix:
+    name: Hello World Contract Tutorial Unix
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -37,13 +37,7 @@ jobs:
         run: npm install -g zksync-cli
 
       - name: Create new project called greeter-example
-        run: |
-          if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
-            echo "" | zksync-cli create-project greeter-example
-          else
-            echo | zksync-cli create-project greeter-example
-          fi
-        shell: bash
+        run: echo | zksync-cli create-project greeter-example
 
       - name: Add private key to WALLET_PRIVATE_KEY variable in .env.example file
         run: |
@@ -52,19 +46,51 @@ jobs:
           else
             cd greeter-example && sed -i 's/WALLET_PRIVATE_KEY=/WALLET_PRIVATE_KEY=ac7de7276038f2c181c541331f38d5913a8d63414752295e0011b3a286387043/' .env.example
           fi
-            
+
+      - name: Rename .env.example to .env
+        run: cd greeter-example && mv .env.example .env
+
+      - name: Compile contracts with hardhat
+        run: cd greeter-example && yarn hardhat compile
+
+      - name: Deploy contract
+        run: cd greeter-example && yarn hardhat deploy-zksync --script deploy-greeter.ts
+  
+  hello-world-contract-windows:
+    name: Hello World Contract Tutorial Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Node.js (LTS)
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+
+      - name: Install yarn
+        run: npm install -g yarn
+
+      - name: Install patch-package globally
+        run: npm install -g patch-package
+
+      - name: Install zksync-cli globally
+        run: npm install -g zksync-cli
+
+      - name: Create new project called greeter-example
+        run: echo "" | zksync-cli create-project greeter-example
+      
       - name: Add private key to WALLET_PRIVATE_KEY variable in .env.example file (Windows)
-        if: runner.os == 'Windows'
         run: |
           cd greeter-example
           $content = Get-Content .env.example -Raw
           $content = $content -replace 'WALLET_PRIVATE_KEY=', 'WALLET_PRIVATE_KEY=ac7de7276038f2c181c541331f38d5913a8d63414752295e0011b3a286387043'
           Set-Content .env.example $content
         shell: pwsh
-
+      
       - name: Rename .env.example to .env
         run: cd greeter-example && mv .env.example .env
-
+      
       - name: Compile contracts with hardhat
         run: cd greeter-example && yarn hardhat compile
 
