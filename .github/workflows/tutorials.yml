@@ -37,7 +37,14 @@ jobs:
         run: npm install -g zksync-cli
 
       - name: Create new project called greeter-example
-        run: echo | zksync-cli create-project greeter-example
+        run: |
+          if [[ "$RUNNER_OS" == "Windows_NT" ]]; then
+            echo "" | zksync-cli create-project greeter-example
+          else
+            echo | zksync-cli create-project greeter-example
+          fi
+        shell: bash
+      
 
       - name: Add private key to WALLET_PRIVATE_KEY variable in .env.example file
         run: |
