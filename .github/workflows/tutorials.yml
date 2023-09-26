@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  run:
+  hello-world:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -25,6 +25,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
+
+      - name: Install patch-package globally
+        run: npm install -g patch-package
 
       - name: Install zksync-cli globally
         run: npm install -g zksync-cli
