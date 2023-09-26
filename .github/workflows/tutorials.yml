@@ -42,8 +42,17 @@ jobs:
       - name: Change dir to greeter-example
         run: cd greeter-example
 
-      - name: Add private key to WALLET_PRIVATE_KEY variable in .env.example file
-        run: sed -i 's/WALLET_PRIVATE_KEY=/WALLET_PRIVATE_KEY=ac7de7276038f2c181c541331f38d5913a8d63414752295e0011b3a2863870' .env.example
+      - name: Add private key to WALLET_PRIVATE_KEY variable in .env.example file (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: sed -i 's/WALLET_PRIVATE_KEY=/WALLET_PRIVATE_KEY=ac7de7276038f2c181c541331f38d5913a8d63414752295e0011b3a2863870/' .env.example
+      
+      - name: Add private key to WALLET_PRIVATE_KEY variable in .env.example file (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $content = Get-Content .env.example -Raw
+          $content = $content -replace 'WALLET_PRIVATE_KEY=', 'WALLET_PRIVATE_KEY=ac7de7276038f2c181c541331f38d5913a8d63414752295e0011b3a2863870'
+          Set-Content .env.example $content
+        shell: pwsh
 
       - name: Rename .env.example to .env
         run: mv .env.example .env
