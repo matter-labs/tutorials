@@ -25,7 +25,7 @@ jobs:
       - name: Install Node.js (LTS)
         uses: actions/setup-node@v3
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
 
       - name: Install yarn
         run: npm install -g yarn
@@ -44,7 +44,7 @@ jobs:
 
       - name: Add private key to WALLET_PRIVATE_KEY variable in .env.example file
         run: sed -i 's/WALLET_PRIVATE_KEY=/WALLET_PRIVATE_KEY=ac7de7276038f2c181c541331f38d5913a8d63414752295e0011b3a2863870' .env.example
-      
+
       - name: Rename .env.example to .env
         run: mv .env.example .env
 
