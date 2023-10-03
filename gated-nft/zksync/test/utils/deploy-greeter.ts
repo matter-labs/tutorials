@@ -5,7 +5,7 @@ import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import * as fs from "fs";
 
 // load env file
-import {localConfig} from "../../../../tests/testConfig";
+import { localConfig } from "../../../../tests/testConfig";
 
 // load wallet private key from env file
 const PRIVATE_KEY = localConfig.privateKey;

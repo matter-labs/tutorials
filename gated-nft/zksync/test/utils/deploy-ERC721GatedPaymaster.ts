@@ -3,7 +3,7 @@ import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import * as fs from "fs";
-import {localConfig} from "../../../../tests/testConfig";
+import { localConfig } from "../../../../tests/testConfig";
 
 const PRIVATE_KEY = localConfig.privateKey;
 // The address of the NFT collection contract

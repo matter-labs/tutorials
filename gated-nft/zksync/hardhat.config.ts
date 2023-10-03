@@ -5,12 +5,10 @@ import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
 import "@matterlabs/hardhat-zksync-verify";
 
-
 const config: HardhatUserConfig = {
   zksolc: {
     version: "latest",
-    settings: {
-    },
+    settings: {},
   },
   defaultNetwork: "zkSyncTestnet",
   networks: {
@@ -25,7 +23,7 @@ const config: HardhatUserConfig = {
   },
   solidity: {
     version: "0.8.17",
-  }
+  },
 };
 
 export default config;
