@@ -24,31 +24,6 @@ export class Utils {
 
   constructor(hre: HardhatRuntimeEnvironment) {}
 
-  // private async getRecipientAddress(defaultAddress: string = ""): Promise<string> {
-  //     const rl = readline.createInterface({
-  //         input: process.stdin,
-  //         output: process.stdout,
-  //     });
-  //
-  //     return new Promise((resolve, reject) => {
-  //         if (defaultAddress) {
-  //             // Если предоставлен адрес по умолчанию, сразу возвращаем его
-  //             resolve(defaultAddress);
-  //         } else {
-  //             rl.question(
-  //                 "Please provide the recipient address to receive an NFT: ",
-  //                 (address) => {
-  //                     if (!address) {
-  //                         reject("⛔️ RECIPIENT_ADDRESS not provided!");
-  //                     } else {
-  //                         resolve(address);
-  //                     }
-  //                 },
-  //             );
-  //         }
-  //     });
-  // }
-
   async deployAbstractContract(
     privateKey: string = localConfig.privateKey,
     contractName: string,
@@ -97,15 +72,13 @@ export class Utils {
     return this.nftAddress;
   }
 
-  async mintERC721(
-    /*contractEntity: object = this.contractEntity,*/ stone: string = "Power Stone",
+  async mintERC721(stone: string = "Power Stone",
     privateKey: string = localConfig.privateKey,
     recepientAddress: string = Wallets.secondWalletAddress,
   ) {
     const contract = this.contractEntity;
 
     try {
-      // const tx = await this.contractEntity.mint(recepientAddress, stone, localConfig.gasLimit);
       const tx = await contract.mint(
         recepientAddress,
         stone,
@@ -120,7 +93,7 @@ export class Utils {
     }
   }
 
-  private async getBalanceOfERC721Recipient(recepientAddress: string) {
+   async getBalanceOfERC721Recipient(recepientAddress: string = Wallets.secondWalletAddress) {
     const balance = await this.contractEntity.balanceOf(recepientAddress);
     console.log(`Balance of the recipient: ${balance}`);
 
@@ -170,7 +143,7 @@ export class Utils {
     await this.mintERC721();
 
     // Get and log the balance of the recipient
-    await this.getBalanceOfERC721Recipient(recepientAddress);
+    await this.getBalanceOfERC721Recipient();
 
     // Update base URI
     await this.updateBaseURI();

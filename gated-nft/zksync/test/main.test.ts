@@ -46,7 +46,7 @@ describe("Gated NFT", function () {
       expect(result[2].toString()).to.equal("1");
     });
 
-    it("Should be failed if an empty recipient address provided", async function () {
+    it("Should fail if an empty recipient address provided", async function () {
       result = await utils.deployOnlyERC721Contract("");
       expect(result).to.contain("⛔️ RECIPIENT_ADDRESS not detected!");
     });
@@ -63,7 +63,7 @@ describe("Gated NFT", function () {
       expect(result.to).to.equal(contract);
     });
 
-    it("Should be failed if an empty stone provided", async function () {
+    it("Should fail if an empty stone provided", async function () {
       result = await utils.mintERC721("");
       expect(result.message).to.contain("transaction failed");
     });
@@ -73,7 +73,7 @@ describe("Gated NFT", function () {
       expect(result.to).to.equal(contract);
     });
 
-    it("Should be failed if an empty recipient address provided", async function () {
+    it("Should fail if an empty recipient address provided", async function () {
       result = await utils.mintERC721(
         "Power Stone",
         localConfig.privateKey,
@@ -84,7 +84,7 @@ describe("Gated NFT", function () {
       );
     });
 
-    it("Should be failed if an incorrect recipient address provided", async function () {
+    it("Should fail if an incorrect recipient address provided", async function () {
       result = await utils.mintERC721(
         "Power Stone",
         localConfig.privateKey,
@@ -93,7 +93,7 @@ describe("Gated NFT", function () {
       expect(result.message).to.contain("invalid address");
     });
 
-    it("Should be failed if a correct recipient address provided with one space", async function () {
+    it("Should fail if a correct recipient address provided with one space", async function () {
       result = await utils.mintERC721(
         "Power Stone",
         localConfig.privateKey,
@@ -102,6 +102,48 @@ describe("Gated NFT", function () {
       expect(result.message).to.contain(
         'network does not support ENS (operation="getResolver", network="unknown", code=UNSUPPORTED_OPERATION',
       );
+    });
+
+    it("Should fail if a correct recipient address provided with lowercase letters", async function () {
+      result = await utils.mintERC721(
+        "Power Stone",
+        localConfig.privateKey,
+        "0x0d43eB5b8a47bA8900d84aa36656c92024e9772e",
+      );
+      expect(result.message).to.contain(
+        'bad address checksum',
+      );
+    });
+
+    it("Should fail if a correct recipient address provided twice in a row", async function () {
+      result = await utils.mintERC721(
+        "Power Stone",
+        localConfig.privateKey,
+        "0x0D43eB5B8a47bA8900d84AA36656c92024e9772e0x0D43eB5B8a47bA8900d84AA36656c92024e9772e",
+      );
+      expect(result.message).to.contain(
+        'network does not support ENS',
+      );
+    });
+
+    it("Should pass if a correct recipient address provided without 0x prefix", async function () {
+      result = await utils.mintERC721(
+          "Power Stone",
+          localConfig.privateKey,
+          "0D43eB5B8a47bA8900d84AA36656c92024e9772e",
+      );
+      expect(result.to).to.contain(contract);
+    });
+
+    it("Should have the 0 at the recipient address balance before mint", async function () {
+      result = await utils.getBalanceOfERC721Recipient();
+      expect(result.toString()).to.equal("0");
+    });
+
+    it("Should have the 1 at the recipient address balance after mint", async function () {
+      await utils.mintERC721();
+      result = await utils.getBalanceOfERC721Recipient();
+      expect(result.toString()).to.equal("1");
     });
   });
 
