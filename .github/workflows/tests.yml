@@ -86,4 +86,4 @@ jobs:
 
       - name: Gated NFT tests
         run: |
-          cd gated-nft/zksync && yarn test
+          cd gated-nft/zksync && yarn install --frozen-lockfile && yarn test
