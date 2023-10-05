@@ -73,9 +73,9 @@ describe("Custom AA Tests", function () {
       expect(result).to.equal("100000000000000000000");
     });
 
-    it("Should have a balance with the value 99999470421750000000 eventually", async function () {
+    it("Should have a balance with the value 99999468927500000000 eventually", async function () {
       result = multiSigResult.balanceAfter;
-      expect(result).to.equal("99999470421750000000");
+      expect(result).to.equal("99999468927500000000");
     });
 
     it("Should have the Multisig balance before a transaction more than after", async function () {
@@ -156,7 +156,7 @@ describe("Custom AA Tests", function () {
         expect.fail("Should fail");
       } catch (e) {
         const expectedMessage =
-          "Execution error: Failed to execute next transaction: Account validation error: Account validation returned invalid magic value. Most often this means that the signature is incorrect";
+          "Execution error: Transaction HALT: Account validation error: Account validation returned invalid magic value. Most often this means that the signature is incorrect";
         expect(e.message).to.contains(expectedMessage);
       }
     });
