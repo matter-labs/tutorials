@@ -1,49 +1,48 @@
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
-import { EIP712Signer, Provider, types, utils, Wallet } from "zksync-web3";
+import { Provider, Wallet } from "zksync-web3";
 import { localConfig } from "../../../../tests/testConfig";
-import { Contract, ethers } from "ethers";
-import { Helper } from "../../../../tests/helper";
-import * as readline from "readline";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { ethers } from "ethers";
 import * as fs from "fs";
 import * as hre from "hardhat";
-import { experimentalAddHardhatNetworkMessageTraceHook } from "hardhat/config";
 import { Wallets } from "../../../../tests/testData";
 
-// Temporary wallet for testing - that is accepting two private keys - and signs the transaction with both.
-export class Utils {
-  private nftAddress: string;
+export class ERC721 {
+  public nftAddress: string;
   private baseURI: string;
   private erc721RecipientBalance: string;
 
-  private contractAddress: string;
+  public contractAddress: string;
 
-  private contractEntity: any;
-  private paymasterAddress: string;
-  private greeterAddress: string;
+  public contractEntity: any;
+  public deployer: any;
 
-  constructor(hre: HardhatRuntimeEnvironment) {}
+  // public hre: object
 
-  async deployAbstractContract(
+  constructor(/*hre: HardhatRuntimeEnvironment*/) {
+    // tч.his.hre = hre;
+  }
+
+  public async deployContract(
     privateKey: string = localConfig.privateKey,
     contractName: string,
   ) {
     const wallet = new Wallet(privateKey);
     const deployer = new Deployer(hre, wallet);
+    let contract;
 
-    // Deploying the ERC721 contract
     const contractArtifact = await deployer.loadArtifact(contractName);
-    const contract = await deployer.deploy(contractArtifact, []);
+    contract = await deployer.deploy(contractArtifact, []);
+
     console.log(`Contract has been deployed to address: ${contract.address}`);
 
+    this.deployer = deployer;
     this.contractAddress = contract.address;
-
     this.contractEntity = contract;
 
     return this.contractEntity;
   }
 
-  async deployOnlyERC721Contract(
+  async deployERC721Contract(
     recipientAddress: string = Wallets.secondWalletAddress,
     privateKey: string = localConfig.privateKey,
   ) {
@@ -60,19 +59,17 @@ export class Utils {
 
     const contractName = "InfinityStones";
 
-    const nftAddress = await this.deployAbstractContract(
-      privateKey,
-      contractName,
-    );
+    const nft = await this.deployContract(privateKey, contractName);
 
-    this.nftAddress = nftAddress.address;
+    this.nftAddress = nft.address;
 
     console.log(`NFT Contract address: ${this.nftAddress}`);
 
     return this.nftAddress;
   }
 
-  async mintERC721(stone: string = "Power Stone",
+  async mintERC721(
+    stone: string = "Power Stone",
     privateKey: string = localConfig.privateKey,
     recepientAddress: string = Wallets.secondWalletAddress,
   ) {
@@ -93,7 +90,9 @@ export class Utils {
     }
   }
 
-   async getBalanceOfERC721Recipient(recepientAddress: string = Wallets.secondWalletAddress) {
+  async getBalanceOfERC721Recipient(
+    recepientAddress: string = Wallets.secondWalletAddress,
+  ) {
     const balance = await this.contractEntity.balanceOf(recepientAddress);
     console.log(`Balance of the recipient: ${balance}`);
 
@@ -133,11 +132,11 @@ export class Utils {
     console.log(`Done!`);
   }
 
-  async deployFullERC721(
+  async deployERC721Script(
     recepientAddress: string = Wallets.secondWalletAddress,
     privateKey: string = localConfig.privateKey,
   ) {
-    await this.deployOnlyERC721Contract(recepientAddress, privateKey);
+    await this.deployERC721Contract(recepientAddress, privateKey);
 
     // Mint NFTs to the recipient address
     await this.mintERC721();
@@ -156,48 +155,118 @@ export class Utils {
 
     return [this.nftAddress, this.baseURI, this.erc721RecipientBalance];
   }
+}
 
-  async deployERC721GatedPaymaster(
+export class ERC721GatedPaymaster extends ERC721 {
+  private paymasterAddress: string;
+  private paymasterFee: string;
+  private paymasterBalance: string;
+  private paymasterArtifacts: object;
+
+  constructor(/*hre: HardhatRuntimeEnvironment*/) {
+    super(/*hre*/);
+  }
+
+  public async getPaymasterGatedNFTArtifacts(
     privateKey: string = localConfig.privateKey,
   ) {
-    const NFT_COLLECTION_ADDRESS = this.nftAddress;
-
-    console.log(
-      `Running deploy script for the ERC721GatedPaymaster contract...`,
-    );
-    const provider = new Provider(localConfig.L2Network);
-
-    // The wallet that will deploy the token and the paymaster
-    // It is assumed that this wallet already has sufficient funds on zkSync
     const wallet = new Wallet(privateKey);
     const deployer = new Deployer(hre, wallet);
 
-    // Deploying the paymaster
-    const paymasterArtifact = await deployer.loadArtifact(
+    this.deployer = deployer;
+
+    const paymasterContractArtifacts = await deployer.loadArtifact(
       "ERC721GatedPaymaster",
     );
-    const deploymentFee = await deployer.estimateDeployFee(paymasterArtifact, [
-      NFT_COLLECTION_ADDRESS,
-    ]);
+    this.paymasterArtifacts = paymasterContractArtifacts;
+
+    return this.paymasterArtifacts;
+  }
+
+  async deployPaymaster(nftAddress: string = undefined) {
+    let paymaster;
+
+    if (nftAddress == undefined) {
+      paymaster = await this.deployer.deploy(this.paymasterArtifacts, [
+        this.nftAddress,
+      ]);
+    } else {
+      try {
+        paymaster = await this.deployer.deploy(this.paymasterArtifacts, [
+          nftAddress,
+        ]);
+      } catch (e) {
+        return e;
+      }
+    }
+
+    this.paymasterAddress = paymaster.address;
+    console.log(`Paymaster address: ${this.paymasterAddress}`);
+
+    return this.paymasterAddress;
+  }
+
+  async getPaymasterDeploymentFee(
+    constructorArguments: string = this.nftAddress,
+  ) {
+    const deploymentFee = await this.deployer.estimateDeployFee(
+      this.paymasterArtifacts,
+      [constructorArguments],
+    );
+
     const parsedFee = ethers.utils.formatEther(deploymentFee.toString());
     console.log(`The deployment is estimated to cost ${parsedFee} ETH`);
-    // Deploy the contract
-    const paymaster = await deployer.deploy(paymasterArtifact, [
-      NFT_COLLECTION_ADDRESS,
-    ]);
-    console.log(`Paymaster address: ${paymaster.address}`);
 
+    this.paymasterFee = parsedFee;
+
+    return this.paymasterFee;
+  }
+
+  async fundingPaymasterAddress(
+    sum: string = "0.005",
+    paymasterAddress: string = this.paymasterAddress,
+  ) {
     console.log("Funding paymaster with ETH");
     // Supplying paymaster with ETH
-    await (
-      await deployer.zkWallet.sendTransaction({
-        to: paymaster.address,
-        value: ethers.utils.parseEther("0.005"),
-      })
-    ).wait();
 
-    let paymasterBalance = await provider.getBalance(paymaster.address);
+    const tx = await this.deployer.zkWallet.sendTransaction({
+      to: paymasterAddress,
+      value: ethers.utils.parseEther(sum),
+    });
+    return await tx.wait(1);
+  }
+
+  async getPaymasterBalance() {
+    const provider = new Provider(localConfig.L2Network);
+    const paymasterBalance = await provider.getBalance(this.paymasterAddress);
+
     console.log(`Paymaster ETH balance is now ${paymasterBalance.toString()}`);
+
+    this.paymasterBalance = ethers.utils.formatEther(paymasterBalance);
+
+    return this.paymasterBalance;
+  }
+
+  async deployGatedPaymasterContract(
+    privateKey: string = localConfig.privateKey,
+  ) {
+    console.log(
+      `Running deploy script for the ERC721GatedPaymaster contract...`,
+    );
+
+    await this.getPaymasterGatedNFTArtifacts(Wallets.secondWalletPrivateKey);
+    await this.getPaymasterDeploymentFee();
+    await this.deployPaymaster();
+    await this.fundingPaymasterAddress();
+    await this.getPaymasterBalance();
+
+    return this.paymasterAddress;
+  }
+
+  async deployGatedPaymasterScript(
+    privateKey: string = localConfig.privateKey,
+  ) {
+    await this.deployGatedPaymasterContract();
 
     // Verify contract programmatically
     //
@@ -211,13 +280,11 @@ export class Utils {
     const data = fs.readFileSync(frontendConstantsFilePath, "utf8");
     const result = data.replace(
       /PAYMASTER-CONTRACT-ADDRESS/g,
-      paymaster.address,
+      this.paymasterAddress,
     );
     fs.writeFileSync(frontendConstantsFilePath, result, "utf8");
 
     console.log(`Done!`);
-
-    this.paymasterAddress = paymaster.address;
 
     return this.paymasterAddress;
   }

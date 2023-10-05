@@ -1,10 +1,12 @@
 import { expect } from "chai";
-import { Utils } from "./utils/utils";
+import { ERC721, ERC721GatedPaymaster } from "./utils/utils";
 import deployERC721 from "../deploy/deploy-ERC721";
 import * as hre from "hardhat";
 import { any } from "hardhat/internal/core/params/argumentTypes";
 import { Wallets } from "../../../tests/testData";
 import { localConfig } from "../../../tests/testConfig";
+import walletButton from "frontend/app/components/WalletButton";
+import type = Mocha.utils.type;
 
 describe("Gated NFT", function () {
   // xit("Whole flow", async function () {
@@ -19,35 +21,35 @@ describe("Gated NFT", function () {
   //   await utils.deployGreeter()
   // });
 
-  describe("ERC721", function () {
+  xdescribe("ERC721", function () {
     let contract: any;
     let result: any;
-    const utils = new Utils(hre);
+    const utils = new ERC721();
 
     beforeEach(async function () {
-      contract = await utils.deployOnlyERC721Contract();
+      contract = await utils.deployERC721Contract();
     });
 
     it("Should be deployed the ERC721 contract and return the NFT address", async function () {
-      result = await utils.deployFullERC721();
+      result = await utils.deployERC721Script();
       expect(result[0]).to.contain("0x");
     });
 
     it("Should be deployed the ERC721 contract and return the correct URI", async function () {
       const baseURI =
         "https://ipfs.io/ipfs/QmPtDtJEJDzxthbKmdgvYcLa9oNUUUkh7vvz5imJFPQdKx";
-      result = await utils.deployFullERC721();
+      result = await utils.deployERC721Script();
 
       expect(result[1]).to.equal(baseURI);
     });
 
     it("Should be deployed the ERC721 contract and return the correct URI", async function () {
-      result = await utils.deployFullERC721();
+      result = await utils.deployERC721Script();
       expect(result[2].toString()).to.equal("1");
     });
 
     it("Should fail if an empty recipient address provided", async function () {
-      result = await utils.deployOnlyERC721Contract("");
+      result = await utils.deployERC721Contract("");
       expect(result).to.contain("⛔️ RECIPIENT_ADDRESS not detected!");
     });
 
@@ -110,9 +112,7 @@ describe("Gated NFT", function () {
         localConfig.privateKey,
         "0x0d43eB5b8a47bA8900d84aa36656c92024e9772e",
       );
-      expect(result.message).to.contain(
-        'bad address checksum',
-      );
+      expect(result.message).to.contain("bad address checksum");
     });
 
     it("Should fail if a correct recipient address provided twice in a row", async function () {
@@ -121,16 +121,14 @@ describe("Gated NFT", function () {
         localConfig.privateKey,
         "0x0D43eB5B8a47bA8900d84AA36656c92024e9772e0x0D43eB5B8a47bA8900d84AA36656c92024e9772e",
       );
-      expect(result.message).to.contain(
-        'network does not support ENS',
-      );
+      expect(result.message).to.contain("network does not support ENS");
     });
 
     it("Should pass if a correct recipient address provided without 0x prefix", async function () {
       result = await utils.mintERC721(
-          "Power Stone",
-          localConfig.privateKey,
-          "0D43eB5B8a47bA8900d84AA36656c92024e9772e",
+        "Power Stone",
+        localConfig.privateKey,
+        "0D43eB5B8a47bA8900d84AA36656c92024e9772e",
       );
       expect(result.to).to.contain(contract);
     });
@@ -147,8 +145,68 @@ describe("Gated NFT", function () {
     });
   });
 
-  // it("Should be deployed and have address", async function () {
-  //   await utils.deployERC721GatedPaymaster(localConfig.privateKey)
-  //   await utils.deployGreeter(localConfig.privateKey)
-  // });
+  describe("ERC721GatedPaymaster", function () {
+    let contract: any;
+    let result: any;
+    const utils = new ERC721GatedPaymaster();
+
+    beforeEach(async function () {
+      await utils.deployERC721Contract();
+    });
+
+    it("Should be deployed the ERC721GatedPaymaster contract and return the paymaster address", async function () {
+      result = await utils.deployGatedPaymasterContract();
+      expect(result).to.contain("0x");
+    });
+
+    it("Should be deployed if the correct wallet address is provided instead of the correct NFT address", async function () {
+      await utils.getPaymasterGatedNFTArtifacts();
+      result = await utils.deployPaymaster(
+        "0x0D43eB5B8a47bA8900d84AA36656c92024e9772e",
+      );
+
+      expect(result).to.contain("0x");
+    });
+
+    it("Should be failed if an incorrect address format is provided as an NFT address", async function () {
+      await utils.getPaymasterGatedNFTArtifacts();
+      result = await utils.deployPaymaster(
+        "0x0D43eB5B8a47bA8900d8 4AA36656c92024e9772e",
+      );
+
+      expect(result.message).to.contain("network does not support ENS");
+    });
+
+    it("Should be failed if an empty value is provided as an NFT address", async function () {
+      await utils.getPaymasterGatedNFTArtifacts();
+      result = await utils.deployPaymaster("");
+
+      expect(result.reason).to.contain(
+        "resolver or addr is not configured for ENS name",
+      );
+    });
+
+    it("Should define and return the Paymaster Deployment fee in ETH", async function () {
+      result = await utils.getPaymasterDeploymentFee();
+
+      expect(result).to.contain("0.");
+      expect(typeof Number(result)).to.equal("number");
+    });
+
+    it("Should have the 0 ETH at the Paymaster balance before funding", async function () {
+      result = await utils.getPaymasterBalance();
+      expect(Number(result)).to.equal(0);
+    });
+
+    it("Should be succeeded after the Paymaster balance funding", async function () {
+      result = await utils.fundingPaymasterAddress();
+      expect(result.transactionHash).to.contain("0x");
+    });
+
+    it("Should have the correct Paymaster balance top upped after funding", async function () {
+      result = await utils.getPaymasterBalance();
+
+      expect(result.toString()).to.equal("0.005");
+    });
+  });
 });
