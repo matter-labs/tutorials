@@ -83,3 +83,7 @@ jobs:
       - name: Hello World tests
         run: |
           cd hello-world && yarn test
+
+      - name: Gated NFT tests
+        run: |
+          cd gated-nft/zksync && yarn test
