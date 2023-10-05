@@ -51,7 +51,7 @@ export class ERC721 {
     console.log(
       `You first need to add a RECIPIENT_ADDRESS to mint the NFT to...`,
     );
-    // We will mint the NFTs to this address
+
     try {
       if (!recipientAddress) throw "⛔️ RECIPIENT_ADDRESS not detected!";
     } catch (e) {
@@ -137,20 +137,10 @@ export class ERC721 {
     privateKey: string = localConfig.privateKey,
   ) {
     await this.deployERC721Contract(recepientAddress, privateKey);
-
-    // Mint NFTs to the recipient address
     await this.mintERC721();
-
-    // Get and log the balance of the recipient
     await this.getBalanceOfERC721Recipient();
-
-    // Update base URI
     await this.updateBaseURI();
-
-    // Update frontend with contract address
     await this.updateFEbyAddressNFT();
-
-    // Update paymaster deploy script with contract address
     await this.updatePaymasterDeployScript();
 
     return [this.nftAddress, this.baseURI, this.erc721RecipientBalance];
@@ -224,7 +214,6 @@ export class ERC721GatedPaymaster extends ERC721 {
     paymasterAddress: string = this.paymasterAddress,
   ) {
     console.log("Funding paymaster with ETH");
-    // Supplying paymaster with ETH
 
     const tx = await this.deployer.zkWallet.sendTransaction({
       to: paymasterAddress,
@@ -313,7 +302,6 @@ export class Greeter extends ERC721GatedPaymaster {
     );
 
     try {
-      // greeter = await this.deployer.deploy(this.contractArtifacts, contractArguments);
       greeter = await this.deployer.deploy(
         this.contractArtifacts,
         contractArguments,
@@ -323,7 +311,6 @@ export class Greeter extends ERC721GatedPaymaster {
       return e;
     }
 
-    //obtain the Constructor Arguments
     console.log(
       "Constructor args:" + greeter.interface.encodeDeploy(contractArguments),
     );

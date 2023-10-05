@@ -128,7 +128,6 @@ describe("Gated NFT", function () {
   });
 
   describe("ERC721GatedPaymaster", function () {
-    let contract: any;
     let result: any;
     const utils = new ERC721GatedPaymaster();
 
@@ -187,7 +186,6 @@ describe("Gated NFT", function () {
 
     it("Should have the correct Paymaster balance top upped after funding", async function () {
       result = await utils.getPaymasterBalance();
-
       expect(result.toString()).to.equal("0.005");
     });
 
@@ -235,7 +233,6 @@ describe("Gated NFT", function () {
 
     it("Should succeeded deploy Greeter script ", async function () {
       result = await utils.deployGreeterScript();
-
       expect(result).to.contain("0x");
     });
   });
