@@ -16,22 +16,23 @@ export class ERC721 {
   public contractEntity: any;
   public deployer: any;
 
-  // public hre: object
-
-  constructor(/*hre: HardhatRuntimeEnvironment*/) {
-    // tч.his.hre = hre;
-  }
+  constructor() {}
 
   public async deployContract(
     privateKey: string = localConfig.privateKey,
     contractName: string,
+    contractArguments: string = undefined,
   ) {
     const wallet = new Wallet(privateKey);
     const deployer = new Deployer(hre, wallet);
     let contract;
-
     const contractArtifact = await deployer.loadArtifact(contractName);
-    contract = await deployer.deploy(contractArtifact, []);
+
+    if (contractArguments == undefined) {
+      contract = await deployer.deploy(contractArtifact, []);
+    } else {
+      contract = await deployer.deploy(contractArtifact, [contractArguments]);
+    }
 
     console.log(`Contract has been deployed to address: ${contract.address}`);
 
@@ -115,8 +116,7 @@ export class ERC721 {
   }
 
   private async updateFEbyAddressNFT() {
-    const frontendConstantsFilePath =
-      "/Users/lafinion/Desktop/Development/MatterLabs/tutorials/gated-nft/frontend/app/constants/consts.tsx";
+    const frontendConstantsFilePath = "../frontend/app/constants/consts.tsx";
     const data = fs.readFileSync(frontendConstantsFilePath, "utf8");
     const result = data.replace(/NFT-CONTRACT-ADDRESS/g, this.nftAddress);
     fs.writeFileSync(frontendConstantsFilePath, result, "utf8");
@@ -161,39 +161,38 @@ export class ERC721GatedPaymaster extends ERC721 {
   private paymasterAddress: string;
   private paymasterFee: string;
   private paymasterBalance: string;
-  private paymasterArtifacts: object;
+  public contractArtifacts: object;
 
-  constructor(/*hre: HardhatRuntimeEnvironment*/) {
-    super(/*hre*/);
+  constructor() {
+    super();
   }
 
-  public async getPaymasterGatedNFTArtifacts(
+  public async getContractArtifacts(
     privateKey: string = localConfig.privateKey,
+    contractName: string = "ERC721GatedPaymaster",
   ) {
     const wallet = new Wallet(privateKey);
     const deployer = new Deployer(hre, wallet);
 
     this.deployer = deployer;
 
-    const paymasterContractArtifacts = await deployer.loadArtifact(
-      "ERC721GatedPaymaster",
-    );
-    this.paymasterArtifacts = paymasterContractArtifacts;
+    const contractArtifacts = await deployer.loadArtifact(contractName);
+    this.contractArtifacts = contractArtifacts;
 
-    return this.paymasterArtifacts;
+    return this.contractArtifacts;
   }
 
-  async deployPaymaster(nftAddress: string = undefined) {
+  async deployPaymaster(contractArguments: string = undefined) {
     let paymaster;
 
-    if (nftAddress == undefined) {
-      paymaster = await this.deployer.deploy(this.paymasterArtifacts, [
+    if (contractArguments == undefined) {
+      paymaster = await this.deployer.deploy(this.contractArtifacts, [
         this.nftAddress,
       ]);
     } else {
       try {
-        paymaster = await this.deployer.deploy(this.paymasterArtifacts, [
-          nftAddress,
+        paymaster = await this.deployer.deploy(this.contractArtifacts, [
+          contractArguments,
         ]);
       } catch (e) {
         return e;
@@ -206,12 +205,10 @@ export class ERC721GatedPaymaster extends ERC721 {
     return this.paymasterAddress;
   }
 
-  async getPaymasterDeploymentFee(
-    constructorArguments: string = this.nftAddress,
-  ) {
+  async getDeploymentFee(contractArguments: string = this.nftAddress) {
     const deploymentFee = await this.deployer.estimateDeployFee(
-      this.paymasterArtifacts,
-      [constructorArguments],
+      this.contractArtifacts,
+      [contractArguments],
     );
 
     const parsedFee = ethers.utils.formatEther(deploymentFee.toString());
@@ -254,8 +251,8 @@ export class ERC721GatedPaymaster extends ERC721 {
       `Running deploy script for the ERC721GatedPaymaster contract...`,
     );
 
-    await this.getPaymasterGatedNFTArtifacts(Wallets.secondWalletPrivateKey);
-    await this.getPaymasterDeploymentFee();
+    await this.getContractArtifacts(Wallets.secondWalletPrivateKey);
+    await this.getDeploymentFee();
     await this.deployPaymaster();
     await this.fundingPaymasterAddress();
     await this.getPaymasterBalance();
@@ -263,20 +260,8 @@ export class ERC721GatedPaymaster extends ERC721 {
     return this.paymasterAddress;
   }
 
-  async deployGatedPaymasterScript(
-    privateKey: string = localConfig.privateKey,
-  ) {
-    await this.deployGatedPaymasterContract();
-
-    // Verify contract programmatically
-    //
-    // Contract MUST be fully qualified name (e.g. path/sourceName:contractName)
-    const contractFullyQualifedName =
-      "contracts/ERC721GatedPaymaster.sol:ERC721GatedPaymaster";
-
-    // Update frontend with contract address
-    const frontendConstantsFilePath =
-      "/Users/lafinion/Desktop/Development/MatterLabs/tutorials/gated-nft/frontend/app/constants/consts.tsx";
+  async updateFEbyPaymasterAddress() {
+    const frontendConstantsFilePath = "../frontend/app/constants/consts.tsx";
     const data = fs.readFileSync(frontendConstantsFilePath, "utf8");
     const result = data.replace(
       /PAYMASTER-CONTRACT-ADDRESS/g,
@@ -285,52 +270,76 @@ export class ERC721GatedPaymaster extends ERC721 {
     fs.writeFileSync(frontendConstantsFilePath, result, "utf8");
 
     console.log(`Done!`);
-
-    return this.paymasterAddress;
   }
 
-  async deployGreeter(privateKey: string = localConfig.privateKey) {
-    console.log(`Running deploy script for the Greeter contract`);
+  async deployGatedPaymasterScript() {
+    await this.deployGatedPaymasterContract();
+    await this.updateFEbyPaymasterAddress();
 
-    // Initialize the wallet.
-    const wallet = new Wallet(privateKey);
+    return [this.paymasterAddress, this.paymasterBalance];
+  }
+}
 
-    // Create deployer object and load the artifact of the contract you want to deploy.
-    const deployer = new Deployer(hre, wallet);
-    const artifact = await deployer.loadArtifact("Greeter");
+export class Greeter extends ERC721GatedPaymaster {
+  public greeterAddress: string;
 
-    // Estimate contract deployment fee
-    const greeting = "Hi there!";
-    const deploymentFee = await deployer.estimateDeployFee(artifact, [
-      greeting,
-    ]);
+  constructor() {
+    super();
+  }
 
-    // Deploy this contract. The returned object will be of a `Contract` type, similarly to ones in `ethers`.
-    // `greeting` is an argument for contract constructor.
-    const parsedFee = ethers.utils.formatEther(deploymentFee.toString());
-    console.log(`The deployment is estimated to cost ${parsedFee} ETH`);
-
-    const greeterContract = await deployer.deploy(artifact, [greeting]);
-
-    //obtain the Constructor Arguments
-    console.log(
-      "Constructor args:" + greeterContract.interface.encodeDeploy([greeting]),
-    );
-
-    // Show the contract info.
-    const contractAddress = greeterContract.address;
-    console.log(`${artifact.contractName} was deployed to ${contractAddress}`);
-
-    // Update frontend with contract address
-    const frontendConstantsFilePath =
-      "/Users/lafinion/Desktop/Development/MatterLabs/tutorials/gated-nft/frontend/app/constants/consts.tsx";
+  async updateFEbyGreeterAddress() {
+    const frontendConstantsFilePath = "../frontend/app/constants/consts.tsx";
     const data = fs.readFileSync(frontendConstantsFilePath, "utf8");
-    const result = data.replace(/YOUR-GREETER-ADDRESS/g, contractAddress);
+    const result = data.replace(/YOUR-GREETER-ADDRESS/g, this.greeterAddress);
     fs.writeFileSync(frontendConstantsFilePath, result, "utf8");
 
     console.log("Done!");
+  }
 
-    this.greeterAddress = contractAddress;
+  async deployGreeter(
+    contractArguments: string[] = [],
+    privateKey: string = localConfig.privateKey,
+  ) {
+    let greeter;
+
+    const wallet = new Wallet(privateKey);
+    const deployer = new Deployer(hre, wallet);
+
+    this.deployer = deployer;
+
+    this.contractArtifacts = await this.getContractArtifacts(
+      localConfig.privateKey,
+      "Greeter",
+    );
+
+    try {
+      // greeter = await this.deployer.deploy(this.contractArtifacts, contractArguments);
+      greeter = await this.deployer.deploy(
+        this.contractArtifacts,
+        contractArguments,
+      );
+    } catch (e) {
+      console.error("Error deploying Greeter:", e);
+      return e;
+    }
+
+    //obtain the Constructor Arguments
+    console.log(
+      "Constructor args:" + greeter.interface.encodeDeploy(contractArguments),
+    );
+
+    this.greeterAddress = greeter.address;
+    console.log(`Greeter address: ${this.greeterAddress}`);
+    this.contractEntity = greeter;
+
+    return this.contractEntity;
+  }
+
+  async deployGreeterScript(privateKey: string = localConfig.privateKey) {
+    await this.getContractArtifacts(privateKey, "Greeter");
+    await this.getDeploymentFee("Hi there!");
+    await this.deployGreeter(["Hi there!"]);
+    await this.updateFEbyGreeterAddress();
 
     return this.greeterAddress;
   }

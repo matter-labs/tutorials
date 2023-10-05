@@ -1,27 +1,9 @@
 import { expect } from "chai";
-import { ERC721, ERC721GatedPaymaster } from "./utils/utils";
-import deployERC721 from "../deploy/deploy-ERC721";
-import * as hre from "hardhat";
-import { any } from "hardhat/internal/core/params/argumentTypes";
-import { Wallets } from "../../../tests/testData";
+import { ERC721, ERC721GatedPaymaster, Greeter } from "./utils/utils";
 import { localConfig } from "../../../tests/testConfig";
-import walletButton from "frontend/app/components/WalletButton";
-import type = Mocha.utils.type;
 
 describe("Gated NFT", function () {
-  // xit("Whole flow", async function () {
-  //    result = await utils.deployFullERC721();
-  //    console.log(result, '===========')
-  //
-  //
-  //    // expect(result).to.contain("Error: resolver or addr is not configured for ENS name")
-  //
-  //    // console.log(result, '+++++++++++')
-  //   await utils.deployERC721GatedPaymaster()
-  //   await utils.deployGreeter()
-  // });
-
-  xdescribe("ERC721", function () {
+  describe("ERC721", function () {
     let contract: any;
     let result: any;
     const utils = new ERC721();
@@ -160,7 +142,7 @@ describe("Gated NFT", function () {
     });
 
     it("Should be deployed if the correct wallet address is provided instead of the correct NFT address", async function () {
-      await utils.getPaymasterGatedNFTArtifacts();
+      await utils.getContractArtifacts();
       result = await utils.deployPaymaster(
         "0x0D43eB5B8a47bA8900d84AA36656c92024e9772e",
       );
@@ -169,7 +151,7 @@ describe("Gated NFT", function () {
     });
 
     it("Should be failed if an incorrect address format is provided as an NFT address", async function () {
-      await utils.getPaymasterGatedNFTArtifacts();
+      await utils.getContractArtifacts();
       result = await utils.deployPaymaster(
         "0x0D43eB5B8a47bA8900d8 4AA36656c92024e9772e",
       );
@@ -178,7 +160,7 @@ describe("Gated NFT", function () {
     });
 
     it("Should be failed if an empty value is provided as an NFT address", async function () {
-      await utils.getPaymasterGatedNFTArtifacts();
+      await utils.getContractArtifacts();
       result = await utils.deployPaymaster("");
 
       expect(result.reason).to.contain(
@@ -187,7 +169,7 @@ describe("Gated NFT", function () {
     });
 
     it("Should define and return the Paymaster Deployment fee in ETH", async function () {
-      result = await utils.getPaymasterDeploymentFee();
+      result = await utils.getDeploymentFee();
 
       expect(result).to.contain("0.");
       expect(typeof Number(result)).to.equal("number");
@@ -207,6 +189,54 @@ describe("Gated NFT", function () {
       result = await utils.getPaymasterBalance();
 
       expect(result.toString()).to.equal("0.005");
+    });
+
+    it("Should be succeeded for all deployment script", async function () {
+      result = await utils.deployGatedPaymasterScript();
+      expect(result[0]).to.contain("0x");
+    });
+  });
+
+  describe("Greeter", function () {
+    let result: any;
+    let contract;
+    const utils = new Greeter();
+
+    it("Should be deployed the Greeter contract and return the correct address", async function () {
+      result = await utils.deployGreeterScript();
+      expect(result).to.contain("0x");
+    });
+
+    it("Should show the default greeting as Hi!", async function () {
+      const greeting = "Hi!";
+      contract = await utils.deployGreeter([greeting]);
+      result = await contract.greet();
+
+      expect(result).to.eq(greeting);
+    });
+
+    it("Should change the default greeting to the Hola!", async function () {
+      const greeting = "Hola!";
+      contract = await utils.deployGreeter([greeting]);
+      await contract.setGreeting(greeting);
+      result = await contract.greet();
+
+      expect(result).to.eq(greeting);
+    });
+
+    it("Should be failed when an empty contract argument provided", async function () {
+      const greeting = "";
+      contract = await utils.deployGreeter([greeting]);
+      await contract.setGreeting(greeting);
+      result = await contract.greet();
+
+      expect(result).to.eq(greeting);
+    });
+
+    it("Should succeeded deploy Greeter script ", async function () {
+      result = await utils.deployGreeterScript();
+
+      expect(result).to.contain("0x");
     });
   });
 });
