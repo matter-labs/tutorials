@@ -58,7 +58,7 @@ describe("Gated NFT", function () {
       expect(result.to).to.equal(contract);
     });
 
-    it("Should fail if an empty recipient address provided", async function () {
+    it("Should fail if an empty recipient address is provided", async function () {
       result = await utils.mintERC721(
         "Power Stone",
         localConfig.privateKey,
