@@ -35,7 +35,7 @@ describe("Gated NFT", function () {
       expect(result).to.contain("⛔️ RECIPIENT_ADDRESS not detected!");
     });
 
-    it("Should be succeeded if a base stone provided", async function () {
+    it("Should succeed if a base stone provided", async function () {
       this.timeout(10000);
       result = await utils.mintERC721(/*contract,*/ "Power Stone");
 
