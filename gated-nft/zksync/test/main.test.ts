@@ -12,7 +12,7 @@ describe("Gated NFT", function () {
       contract = await utils.deployERC721Contract();
     });
 
-    it("Should be deployed the ERC721 contract and return the NFT address", async function () {
+    it("Should deploy the ERC721 contract and return the NFT address", async function () {
       result = await utils.deployERC721Script();
       expect(result[0]).to.contain("0x");
       expect(result[0].length).to.equal(42);
