@@ -148,6 +148,7 @@ describe("Gated NFT", function () {
       );
 
       expect(result).to.contain("0x");
+      expect(result[0].length).to.equal(42);
     });
 
     it("Should fail if an incorrect address format is provided as an NFT address", async function () {
