@@ -53,7 +53,7 @@ describe("Gated NFT", function () {
       expect(result.message).to.contain("transaction failed");
     });
 
-    it("Should be succeeded if an alternative stone provided", async function () {
+    it("Should succeed if an alternative stone is provided", async function () {
       result = await utils.mintERC721("11111");
       expect(result.to).to.equal(contract);
     });
