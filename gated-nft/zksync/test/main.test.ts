@@ -185,7 +185,7 @@ describe("Gated NFT", function () {
       expect(result.transactionHash).to.contain("0x");
     });
 
-    it("Should have the correct Paymaster balance top upped after funding", async function () {
+    it("Should have the correct Paymaster balance after funding", async function () {
       result = await utils.getPaymasterBalance();
       expect(result.toString()).to.equal("0.005");
     });
