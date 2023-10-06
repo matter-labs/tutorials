@@ -17,7 +17,7 @@ describe("Gated NFT", function () {
       expect(result[0]).to.contain("0x");
     });
 
-    it("Should be deployed the ERC721 contract and return the correct URI", async function () {
+    it("Should deploy the ERC721 contract and return the correct URI", async function () {
       const baseURI =
         "https://ipfs.io/ipfs/QmPtDtJEJDzxthbKmdgvYcLa9oNUUUkh7vvz5imJFPQdKx";
       result = await utils.deployERC721Script();
