@@ -78,7 +78,7 @@ describe("Gated NFT", function () {
       expect(result.message).to.contain("invalid address");
     });
 
-    it("Should fail if a correct recipient address provided with one space", async function () {
+    it("Should fail if a correct recipient address is provided with one space", async function () {
       result = await utils.mintERC721(
         "Power Stone",
         localConfig.privateKey,
@@ -98,7 +98,7 @@ describe("Gated NFT", function () {
       expect(result.message).to.contain("bad address checksum");
     });
 
-    it("Should fail if a correct recipient address provided twice in a row", async function () {
+    it("Should fail if a correct recipient address is provided twice in a row", async function () {
       result = await utils.mintERC721(
         "Power Stone",
         localConfig.privateKey,
@@ -107,7 +107,7 @@ describe("Gated NFT", function () {
       expect(result.message).to.contain("network does not support ENS");
     });
 
-    it("Should pass if a correct recipient address provided without 0x prefix", async function () {
+    it("Should pass if a correct recipient address is provided without 0x prefix", async function () {
       result = await utils.mintERC721(
         "Power Stone",
         localConfig.privateKey,
@@ -116,12 +116,12 @@ describe("Gated NFT", function () {
       expect(result.to).to.contain(contract);
     });
 
-    it("Should have the 0 at the recipient address balance before mint", async function () {
+    it("Should have 0 as a balance at the recipient address before mint", async function () {
       result = await utils.getBalanceOfERC721Recipient();
       expect(result.toString()).to.equal("0");
     });
 
-    it("Should have the 1 at the recipient address balance after mint", async function () {
+    it("Should have 1 as a balance at the recipient address after mint", async function () {
       await utils.mintERC721();
       result = await utils.getBalanceOfERC721Recipient();
       expect(result.toString()).to.equal("1");
@@ -136,12 +136,12 @@ describe("Gated NFT", function () {
       await utils.deployERC721Contract();
     });
 
-    it("Should be deployed the ERC721GatedPaymaster contract and return the paymaster address", async function () {
+    it("Should deploy the ERC721GatedPaymaster contract and return the paymaster address", async function () {
       result = await utils.deployGatedPaymasterContract();
       expect(result).to.contain("0x");
     });
 
-    it("Should be deployed if the correct wallet address is provided instead of the correct NFT address", async function () {
+    it("Should deploy if the correct wallet address is provided as an NFT address", async function () {
       await utils.getContractArtifacts();
       result = await utils.deployPaymaster(
         "0x0D43eB5B8a47bA8900d84AA36656c92024e9772e",
@@ -150,7 +150,7 @@ describe("Gated NFT", function () {
       expect(result).to.contain("0x");
     });
 
-    it("Should be failed if an incorrect address format is provided as an NFT address", async function () {
+    it("Should fail if an incorrect address format is provided as an NFT address", async function () {
       await utils.getContractArtifacts();
       result = await utils.deployPaymaster(
         "0x0D43eB5B8a47bA8900d8 4AA36656c92024e9772e",
@@ -159,7 +159,7 @@ describe("Gated NFT", function () {
       expect(result.message).to.contain("network does not support ENS");
     });
 
-    it("Should be failed if an empty value is provided as an NFT address", async function () {
+    it("Should fail if an empty value is provided as an NFT address", async function () {
       await utils.getContractArtifacts();
       result = await utils.deployPaymaster("");
 
@@ -175,7 +175,7 @@ describe("Gated NFT", function () {
       expect(typeof Number(result)).to.equal("number");
     });
 
-    it("Should have the 0 ETH at the Paymaster balance before funding", async function () {
+    it("Should have 0 ETH as balance at the Paymaster before funding", async function () {
       result = await utils.getPaymasterBalance();
       expect(Number(result)).to.equal(0);
     });
