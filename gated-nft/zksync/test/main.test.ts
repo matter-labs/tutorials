@@ -18,7 +18,7 @@ describe("Gated NFT", function () {
       expect(result[0].length).to.equal(42);
     });
 
-    it("Should be deployed the ERC721 contract and return the default BaseURI value", async function () {
+    it("Should deploy the ERC721 contract and return the correct URI", async function () {
       const baseURI =
         "https://ipfs.io/ipfs/QmPtDtJEJDzxthbKmdgvYcLa9oNUUUkh7vvz5imJFPQdKx";
       result = await utils.deployERC721Script();
@@ -36,7 +36,7 @@ describe("Gated NFT", function () {
       expect(result).to.contain("⛔️ RECIPIENT_ADDRESS not detected!");
     });
 
-    it("Should be succeeded if a base stone provided", async function () {
+    it("Should succeed if a base stone provided", async function () {
       this.timeout(10000);
       result = await utils.mintERC721(/*contract,*/ "Power Stone");
 
@@ -180,7 +180,7 @@ describe("Gated NFT", function () {
       expect(Number(result)).to.equal(0);
     });
 
-    it("Should be succeeded after the Paymaster balance funding", async function () {
+    it("Should succeed after the Paymaster balance funding", async function () {
       result = await utils.fundingPaymasterAddress();
       expect(result.transactionHash).to.contain("0x");
     });
@@ -190,7 +190,7 @@ describe("Gated NFT", function () {
       expect(result.toString()).to.equal("0.005");
     });
 
-    it("Should be succeeded for all deployment script", async function () {
+    it("Should succeed for all deployment scripts", async function () {
       result = await utils.deployGatedPaymasterScript();
       expect(result[0]).to.contain("0x");
     });
