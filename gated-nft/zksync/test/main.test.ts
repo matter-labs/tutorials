@@ -69,7 +69,7 @@ describe("Gated NFT", function () {
       );
     });
 
-    it("Should fail if an incorrect recipient address provided", async function () {
+    it("Should fail if an incorrect recipient address is provided", async function () {
       result = await utils.mintERC721(
         "Power Stone",
         localConfig.privateKey,
