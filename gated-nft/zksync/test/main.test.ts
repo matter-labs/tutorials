@@ -43,7 +43,7 @@ describe("Gated NFT", function () {
       expect(result.to).to.equal(contract);
     });
 
-    it("Should be succeeded if a correct stone provided", async function () {
+    it("Should succeed if a correct stone is provided", async function () {
       result = await utils.mintERC721(contract, "Space Stone");
       expect(result.to).to.equal(contract);
     });
