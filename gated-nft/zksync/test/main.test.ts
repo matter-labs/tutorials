@@ -189,7 +189,7 @@ describe("Gated NFT", function () {
       expect(result.toString()).to.equal("0.005");
     });
 
-    it("Should be succeeded for all deployment script", async function () {
+    it("Should succeed for all deployment scripts", async function () {
       result = await utils.deployGatedPaymasterScript();
       expect(result[0]).to.contain("0x");
     });
