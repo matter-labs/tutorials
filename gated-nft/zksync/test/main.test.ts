@@ -15,9 +15,10 @@ describe("Gated NFT", function () {
     it("Should be deployed the ERC721 contract and return the NFT address", async function () {
       result = await utils.deployERC721Script();
       expect(result[0]).to.contain("0x");
+      expect(result[0].length).to.equal(42);
     });
 
-    it("Should be deployed the ERC721 contract and return the correct URI", async function () {
+    it("Should be deployed the ERC721 contract and return the default BaseURI value", async function () {
       const baseURI =
         "https://ipfs.io/ipfs/QmPtDtJEJDzxthbKmdgvYcLa9oNUUUkh7vvz5imJFPQdKx";
       result = await utils.deployERC721Script();
@@ -192,48 +193,6 @@ describe("Gated NFT", function () {
     it("Should be succeeded for all deployment script", async function () {
       result = await utils.deployGatedPaymasterScript();
       expect(result[0]).to.contain("0x");
-    });
-  });
-
-  describe("Greeter", function () {
-    let result: any;
-    let contract;
-    const utils = new Greeter();
-
-    it("Should be deployed the Greeter contract and return the correct address", async function () {
-      result = await utils.deployGreeterScript();
-      expect(result).to.contain("0x");
-    });
-
-    it("Should show the default greeting as Hi!", async function () {
-      const greeting = "Hi!";
-      contract = await utils.deployGreeter([greeting]);
-      result = await contract.greet();
-
-      expect(result).to.eq(greeting);
-    });
-
-    it("Should change the default greeting to the Hola!", async function () {
-      const greeting = "Hola!";
-      contract = await utils.deployGreeter([greeting]);
-      await contract.setGreeting(greeting);
-      result = await contract.greet();
-
-      expect(result).to.eq(greeting);
-    });
-
-    it("Should be failed when an empty contract argument provided", async function () {
-      const greeting = "";
-      contract = await utils.deployGreeter([greeting]);
-      await contract.setGreeting(greeting);
-      result = await contract.greet();
-
-      expect(result).to.eq(greeting);
-    });
-
-    it("Should succeeded deploy Greeter script ", async function () {
-      result = await utils.deployGreeterScript();
-      expect(result).to.contain("0x");
     });
   });
 });

@@ -42,12 +42,12 @@ describe("Custom AA Tests", function () {
 
     it("Should have the From value as a rich wallet address", async function () {
       result = factory.deployTransaction.from;
-      expect(result).to.equal(Wallets.richWalletAddress);
+      expect(result).to.equal(Wallets.firstWalletAddress);
     });
 
     it("Should have the Signer address value as a rich wallet address", async function () {
       result = factory.signer;
-      expect(result.address).to.equal(Wallets.richWalletAddress);
+      expect(result.address).to.equal(Wallets.firstWalletAddress);
     });
   });
 

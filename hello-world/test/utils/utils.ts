@@ -7,7 +7,7 @@ import { localConfig } from "../../../tests/testConfig";
 export const deploy = async () => {
   const provider = new Provider(localConfig.L2Network);
 
-  const wallet = new Wallet(Wallets.richWalletPrivateKey, provider);
+  const wallet = new Wallet(Wallets.firstWalletPrivateKey, provider);
   const deployer = new Deployer(hre, wallet);
   const artifact = await deployer.loadArtifact("Greeter");
   const contract = await deployer.deploy(artifact, ["Hi"]);
