@@ -193,6 +193,7 @@ describe("Gated NFT", function () {
     it("Should succeed for all deployment scripts", async function () {
       result = await utils.deployGatedPaymasterScript();
       expect(result[0]).to.contain("0x");
+      expect(result[0].length).to.equal(42);
     });
   });
 });
