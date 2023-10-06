@@ -26,7 +26,7 @@ describe("Gated NFT", function () {
       expect(result[1]).to.equal(baseURI);
     });
 
-    it("Should be deployed the ERC721 contract and return the correct URI", async function () {
+    it("Should deploy the ERC721 contract and return the 1 ETH as a recipient balance", async function () {
       result = await utils.deployERC721Script();
       expect(result[2].toString()).to.equal("1");
     });
@@ -38,7 +38,7 @@ describe("Gated NFT", function () {
 
     it("Should succeed if a base stone provided", async function () {
       this.timeout(10000);
-      result = await utils.mintERC721(/*contract,*/ "Power Stone");
+      result = await utils.mintERC721("Power Stone");
 
       expect(result.to).to.equal(contract);
     });
