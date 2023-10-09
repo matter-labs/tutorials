@@ -1,7 +1,8 @@
 import { HardhatUserConfig } from "hardhat/config";
+import { localConfig } from "../../tests/testConfig";
 
-import "@matterlabs/hardhat-zksync-solc";
 import "@matterlabs/hardhat-zksync-deploy";
+import "@matterlabs/hardhat-zksync-solc";
 import "@matterlabs/hardhat-zksync-verify";
 
 const config: HardhatUserConfig = {
@@ -12,15 +13,12 @@ const config: HardhatUserConfig = {
   defaultNetwork: "zkSyncTestnet",
   networks: {
     hardhat: {
-      zksync: false,
+      zksync: true,
     },
     zkSyncTestnet: {
-      url: "https://zksync2-testnet.zksync.dev",
-      ethNetwork: "goerli",
+      url: localConfig.L2Network,
+      ethNetwork: localConfig.L1Network,
       zksync: true,
-      // contract verification endpoint
-      verifyURL:
-        "https://zksync2-testnet-explorer.zksync.dev/contract_verification",
     },
   },
   solidity: {
