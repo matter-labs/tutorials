@@ -69,9 +69,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Run Era Test Node
-        uses: dutterbutter/era-test-node-action@latest
-
       - name: Install dependencies
         run: |
           yarn install --frozen-lockfile
