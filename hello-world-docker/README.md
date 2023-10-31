@@ -40,4 +40,4 @@ If you do not start the zkSync local environment, the tests will fail with error
 - [Documentation](https://v2-docs.zksync.io/dev/)
 - [GitHub](https://github.com/matter-labs)
 - [Twitter](https://twitter.com/zksync)
-- [Discord](https://discord.gg/nMaPGrDDwk)
+- [Discord](https://join.zksync.dev/)
