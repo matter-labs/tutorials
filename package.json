@@ -21,8 +21,6 @@
   },
   "scripts": {
     "fix:fmt": "prettier --write .",
-    "lint:fmt": "prettier --check .",
-    "install:local:node": "cargo install --git https://github.com/matter-labs/era-test-node.git --locked",
-    "launch:local:node": "era_test_node run"
+    "lint:fmt": "prettier --check ."
   }
 }
