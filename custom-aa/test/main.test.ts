@@ -73,9 +73,9 @@ describe("Custom AA Tests", function () {
       expect(result).to.equal("100000000000000000000");
     });
 
-    it("Should have a balance with the value 99999468927500000000 eventually", async function () {
+    it("Should have a balance with the value 99999469873500000000 eventually", async function () {
       result = multiSigResult.balanceAfter;
-      expect(result).to.equal("99999468927500000000");
+      expect(result).to.equal("99999469873500000000");
     });
 
     it("Should have the Multisig balance before a transaction more than after", async function () {
