@@ -78,10 +78,11 @@ jobs:
         run: |
           cd hello-world && yarn test
 
+      - name: Custom AA tests
+        run: |
+          cd custom-aa && yarn test
+
       - name: Gated NFT tests
         run: |
           cd gated-nft/zksync && yarn test
 
-      - name: Custom AA tests
-        run: |
-          cd custom-aa && yarn test
