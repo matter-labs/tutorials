@@ -5,7 +5,7 @@ describe("Greeter", function () {
   let contract: any;
   let result: string;
 
-  beforeEach(async function () {
+  before(async function () {
     contract = await deploy();
   });
 
