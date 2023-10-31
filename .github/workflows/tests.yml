@@ -74,10 +74,6 @@ jobs:
           yarn install --frozen-lockfile
           cd gated-nft/zksync && yarn install --frozen-lockfile
 
-      - name: Custom AA tests
-        run: |
-          cd custom-aa && yarn test
-
       - name: Hello World tests
         run: |
           cd hello-world && yarn test
@@ -85,3 +81,7 @@ jobs:
       - name: Gated NFT tests
         run: |
           cd gated-nft/zksync && yarn test
+
+      - name: Custom AA tests
+        run: |
+          cd custom-aa && yarn test
