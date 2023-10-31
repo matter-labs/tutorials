@@ -13,6 +13,6 @@ For more information and support, visit our official channels:
 - [Documentation](https://era.zksync.io/docs/dev/tutorials/gated-nft-paymaster-tutorial.html)
 - [GitHub](https://github.com/matter-labs)
 - [Twitter](https://twitter.com/zksync)
-- [Discord](https://discord.gg/nMaPGrDDwk)
+- [Discord](https://join.zksync.dev/)
 
 Jump in, and let's make the most of paymasters together! 🚀
