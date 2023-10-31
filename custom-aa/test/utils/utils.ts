@@ -138,6 +138,7 @@ export class Utils {
       await tx.wait(1);
       this.txHash = tx.hash;
     } catch (e) {
+      console.log("\n\n ==== Deploy account error ==== \n\n", e);
       return e;
     }
     // Getting the address of the deployed contract account
