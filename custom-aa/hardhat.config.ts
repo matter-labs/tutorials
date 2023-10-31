@@ -6,7 +6,6 @@ import "@matterlabs/hardhat-zksync-node";
 
 import "@matterlabs/hardhat-zksync-verify";
 
-
 const config: HardhatUserConfig = {
   zksolc: {
     version: "latest",
