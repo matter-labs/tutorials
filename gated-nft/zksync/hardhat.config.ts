@@ -10,7 +10,9 @@ import "@matterlabs/hardhat-zksync-verify";
 const config: HardhatUserConfig = {
   zksolc: {
     version: "latest",
-    settings: {},
+    settings: {
+      isSystem: true
+    },
   },
   networks: {
     hardhat: {
