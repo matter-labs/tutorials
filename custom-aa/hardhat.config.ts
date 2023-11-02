@@ -12,7 +12,7 @@ const config: HardhatUserConfig = {
     version: "latest",
     settings: {
       isSystem: true
-    }
+    },
   },
   networks: {
     hardhat: {
