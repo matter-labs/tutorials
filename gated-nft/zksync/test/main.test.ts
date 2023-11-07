@@ -9,7 +9,6 @@ describe("Gated NFT", function () {
     const utils = new ERC721();
 
     beforeEach(async function () {
-      this.timeout(10000);
       contract = await utils.deployERC721Contract();
     });
 
@@ -134,7 +133,6 @@ describe("Gated NFT", function () {
     const utils = new ERC721GatedPaymaster();
 
     beforeEach(async function () {
-      this.timeout(10000);
       await utils.deployERC721Contract();
     });
 
