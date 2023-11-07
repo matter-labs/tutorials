@@ -17,8 +17,9 @@
     "@matterlabs/hardhat-zksync-deploy": "^0.6.5",
     "@matterlabs/hardhat-zksync-solc": "^0.4.2",
     "@matterlabs/zksync-contracts": "^0.6.1",
+    "@matterlabs/hardhat-zksync-node": "^0.0.1-beta.6",
     "@openzeppelin/contracts": "^4.7.3",
     "hardhat": "^2.12.0",
-    "zksync-web3": "^0.14.3"
+    "zksync-web3": "^0.16.0"
   }
 }
