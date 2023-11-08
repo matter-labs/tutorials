@@ -1,4 +1,4 @@
-import { Wallet, utils } from "zksync-web3";
+import { Wallet } from "zksync2-js";
 import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
@@ -40,7 +40,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   // Deploy this contract. The returned object will be of a `Contract` type, similarly to ones in `ethers`.
   // `greeting` is an argument for contract constructor.
-  const parsedFee = ethers.utils.formatEther(deploymentFee.toString());
+  const parsedFee = ethers.formatEther(deploymentFee.toString());
   console.log(`The deployment is estimated to cost ${parsedFee} ETH`);
 
   const greeterContract = await deployer.deploy(artifact, [greeting]);

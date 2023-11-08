@@ -1,4 +1,4 @@
-import { Wallet, Provider, Contract } from "zksync-web3";
+import { Wallet, Provider } from "zksync2-js";
 import * as hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import { Wallets } from "../../../tests/testData";
