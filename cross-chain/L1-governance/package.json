@@ -39,6 +39,6 @@
   },
   "scripts": {
     "build": "hardhat compile",
-    "deploy-governance": "hardhat run --network goerli ./scripts/deploy.ts"
+    "deploy-governance": "hardhat run --network sepolia ./scripts/deploy.ts"
   }
 }

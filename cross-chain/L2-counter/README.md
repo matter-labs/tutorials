@@ -25,7 +25,7 @@ yarn
 
 2. Open `deploy/counter.ts`.
 
-3. Replace the `<WALLET-PRIVATE-KEY>` and the `<GOVERNANCE-ADDRESS>` with the `0x`-prefixed private key of the Ethereum wallet with some ETH balance on Görli and the address of the L1 governance contract respectively
+3. Replace the `<WALLET-PRIVATE-KEY>` and the `<GOVERNANCE-ADDRESS>` with the `0x`-prefixed private key of the Ethereum wallet with some ETH balance on Sepolia and the address of the L1 governance contract respectively
 
 4. Run the script using the following command:
 

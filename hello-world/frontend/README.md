@@ -29,3 +29,7 @@ yarn lint
 ### Customize configuration
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+:::Note
+The values under src/erc20.json will be updated.
+:::

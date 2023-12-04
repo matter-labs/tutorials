@@ -1,4 +1,4 @@
-import { BigNumber, Contract, ethers, Wallet } from "ethers";
+import { BigNumber, Contract, Wallet, ethers } from "ethers";
 import { Provider, utils } from "zksync-web3";
 const GOVERNANCE_ABI = require("./governance.json");
 const GOVERNANCE_ADDRESS = "<GOVERNANCE-ADDRESS>";
@@ -14,7 +14,7 @@ async function main() {
   const govcontract = new Contract(GOVERNANCE_ADDRESS, GOVERNANCE_ABI, wallet);
 
   // Initialize the L2 provider.
-  const l2Provider = new Provider("https://testnet.era.zksync.dev");
+  const l2Provider = new Provider("https://sepolia.era.zksync.dev");
   // Get the current address of the zkSync L1 bridge.
   const zkSyncAddress = await l2Provider.getMainContractAddress();
   // Get the `Contract` object of the zkSync bridge.

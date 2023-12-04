@@ -1,5 +1,7 @@
-import { Provider, utils, Wallet } from "zksync-web3";
 import * as ethers from "ethers";
+
+import { Provider, Wallet, utils } from "zksync-web3";
+
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 // Put the address of the deployed paymaster here
@@ -17,7 +19,7 @@ function getToken(hre: HardhatRuntimeEnvironment, wallet: Wallet) {
 }
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider("https://testnet.era.zksync.dev");
+  const provider = new Provider("https://sepolia.era.zksync.dev");
   const emptyWallet = new Wallet(EMPTY_WALLET_PRIVATE_KEY, provider);
 
   // const paymasterWallet = new Wallet(PAYMASTER_ADDRESS, provider);
