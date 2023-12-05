@@ -1,8 +1,10 @@
-import { Provider, Wallet } from "zksync-web3";
 import * as ethers from "ethers";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import * as fs from "fs";
+
+import { Provider, Wallet } from "zksync-web3";
+
+import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { localConfig } from "../../../../tests/testConfig";
 
 const PRIVATE_KEY = localConfig.privateKey;
@@ -11,7 +13,7 @@ const NFT_COLLECTION_ADDRESS = "0x3ccA24e1A0e49654bc3482ab70199b7400eb7A3a";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   console.log(`Running deploy script for the ERC721GatedPaymaster contract...`);
-  const provider = new Provider("https://testnet.era.zksync.dev");
+  const provider = new Provider("https://sepolia.era.zksync.dev");
 
   // The wallet that will deploy the token and the paymaster
   // It is assumed that this wallet already has sufficient funds on zkSync
