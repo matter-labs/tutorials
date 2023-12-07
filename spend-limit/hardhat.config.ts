@@ -1,44 +1,24 @@
-import "@matterlabs/hardhat-zksync-chai-matchers";
-import "@matterlabs/hardhat-zksync-deploy";
-import "@matterlabs/hardhat-zksync-solc";
-import "@matterlabs/hardhat-zksync-verify";
-
-import * as dotenv from "dotenv";
-
 import { HardhatUserConfig } from "hardhat/config";
 
-dotenv.config();
+import "@matterlabs/hardhat-zksync-deploy";
+import "@matterlabs/hardhat-zksync-solc";
 
-const zkSyncTestnet =
-  process.env.NODE_ENV == "test"
-    ? {
-        url: "http://localhost:3050",
-        ethNetwork: "http://localhost:8545",
-        zksync: true,
-      }
-    : {
-        url: "https://sepolia.era.zksync.dev",
-        ethNetwork: "sepolia", // Can also be the RPC URL of the network (e.g. `https://sepolia.infura.io/v3/<API_KEY>`)
-        zksync: true,
-        verifyURL:
-          "https://explorer.sepolia.era.zksync.dev/contract_verification",
-      };
+import "@matterlabs/hardhat-zksync-verify";
 
 const config: HardhatUserConfig = {
   zksolc: {
-    version: "latest",
+    version: "latest", // Uses latest available in https://github.com/matter-labs/zksolc-bin/
     settings: {
-      isSystem: true,
+      isSystem: true, // make sure to include this line
     },
   },
-
   defaultNetwork: "zkSyncTestnet",
-
   networks: {
-    hardhat: {
+    zkSyncTestnet: {
+      url: "https://sepolia.era.zksync.dev",
+      ethNetwork: "sepolia", // Can also be the RPC URL of the network (e.g. `https://sepolia.infura.io/v3/<API_KEY>`)
       zksync: true,
     },
-    zkSyncTestnet,
   },
   solidity: {
     version: "0.8.17",
