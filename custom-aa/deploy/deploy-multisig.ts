@@ -50,7 +50,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     await wallet.sendTransaction({
       to: multisigAddress,
       // You can increase the amount of ETH sent to the multisig
-      value: ethers.utils.parseEther("0.008"),
+      value: ethers.utils.parseEther("0.013"),
     })
   ).wait();
 
