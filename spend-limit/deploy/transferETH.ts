@@ -1,18 +1,26 @@
-import { utils, Wallet, Provider, Contract, EIP712Signer, types } from "zksync-web3";
 import * as ethers from "ethers";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-const ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
-const ACCOUNT_ADDRESS = "<DEPLOYED_ACCOUNT_ADDRESS>";
+import { Contract, EIP712Signer, Provider, Wallet, types, utils } from "zksync-web3";
+
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// Load the values below on your .env file, after deploying the FactoryAccount
+const DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY = process.env.DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY || "";
+const ACCOUNT_ADDRESS = process.env.DEPLOYED_ACCOUNT_ADDRESS || "";
+const ETH_ADDRESS = process.env.ETH_ADDRESS || "";
+const RECEIVER_ACCOUNT = process.env.RECEIVER_ACCOUNT || "";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   // @ts-ignore target zkSyncTestnet in config file which can be testnet or local
   const provider = new Provider(hre.config.networks.zkSyncTestnet.url);
 
-  const owner = new Wallet("<DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY>", provider);
+  const owner = new Wallet(DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY, provider);
 
   // account that will receive the ETH transfer
-  const receiver = "<RECEIVER_ACCOUNT>";
+  const receiver = RECEIVER_ACCOUNT;
   // ⚠️ update this amount to test if the limit works; 0.00051 fails but 0.00049 succeeds
   const transferAmount = "0.00051";
 

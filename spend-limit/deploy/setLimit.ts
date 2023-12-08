@@ -1,30 +1,28 @@
-import {
-  utils,
-  Wallet,
-  Provider,
-  Contract,
-  EIP712Signer,
-  types,
-} from "zksync-web3";
 import * as ethers from "ethers";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-const ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
-const ACCOUNT_ADDRESS = "<DEPLOYED_ACCOUNT_ADDRESS>";
+import { Contract, EIP712Signer, Provider, Wallet, types, utils } from "zksync-web3";
+
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+// load env file
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// load the values into .env file after deploying the FactoryAccount
+const DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY = process.env.DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY || "";
+const ETH_ADDRESS = process.env.ETH_ADDRESS || "";
+const ACCOUNT_ADDRESS = process.env.DEPLOYED_ACCOUNT_ADDRESS || "";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   // @ts-ignore target zkSyncTestnet in config file which can be testnet or local
   const provider = new Provider(hre.config.networks.zkSyncTestnet.url);
 
-  const owner = new Wallet("<DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY>", provider);
+  const owner = new Wallet(DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY, provider);
 
   const accountArtifact = await hre.artifacts.readArtifact("Account");
   const account = new Contract(ACCOUNT_ADDRESS, accountArtifact.abi, owner);
 
-  let setLimitTx = await account.populateTransaction.setSpendingLimit(
-    ETH_ADDRESS,
-    ethers.utils.parseEther("0.0005"),
-  );
+  let setLimitTx = await account.populateTransaction.setSpendingLimit(ETH_ADDRESS, ethers.utils.parseEther("0.0005"));
 
   setLimitTx = {
     ...setLimitTx,
@@ -43,9 +41,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   const signedTxHash = EIP712Signer.getSignedDigest(setLimitTx);
 
-  const signature = ethers.utils.arrayify(
-    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash)),
-  );
+  const signature = ethers.utils.arrayify(ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash)));
 
   setLimitTx.customData = {
     ...setLimitTx.customData,

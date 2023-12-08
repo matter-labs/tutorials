@@ -1,12 +1,21 @@
-import { utils, Wallet, Provider } from "zksync-web3";
 import * as ethers from "ethers";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
+
+import { Provider, Wallet, utils } from "zksync-web3";
+
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+// load env file
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// load wallet private key from env file
+const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   // @ts-ignore target zkSyncTestnet in config file which can be testnet or local
   const provider = new Provider(hre.config.networks.zkSyncTestnet.url);
-  const wallet = new Wallet("<DEPLOYER_PRIVATE_KEY>", provider);
+  const wallet = new Wallet(PRIVATE_KEY, provider);
   const deployer = new Deployer(hre, wallet);
   const factoryArtifact = await deployer.loadArtifact("AAFactory");
   const aaArtifact = await deployer.loadArtifact("Account");
@@ -20,20 +29,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   // });
   // await depositHandle.wait();
 
-  const factory = await deployer.deploy(
-    factoryArtifact,
-    [utils.hashBytecode(aaArtifact.bytecode)],
-    undefined,
-    [aaArtifact.bytecode],
-  );
+  const factory = await deployer.deploy(factoryArtifact, [utils.hashBytecode(aaArtifact.bytecode)], undefined, [aaArtifact.bytecode]);
 
   console.log(`AA factory address: ${factory.address}`);
 
-  const aaFactory = new ethers.Contract(
-    factory.address,
-    factoryArtifact.abi,
-    wallet,
-  );
+  const aaFactory = new ethers.Contract(factory.address, factoryArtifact.abi, wallet);
 
   const owner = Wallet.createRandom();
   console.log("SC Account owner pk: ", owner.privateKey);
@@ -43,12 +43,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   await tx.wait();
 
   const abiCoder = new ethers.utils.AbiCoder();
-  const accountAddress = utils.create2Address(
-    factory.address,
-    await aaFactory.aaBytecodeHash(),
-    salt,
-    abiCoder.encode(["address"], [owner.address]),
-  );
+  const accountAddress = utils.create2Address(factory.address, await aaFactory.aaBytecodeHash(), salt, abiCoder.encode(["address"], [owner.address]));
 
   console.log(`SC Account deployed on address ${accountAddress}`);
 
