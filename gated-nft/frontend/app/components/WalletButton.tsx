@@ -78,7 +78,6 @@ function WalletComponent() {
             name: "Power Stone",
           });
 
-          //ownedStones.push((await response.json()) as PowerStoneNft);
         }
 
         web3Context.setNfts(ownedStones);
