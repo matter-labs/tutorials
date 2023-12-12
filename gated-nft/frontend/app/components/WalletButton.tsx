@@ -60,10 +60,6 @@ function WalletComponent() {
             continue;
           }
 
-          //const response = await fetch(tokenURI);
-          //if (!response.ok) {
-          //  continue;
-          //}
 
           ownedStones.push({
             attributes: [
