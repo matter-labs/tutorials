@@ -7,13 +7,20 @@ import "@matterlabs/hardhat-zksync-node";
 import "@matterlabs/hardhat-zksync-verify";
 
 const config: HardhatUserConfig = {
+  defaultNetwork: "zkSyncTestnet",
   zksolc: {
     version: "latest",
     settings: {
-      isSystem: true,
+      // isSystem: true,
     },
   },
   networks: {
+    zkSyncTestnet: {
+      url: "https://sepolia.era.zksync.dev",
+      ethNetwork: "sepolia",
+      zksync: true,
+      verifyURL: "https://explorer.sepolia.era.zksync.dev/contract_verification",
+    },
     hardhat: {
       zksync: true,
     },

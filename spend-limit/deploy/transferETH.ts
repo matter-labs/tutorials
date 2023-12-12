@@ -1,26 +1,27 @@
-import {
-  utils,
-  Wallet,
-  Provider,
-  Contract,
-  EIP712Signer,
-  types,
-} from "zksync-web3";
 import * as ethers from "ethers";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-const ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
-const ACCOUNT_ADDRESS = "<DEPLOYED_ACCOUNT_ADDRESS>";
+import { Contract, EIP712Signer, Provider, Wallet, types, utils } from "zksync-web3";
+
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// Load the values below on your .env file, after deploying the FactoryAccount
+const DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY = process.env.DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY || "";
+const ACCOUNT_ADDRESS = process.env.DEPLOYED_ACCOUNT_ADDRESS || "";
+const ETH_ADDRESS = process.env.ETH_ADDRESS || "";
+const RECEIVER_ACCOUNT = process.env.RECEIVER_ACCOUNT || "";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   // @ts-ignore target zkSyncTestnet in config file which can be testnet or local
   const provider = new Provider(hre.config.networks.zkSyncTestnet.url);
 
-  const owner = new Wallet("<DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY>", provider);
+  const owner = new Wallet(DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY, provider);
 
   // account that will receive the ETH transfer
-  const receiver = "<RECEIVER_ACCOUNT>";
-  // ⚠️ update this amount to test if the limit works; 0.00051 fails but 0.0049 succeeds
+  const receiver = RECEIVER_ACCOUNT;
+  // ⚠️ update this amount to test if the limit works; 0.00051 fails but 0.00049 succeeds
   const transferAmount = "0.00051";
 
   let ethTransferTx = {
@@ -39,9 +40,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     data: "0x",
   };
   const signedTxHash = EIP712Signer.getSignedDigest(ethTransferTx);
-  const signature = ethers.utils.arrayify(
-    ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash)),
-  );
+  const signature = ethers.utils.arrayify(ethers.utils.joinSignature(owner._signingKey().signDigest(signedTxHash)));
 
   ethTransferTx.customData = {
     ...ethTransferTx.customData,
@@ -58,16 +57,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   console.log("Available today: ", limitData.available.toString());
 
   // L1 timestamp tends to be undefined in latest blocks. So it should find the latest L1 Batch first.
-  let l1BatchRange = await provider.getL1BatchBlockRange(
-    await provider.getL1BatchNumber(),
-  );
+  let l1BatchRange = await provider.getL1BatchBlockRange(await provider.getL1BatchNumber());
   let l1TimeStamp = (await provider.getBlock(l1BatchRange[1])).l1BatchTimestamp;
 
   console.log("L1 timestamp: ", l1TimeStamp);
-  console.log(
-    "Limit will reset on timestamp: ",
-    limitData.resetTime.toString(),
-  );
+  console.log("Limit will reset on timestamp: ", limitData.resetTime.toString());
 
   // actually do the ETH transfer
   console.log("Sending ETH transfer from smart contract account");
@@ -80,10 +74,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const newLimitData = await account.limits(ETH_ADDRESS);
   console.log("Account limit: ", newLimitData.limit.toString());
   console.log("Available today: ", newLimitData.available.toString());
-  console.log(
-    "Limit will reset on timestamp:",
-    newLimitData.resetTime.toString(),
-  );
+  console.log("Limit will reset on timestamp:", newLimitData.resetTime.toString());
 
   if (newLimitData.resetTime.toString() == limitData.resetTime.toString()) {
     console.log("Reset time was not updated as not enough time has passed");

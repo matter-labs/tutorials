@@ -1,61 +1,77 @@
-# Daily Spending Limit
+# Daily Spending Limit Tutorial 📖
 
-This repository is the submission to [the zkSync bounty of the daily spending limit tutorial](https://github.com/matter-labs/zksync-web-v2-docs/issues/241).
+Welcome aboard to the daily spending limit journey with zkSync! 🚀🌌
 
-`TUTORIAL.md` is the tutorial documentation.
+This repository is crafted to guide you through the process of building a daily spending limit contract account on zkSync Era. Coupled with this, you'll find a practical, easy-to-follow guide to implement and understand every step [here](https://era.zksync.io/docs/dev/tutorials/aa-daily-spend-limit.html).
 
-Deployed Account contract that has the daily spending limit feature: [0x6b6B8ea196a6F27EFE408288a4FEeBE9A9e12005](https://zksync2-testnet.zkscan.io/address/0x6b6B8ea196a6F27EFE408288a4FEeBE9A9e12005/transactions) and owner pk:`0x957aff65500eda28beb7130b7c1bc48f783556bb84fa6874d2204c1d66a0ddc7`
+## Need Assistance? 💡
+
+If you're stumbling upon any issues or uncertainties:
+
+- 📖 Explore the [spending limit tutorial](https://era.zksync.io/docs/dev/tutorials/aa-daily-spend-limit.html) for a comprehensive walkthrough of the code in this repository.
+- 🗣️ Or simply [reach out to the community on Discord](https://join.zksync.dev/), or ask a question on the [zkSync Developer Discussions](https://github.com/zkSync-Community-Hub/zkync-developers/discussions) on GitHub. We're always here to help!
+
+## Repository Overview 📂
+
+Dive into the key sections of this repository:
+
+- `/contracts`: All the essential smart contracts you need are neatly stored here.
+
+- `/deploy`: Find out deployment and usage scripts to assist your development process.
+
+- `/test`: Unit tests for the provided contracts.
+
+- `hardhat.config.ts`: The hardhat configuration file.
+
+## Handy Commands 🛠️
+
+Here's a lineup of commands to assist you:
+
+:::Note
+The commands below are part of the `package.json` file, search for the `scripts`
+:::
+
+- `yarn install`: Installs the required dependencies.
+- `yarn compile`: Compiles the contracts.
+- `yarn deploy`: Will deploy the `deployFactoryACcount.ts` contract smoothly.
+- `yarn setLimit`: Executes the `setLimit.ts` script, to set the spend limit by executing the `setSpendingLimit` function. 
+- `yarn transferETH`: Executes the `transferETH.ts` script.
+- `yarn test`: Runs tests. **Make sure to check the test requirements below.**
+
+### Environment variables 🌳
+
+To prevent the leakage of private keys, we use the `dotenv` package to load environment variables. This is particularly used to load the wallet private key, which is required to run the deployment script.
+
+To use it, rename `.env.example` to `.env` and input your private key, and also additional values you'll be guided to add throughout the tutorial.
+
+```
+ETH_ADDRESS=0x000000000000000000000000000000000000800A
+NODE_ENV=
+WALLET_PRIVATE_KEY=
+DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY=
+DEPLOYED_ACCOUNT_ADDRESS=
+RECEIVER_ACCOUNT=
+```
+
+### Local testing 🧪
+
+To run tests, you'll need to start the zkSync local environment. Please refer to [this section of the docs](https://era.zksync.io/docs/tools/testing/) for details. It can be run with either the Dockerized setup or the In-memory node.
+
+Without starting the zkSync local environment, the tests will fail with an error: `Error: could not detect network (event="noNetwork", code=NETWORK_ERROR, version=providers/5.7.2)`
+
+## Common Errors
+
+- Insufficient gasLimit: Transactions often fail due to insufficient gasLimit. Please increase the value manually when transactions fail without clear reasons.
+- Insufficient balance in account contract: transactions may fail due to the lack of balance in the deployed account contract. Please transfer funds to the account using MetaMask or `wallet.sendTransaction()` method used in `deploy/deployFactoryAccount.ts`.
+- Transactions submitted in a close range of time will have the same `block.timestamp` as they can be added to the same L1 batch and might cause the spend limit to not work as expected.
 
 ## Credits
 
-Forked from [this original repository](https://github.com/porco-rosso-j/daily-spendlimit-tutorial) by [porco-rosso](https://linktr.ee/porcorossoj)
+Written by [porco-rosso](https://linktr.ee/porcorossoj) for the GitCoin bounty.
 
-## Deployment & Test
+## Stay Connected 🌐
 
-### zkSync2.0 testnet
-
-As for deployment and simple test on zkSync2.0 testnet, please take a look at the tutorial doc, TUTORIAL.md.
-
-### zkSync local network.
-
-`spend-limit.test.ts` in [the test folder](./test/) offers more detailed tests for each functionality of the SpendLimit contract.
-
-```shell
-git clone git@github.com:porco-rosso-j/daily-spendlimit-tutorial.git
-```
-
-- Enter the repo and install dependencies.
-
-```shell
-cd daily-spendlimit-tutorial
-yarn
-```
-
-- To set up a local environment, Docker and docker-compose should be installed.  
-  If they are not installed on your computer: [Install](https://docs.docker.com/get-docker/).
-
-- To run zkSync local chain, do:
-
-```shell
-git clone https://github.com/matter-labs/local-setup.git
-cd local-setup
-./start.sh
-```
-
-\*check details and common errors for running local zksync chain [here](https://era.zksync.io/docs/tools/testing/dockerized-testing.html#resetting-the-zksync-state).
-
-- Compile:
-
-```shell
-yarn hardhat compile
-```
-
-- Additional configuration: rename .env.example to `.env` and add `NODE_ENV=test`.
-
-Then run:
-
-```shell
-yarn hardhat test
-```
-
-**Some tests are not passing due to different error messages returned by the zkSync Era node.** This repo will be updated to fix the remaining tests.
+- [zkSync's Documentation](https://era.zksync.io/docs/)
+- [GitHub](https://github.com/matter-labs)
+- [Twitter @zkSync](https://twitter.com/zksync)
+- [Join our Discord Community](https://join.zksync.dev)
