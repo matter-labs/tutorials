@@ -74,14 +74,14 @@ export class Utils {
 
   async deployFactory(privateKey: string = localConfig.privateKey) {
     // Private key of the account used to deploy
-    const wallet = new Wallet(privateKey);
+    const provider = new Provider(localConfig.L2Network);
+    const wallet = new Wallet(privateKey).connect(provider);
     const deployer = new Deployer(hre, wallet);
     const factoryArtifact = await deployer.loadArtifact("AAFactory");
     const aaArtifact = await deployer.loadArtifact("TwoUserMultisig");
 
     // Getting the bytecodeHash of the account
     const bytecodeHash = utils.hashBytecode(aaArtifact.bytecode);
-
     let factory = await deployer.deploy(
       factoryArtifact,
       [bytecodeHash],
@@ -263,7 +263,6 @@ export class Utils {
     } catch (e) {
       return e;
     }
-    // await helper.getErrorMessage(await sentTx.wait(0))
 
     const multiSigNonceAfterTx = await provider.getTransactionCount(
       multisigAddress,
