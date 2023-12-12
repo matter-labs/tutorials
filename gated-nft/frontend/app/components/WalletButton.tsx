@@ -60,12 +60,25 @@ function WalletComponent() {
             continue;
           }
 
-          const response = await fetch(tokenURI);
-          if (!response.ok) {
-            continue;
-          }
+          //const response = await fetch(tokenURI);
+          //if (!response.ok) {
+          //  continue;
+          //}
+          
+          ownedStones.push({
+            "attributes": [
+              {
+                "trait_type": "Color",
+                "value": "Purple"              
+              }
+            ],
+            "description": "The zkSync Era's most beloved NFT.",
+            "image": "https://ipfs.io/ipfs/QmTxy9zys87GE6fLhityMd9cVNqj6MRB1Q63ZATGibhY2Z?filename=purple_stone.png",
+            "name": "Power Stone"
+          });
 
-          ownedStones.push((await response.json()) as PowerStoneNft);
+
+          //ownedStones.push((await response.json()) as PowerStoneNft);
         }
 
         web3Context.setNfts(ownedStones);
