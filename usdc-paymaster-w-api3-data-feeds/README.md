@@ -53,8 +53,6 @@ EMPTY_WALLET_PRIVATE_KEY=
 GREETER_CONTRACT=
 ```
 
-### Local testing 🧪
-
 To run tests, you'll need to start the zkSync local environment. Please refer to [this section of the docs](https://era.zksync.io/docs/tools/testing/) for details. It can be run with either the Dockerized setup or the In-memory node.
 
 Without starting the zkSync local environment, the tests will fail with an error: `Error: could not detect network (event="noNetwork", code=NETWORK_ERROR, version=providers/5.7.2)`

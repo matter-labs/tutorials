@@ -7,14 +7,11 @@ module.exports = {
     settings: {},
   },
   defaultNetwork: "zkSyncTestnet",
+
   networks: {
     zkSyncTestnet: {
       url: "https://testnet.era.zksync.dev/",
-      ethNetwork: "sepolia",
-      zksync: true,
-      verifyURL: "https://zksync2-testnet-explorer.zksync.dev/contract_verification",
-    },
-    hardhat: {
+      ethNetwork: "goerli", // the RPC URL of the network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
       zksync: true,
     },
   },

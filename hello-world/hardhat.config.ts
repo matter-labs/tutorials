@@ -10,8 +10,7 @@ const zkSyncTestnet = {
   ethNetwork: "sepolia",
   zksync: true,
   // contract verification endpoint
-  verifyURL:
-    "https://explorer.sepolia.era.zksync.dev/contract_verification",
+  verifyURL: "https://explorer.sepolia.era.zksync.dev/contract_verification",
 };
 
 const config: HardhatUserConfig = {
