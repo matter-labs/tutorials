@@ -60,7 +60,6 @@ function WalletComponent() {
             continue;
           }
 
-
           ownedStones.push({
             attributes: [
               {
@@ -73,7 +72,6 @@ function WalletComponent() {
               "https://ipfs.io/ipfs/QmTxy9zys87GE6fLhityMd9cVNqj6MRB1Q63ZATGibhY2Z?filename=purple_stone.png",
             name: "Power Stone",
           });
-
         }
 
         web3Context.setNfts(ownedStones);
