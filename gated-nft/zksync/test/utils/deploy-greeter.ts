@@ -1,6 +1,6 @@
-import { Wallet, utils } from "zksync-web3";
-import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { Wallet, Provider } from "zksync-web3";
+import * as ethers from "ethers";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import * as fs from "fs";
 
@@ -18,10 +18,11 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   console.log(`Running deploy script for the Greeter contract`);
 
   // Initialize the wallet.
-  const wallet = new Wallet(PRIVATE_KEY);
-
-  // Create deployer object and load the artifact of the contract you want to deploy.
+  const provider = new Provider(localConfig.L2Network);
+  const wallet = new Wallet(PRIVATE_KEY).connect(provider);
   const deployer = new Deployer(hre, wallet);
+
+  // Load the artifact of the contract you want to deploy.
   const artifact = await deployer.loadArtifact("Greeter");
 
   // Estimate contract deployment fee

@@ -9,10 +9,10 @@ This folder as an example of an L1 contract project that interacts with the zkSy
 
 ## Usage
 
-1. Open `goerli.json` and fill in the following values there:
+1. Open `sepolia.json` and fill in the following values there:
 
-- `nodeUrl` should be equal to your Görli Ethereum node provider URL.
-- `deployerPrivateKey` should be equal to the private key of the wallet that will deploy the governance smart contract. It needs to have some ETH on Görli.
+- `nodeUrl` should be equal to your Sepolia Ethereum node provider URL.
+- `deployerPrivateKey` should be equal to the private key of the wallet that will deploy the governance smart contract. It needs to have some ETH on Sepolia.
 
 2. To deploy the governance smart contract run the following commands:
 

@@ -5,7 +5,7 @@ const COUNTER_ABI = require("./counter.json");
 
 async function main() {
   // Initialize the provider
-  const l2Provider = new Provider("https://testnet.era.zksync.dev");
+  const l2Provider = new Provider("https://sepolia.era.zksync.dev");
 
   const counterContract = new Contract(
     COUNTER_ADDRESS,

@@ -21,7 +21,7 @@ yarn run install:local:node
 yarn run launch:local:node
 ```
 
-4. Run tests (before there needs to go the specific folder, eg. hello-world):
+4. Run tests (Change directory (cd) into a specific folder, eg. hello-world):
 
 ```bash
 cd hello-world && yarn run test

@@ -1,18 +1,19 @@
-import { HardhatUserConfig } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
 
-// import file with Göerli params
-const goerli = require("./goerli.json");
+import { HardhatUserConfig } from "hardhat/config";
+
+// import file with Sepolia params
+const sepolia = require("./sepolia.json");
 
 const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.19",
   },
   networks: {
-    // Göerli network
-    goerli: {
-      url: goerli.nodeUrl,
-      accounts: [goerli.deployerPrivateKey],
+    // Sepolia network
+    sepolia: {
+      url: sepolia.nodeUrl,
+      accounts: [sepolia.deployerPrivateKey],
     },
   },
 };

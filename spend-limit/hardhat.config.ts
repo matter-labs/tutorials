@@ -1,10 +1,12 @@
-import { HardhatUserConfig } from "hardhat/config";
 import "@matterlabs/hardhat-zksync-chai-matchers";
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
 import "@matterlabs/hardhat-zksync-verify";
 
 import * as dotenv from "dotenv";
+
+import { HardhatUserConfig } from "hardhat/config";
+
 dotenv.config();
 
 const zkSyncTestnet =
@@ -15,11 +17,11 @@ const zkSyncTestnet =
         zksync: true,
       }
     : {
-        url: "https://testnet.era.zksync.dev",
-        ethNetwork: "goerli", // Can also be the RPC URL of the network (e.g. `https://goerli.infura.io/v3/<API_KEY>`)
+        url: "https://sepolia.era.zksync.dev",
+        ethNetwork: "sepolia", // Can also be the RPC URL of the network (e.g. `https://sepolia.infura.io/v3/<API_KEY>`)
         zksync: true,
         verifyURL:
-          "https://zksync2-testnet-explorer.zksync.dev/contract_verification",
+          "https://explorer.sepolia.era.zksync.dev/contract_verification",
       };
 
 const config: HardhatUserConfig = {

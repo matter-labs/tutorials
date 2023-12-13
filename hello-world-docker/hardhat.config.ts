@@ -1,9 +1,8 @@
-import { HardhatUserConfig } from "hardhat/config";
-
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
-
 import "@matterlabs/hardhat-zksync-verify";
+
+import { HardhatUserConfig } from "hardhat/config";
 
 // dynamically changes endpoints for local tests
 const zkSyncTestnet =
@@ -14,12 +13,12 @@ const zkSyncTestnet =
         zksync: true,
       }
     : {
-        url: "https://zksync2-testnet.zksync.dev",
-        ethNetwork: "goerli",
+        url: "https://sepolia.era.zksync.dev",
+        ethNetwork: "sepolia",
         zksync: true,
         // contract verification endpoint
         verifyURL:
-          "https://zksync2-testnet-explorer.zksync.dev/contract_verification",
+          "https://explorer.sepolia.era.zksync.dev/contract_verification",
       };
 
 const config: HardhatUserConfig = {

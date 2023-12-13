@@ -579,7 +579,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider("https://zksync2-testnet.zksync.dev");
+  const provider = new Provider("https://sepolia.era.zksync.dev");
   const wallet = new Wallet("<WALLET_PRIVATE_KEY>", provider);
   const deployer = new Deployer(hre, wallet);
   const factoryArtifact = await deployer.loadArtifact("AAFactory");
@@ -651,7 +651,7 @@ Account owner pk: 0x957aff65500eda28beb7130b7c1bc48f783556bb84fa6874d2204c1d66a0
 Account deployed on address 0x6b6B8ea196a6F27EFE408288a4FEeBE9A9e12005
 ```
 
-So, we are ready to try the functionality of the `SpendLimit` contract. For the test, now please open [zkSync2.0 testnet explorer](https://zksync2-testnet.zkscan.io/) and search for the deployed Account contract address to be able to track transactions and changes in the balance which we will see in the following sections.
+So, we are ready to try the functionality of the `SpendLimit` contract. For the test, now please open [zkSync2.0 testnet explorer](https://sepolia.explorer.zksync.io) and search for the deployed Account contract address to be able to track transactions and changes in the balance which we will see in the following sections.
 
 **TIP**: For contract verification, please refer to [this section of the documentation](https://v2-docs.zksync.io/dev/developer-guides/contracts/contract-verification.html).
 
@@ -677,7 +677,7 @@ const ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
 const ACCOUNT_ADDRESS = "<ACCOUNT_ADDRESS>";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider("https://zksync2-testnet.zksync.dev");
+  const provider = new Provider("https://sepolia.era.zksync.dev");
   const wallet = new Wallet("<WALLET_PRIVATE_KEY>", provider);
   const owner = new Wallet("<OWNER_PRIVATE_KEY>", provider);
 
@@ -754,7 +754,7 @@ const ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
 const ACCOUNT_ADDRESS = "<ACCOUNT_ADDRESS>";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
-  const provider = new Provider("https://zksync2-testnet.zksync.dev");
+  const provider = new Provider("https://sepolia.era.zksync.dev");
   const wallet = new Wallet("<WALLET_PRIVATE_KEY>", provider);
   const owner = new Wallet("<OWNER_PRIVATE_KEY>", provider);
 

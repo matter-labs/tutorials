@@ -42,7 +42,7 @@ cd local-setup
 ./start.sh
 ```
 
-\*check details and common errors for running local zksync chain [here](https://v2-docs.zksync.io/api/hardhat/testing.html#reset-the-zksync-state).
+\*check details and common errors for running local zksync chain [here](https://era.zksync.io/docs/tools/testing/dockerized-testing.html#resetting-the-zksync-state).
 
 - Compile:
 

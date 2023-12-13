@@ -1,9 +1,9 @@
+import * as hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import { Provider, Wallet } from "zksync-web3";
 import { localConfig } from "../../../../tests/testConfig";
 import { ethers } from "ethers";
 import * as fs from "fs";
-import * as hre from "hardhat";
 import { Wallets } from "../../../../tests/testData";
 
 export class ERC721 {
@@ -23,7 +23,8 @@ export class ERC721 {
     contractName: string,
     contractArguments: string = undefined,
   ) {
-    const wallet = new Wallet(privateKey);
+    const provider = new Provider(localConfig.L2Network);
+    const wallet = new Wallet(privateKey).connect(provider);
     const deployer = new Deployer(hre, wallet);
     let contract;
     const contractArtifact = await deployer.loadArtifact(contractName);
@@ -161,7 +162,8 @@ export class ERC721GatedPaymaster extends ERC721 {
     privateKey: string = localConfig.privateKey,
     contractName: string = "ERC721GatedPaymaster",
   ) {
-    const wallet = new Wallet(privateKey);
+    const provider = new Provider(localConfig.L2Network);
+    const wallet = new Wallet(privateKey).connect(provider);
     const deployer = new Deployer(hre, wallet);
 
     this.deployer = deployer;
@@ -291,7 +293,8 @@ export class Greeter extends ERC721GatedPaymaster {
   ) {
     let greeter;
 
-    const wallet = new Wallet(privateKey);
+    const provider = new Provider(localConfig.L2Network);
+    const wallet = new Wallet(privateKey).connect(provider);
     const deployer = new Deployer(hre, wallet);
 
     this.deployer = deployer;
