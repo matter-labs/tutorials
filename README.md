@@ -6,13 +6,13 @@ This repository contains tutorials for developing on zkSync Era.
 
 ## Tutorials
 
-| Name                                                               | Time-to-complete | Difficulty |
-| ------------------------------------------------------------------ | ---------------- | ---------- |
-| [Cross Chain Governance](./cross-chain/README.md)                  | 3-4 Hours        | Moderate   |
-| [Custom Account Abstraction](./custom-aa/README.md)                | 3-5 Hours        | Hard       |
-| [Gated NFT](./gated-nft/README.md)                                 | 3-5 Hours        | Hard       |
-| [Hello World](./hello-world/README.md)                             | 3-4 Hours        | Easy       |
-| [Daily Spend Limit](./spend-limit/README.md)                       | 2-4 Hours        | Moderate   |
+| Name                                                | Time-to-complete | Difficulty |
+| --------------------------------------------------- | ---------------- | ---------- |
+| [Cross Chain Governance](./cross-chain/README.md)   | 3-4 Hours        | Moderate   |
+| [Custom Account Abstraction](./custom-aa/README.md) | 3-5 Hours        | Hard       |
+| [Gated NFT](./gated-nft/README.md)                  | 3-5 Hours        | Hard       |
+| [Hello World](./hello-world/README.md)              | 3-4 Hours        | Easy       |
+| [Daily Spend Limit](./spend-limit/README.md)        | 2-4 Hours        | Moderate   |
 
 ## Contributing
 
