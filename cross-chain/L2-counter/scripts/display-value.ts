@@ -1,4 +1,4 @@
-import { Contract, Provider } from "zksync-web3";
+import { Contract, Provider } from "zksync-ethers";
 
 const COUNTER_ADDRESS = "<COUNTER-ADDRESS>";
 const COUNTER_ABI = require("./counter.json");

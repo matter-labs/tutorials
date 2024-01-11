@@ -4,7 +4,7 @@ import { localConfig } from "../../tests/testConfig";
 import * as eth from "ethers";
 import { Helper } from "../../tests/helper";
 import { Wallets } from "../../tests/testData";
-import * as zks from "zksync-web3";
+import * as zks from "zksync-ethers";
 
 describe("Custom AA Tests", function () {
   let result: any;

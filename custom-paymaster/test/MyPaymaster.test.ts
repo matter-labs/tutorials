@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Wallet, Provider, Contract, utils } from "zksync-web3";
+import { Wallet, Provider, Contract, utils } from "zksync-ethers";
 import * as hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import * as ethers from "ethers";

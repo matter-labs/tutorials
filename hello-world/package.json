@@ -5,10 +5,10 @@
   "author": "Antonio <aug@matterlabs.dev>",
   "license": "MIT",
   "devDependencies": {
-    "@matterlabs/hardhat-zksync-deploy": "^0.6.5",
+    "@matterlabs/hardhat-zksync-deploy": "^0.7.0",
+    "@matterlabs/hardhat-zksync-node": "^0.0.1",
     "@matterlabs/hardhat-zksync-solc": "^0.4.2",
-    "@matterlabs/hardhat-zksync-verify": "^0.1.8",
-    "@matterlabs/hardhat-zksync-node": "^0.0.1-beta.6",
+    "@matterlabs/hardhat-zksync-verify": "^0.4.0",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
@@ -19,7 +19,7 @@
     "mocha": "^10.2.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4",
-    "zksync-web3": "^0.16.0"
+    "zksync-ethers": "^5"
   },
   "scripts": {
     "test": "hardhat test",

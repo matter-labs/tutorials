@@ -1,5 +1,5 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { Wallet, Provider } from "zksync-web3";
+import { Wallet, Provider } from "zksync-ethers";
 import * as ethers from "ethers";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import * as fs from "fs";

@@ -5,7 +5,7 @@ import {
   utils,
   EIP712Signer,
   types,
-} from "zksync-web3";
+} from "zksync-ethers";
 import { ethers } from "ethers";
 
 export async function sendTx(

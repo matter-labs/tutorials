@@ -1,7 +1,7 @@
 import * as hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
-import { EIP712Signer, Provider, types, utils, Wallet } from "zksync-web3";
+import { EIP712Signer, Provider, types, utils, Wallet } from "zksync-ethers";
 import { localConfig } from "../../../tests/testConfig";
 import { Contract, ethers } from "ethers";
 import { Helper } from "../../../tests/helper";

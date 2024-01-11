@@ -5,7 +5,7 @@ import { Inter } from "next/font/google";
 import { useState } from "react";
 import Web3Context from "./context/Web3Context";
 import { PowerStoneNft } from "./types/powerStoneNft";
-import { Contract, Web3Provider, Signer } from "zksync-web3";
+import { Contract, Web3Provider, Signer } from "zksync-ethers";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({

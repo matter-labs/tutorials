@@ -1,5 +1,5 @@
 import React from "react";
-import { Contract, Web3Provider, Signer } from "zksync-web3";
+import { Contract, Web3Provider, Signer } from "zksync-ethers";
 import { PowerStoneNft } from "../types/types";
 
 export interface Web3ContextType {

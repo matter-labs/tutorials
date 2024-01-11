@@ -1,5 +1,5 @@
 import { BigNumber, Contract, Wallet, ethers } from "ethers";
-import { Provider, utils } from "zksync-web3";
+import { Provider, utils } from "zksync-ethers";
 const GOVERNANCE_ABI = require("./governance.json");
 const GOVERNANCE_ADDRESS = "<GOVERNANCE-ADDRESS>";
 const COUNTER_ABI = require("./counter.json");

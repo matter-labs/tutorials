@@ -1,5 +1,5 @@
 import { ethers, BigNumber } from "ethers";
-import { Wallet } from "zksync-web3";
+import { Wallet } from "zksync-ethers";
 
 export const toBN = (x: string): BigNumber => {
   return ethers.utils.parseEther(x);

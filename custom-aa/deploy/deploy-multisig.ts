@@ -1,6 +1,6 @@
 import * as ethers from "ethers";
 
-import { EIP712Signer, Provider, Wallet, types, utils } from "zksync-web3";
+import { EIP712Signer, Provider, Wallet, types, utils } from "zksync-ethers";
 
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 

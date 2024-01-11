@@ -1,6 +1,6 @@
 import * as hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
-import { Provider, Wallet } from "zksync-web3";
+import { Provider, Wallet } from "zksync-ethers";
 import { localConfig } from "../../../../tests/testConfig";
 import { ethers } from "ethers";
 import * as fs from "fs";
