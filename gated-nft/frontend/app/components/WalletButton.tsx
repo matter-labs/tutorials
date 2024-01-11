@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Web3Provider, Signer, Contract } from "zksync-web3";
+import { Web3Provider, Signer, Contract } from "zksync-ethers";
 import Web3Context from "../context/Web3Context";
 import {
   GREETER_ADDRESS,
@@ -10,7 +10,7 @@ import {
   NETWORK_ID,
 } from "../constants/consts";
 import { PowerStoneNft } from "../types/types";
-import { Address } from "zksync-web3/build/src/types";
+import { Address } from "zksync-ethers/build/src/types";
 
 function WalletComponent() {
   const web3Context = useContext(Web3Context);

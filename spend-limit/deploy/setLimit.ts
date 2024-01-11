@@ -5,7 +5,7 @@ import {
   Contract,
   EIP712Signer,
   types,
-} from "zksync-web3";
+} from "zksync-ethers";
 import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 

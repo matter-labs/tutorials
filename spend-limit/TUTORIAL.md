@@ -20,7 +20,7 @@ First, let’s install all the dependencies that we'll need:
 mkdir custom-spendlimit-tutorial
 cd custom-spendlimit-tutorial
 yarn init -y
-yarn add -D typescript ts-node ethers zksync-web3 hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy
+yarn add -D typescript ts-node ethers zksync-ethers hardhat @matterlabs/hardhat-zksync-solc @matterlabs/hardhat-zksync-deploy
 ```
 
 Additionally, please install a few packages that allow us to utilize the [zkSync smart contracts](https://v2-docs.zksync.io/dev/developer-guides/contracts/system-contracts.html).
@@ -517,7 +517,7 @@ if ( value > 0 ) {
 
 Since we want to set the spending limit of ETH in this example, the first argument in `_checkSpendingLimit` should be `address(ETH_TOKEN_SYSTEM_CONTRACT)`, which is imported from a system contract called `system-contracts/Constant.sol`.
 
-**Note1** : The formal ETH address on zkSync is `0x000000000000000000000000000000000000800a`, neither the well-known `0xEee...EEeE` used by protocols as a placeholder on Ethereum, nor the zero address `0x000...000`, which is what `zksync-web3` package([See](https://v2-docs.zksync.io/api/js/utils.html#the-address-of-ether)) provides as a more user-friendly alias.
+**Note1** : The formal ETH address on zkSync is `0x000000000000000000000000000000000000800a`, neither the well-known `0xEee...EEeE` used by protocols as a placeholder on Ethereum, nor the zero address `0x000...000`, which is what `zksync-ethers` package([See](https://v2-docs.zksync.io/api/js/utils.html#the-address-of-ether)) provides as a more user-friendly alias.
 
 **Note2** : SpendLimit is token-agnostic. Thus an extension is also possible: add a check for whether or not the execution is an ERC20 transfer by extracting the function selector in bytes from transaction calldata.
 
@@ -573,7 +573,7 @@ yarn hardhat compile
 Then, let's create a file `deploy-factory-account.ts` that deploys all the contracts we've made above and creates an account.
 
 ```typescript
-import { utils, Wallet, Provider } from "zksync-web3";
+import { utils, Wallet, Provider } from "zksync-ethers";
 import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
@@ -669,7 +669,7 @@ import {
   Contract,
   EIP712Signer,
   types,
-} from "zksync-web3";
+} from "zksync-ethers";
 import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
@@ -746,7 +746,7 @@ import {
   Contract,
   EIP712Signer,
   types,
-} from "zksync-web3";
+} from "zksync-ethers";
 import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
@@ -875,5 +875,5 @@ You can download the complete project [here](https://github.com/porco-rosso-j/da
 ## Learn more
 
 - To learn more about L1->L2 interaction on zkSync, check out the [documentation](https://v2-docs.zksync.io/dev/developer-guides/bridging/l1-l2.html).
-- To learn more about the zksync-web3 SDK, check out its [documentation](https://v2-docs.zksync.io/api/js).
+- To learn more about the zksync-ethers SDK, check out its [documentation](https://v2-docs.zksync.io/api/js).
 - To learn more about the zkSync hardhat plugins, check out their [documentation](https://v2-docs.zksync.io/api/hardhat).

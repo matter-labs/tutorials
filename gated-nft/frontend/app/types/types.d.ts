@@ -1,4 +1,4 @@
-import { Contract, Web3Provider } from "zksync-web3";
+import { Contract, Web3Provider } from "zksync-ethers";
 
 type InputProps = {
   greeterInstance: Contract | null;

@@ -1,4 +1,4 @@
-import { Provider } from "zksync-web3";
+import { Provider } from "zksync-ethers";
 import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
