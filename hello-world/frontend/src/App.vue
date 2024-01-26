@@ -208,7 +208,7 @@ export default {
       window.ethereum
         .request({ method: "eth_requestAccounts" })
         .then(() => {
-          if (+window.ethereum.networkVersion == 280) {
+          if (+window.ethereum.networkVersion == 300) {
             this.loadMainScreen();
           } else {
             alert("Please switch network to zkSync!");
