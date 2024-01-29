@@ -6,21 +6,21 @@
     "symbol": "ETH"
   },
   {
-    "address": "0x5C221E77624690fff6dd741493D735a17716c26B",
+    "address": "0x7E2026D8f35872923F5459BbEDDB809F6aCEfEB3",
     "decimals": 18,
-    "name": "DAI (goerli)",
-    "symbol": "DAI"
+    "name": "Test Token (zkSync Sepolia)",
+    "symbol": "TEST"
   },
   {
-    "address": "0xCA063A2AB07491eE991dCecb456D1265f842b568",
-    "decimals": 8,
-    "name": "Wrapped Bitcoin (goerli)",
-    "symbol": "wBTC"
-  },
-  {
-    "address": "0xd35CCeEAD182dcee0F148EbaC9447DA2c4D449c4",
+    "address": "0xe1405bA6D206e978f739E2D9702CC8a0C712755A",
     "decimals": 6,
-    "name": "USD Coin (goerli)",
+    "name": "USD Coin (zkSync Sepolia)",
     "symbol": "USDC"
+  },
+  {
+    "address": "0x6Ff473f001877D553833B6e312C89b3c8fACa7Ac",
+    "decimals": 18,
+    "name": "DAI (zkSync Sepolia)",
+    "symbol": "DAI"
   }
 ]
