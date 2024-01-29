@@ -1,25 +1,95 @@
+<template>
+   <div id="app" v-if="!mainLoading">
+    <h1>Greeter says: {{ greeting }} 👋</h1>
+    <div class="title">
+      This a simple dApp, which can choose fee token and interact with the
+      `Greeter` smart contract. 
+      <p>The contract is deployed on the zkSync testnet on <a :href="`https://sepolia.explorer.zksync.io/address/${GREETER_CONTRACT_ADDRESS}`" target="_blank">{{ GREETER_CONTRACT_ADDRESS }}</a></p>
+    </div>
+    <div class="main-box">
+      <div>
+        Select token:
+        <select v-model="selectedTokenAddress" @change="changeToken">
+          <option
+            v-for="token in tokens"
+            v-bind:value="token.address"
+            v-bind:key="token.address"
+          >
+            {{ token.symbol }}
+          </option>
+        </select>
+      </div>
+      <div class="balance" v-if="selectedToken">
+        <p>
+          Balance: <span v-if="retrievingBalance">Loading...</span>
+          <span v-else>{{ currentBalance }} {{ selectedToken.symbol }}</span>
+        </p>
+        <p>
+          Expected fee: <span v-if="retrievingFee">Loading...</span>
+          <span v-else>{{ currentFee }} {{ selectedToken.symbol }}</span>
+          <button class="refresh-button" @click="updateFee">Refresh</button>
+        </p>
+      </div>
+      <div class="greeting-input">
+        <input
+          v-model="newGreeting"
+          :disabled="!selectedToken || txStatus != 0"
+          placeholder="Write new greeting here..."
+        />
+
+        <button
+          class="change-button"
+          :disabled="!selectedToken || txStatus != 0 || retrievingFee"
+          @click="changeGreeting"
+        >
+          <span v-if="selectedToken && !txStatus">Change greeting</span>
+          <span v-else-if="!selectedToken">Select token to pay fee first</span>
+          <span v-else-if="txStatus === 1">Sending tx...</span>
+          <span v-else-if="txStatus === 2"
+            >Waiting until tx is committed...</span
+          >
+          <span v-else-if="txStatus === 3">Updating the page...</span>
+          <span v-else-if="retrievingFee">Updating the fee...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="app" v-else>
+    <div class="start-screen">
+      <h1>Welcome to Greeter dApp!</h1>
+      <button v-if="correctNetwork" @click="connectMetamask">Connect Metamask</button>
+      <button v-else @click="addZkSyncSepolia">Switch to zkSync Sepolia</button>
+
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts" >
-import { ref, onMounted } from 'vue'
-// TODO: import ethers and zksync-ethers
+import { ref, onMounted } from "vue"
+import { Provider, Wallet, Contract, BrowserProvider } from "zksync-ethers";
 
 const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
-import * as allowedTokens from "./eth.json"; // change to "./erc20.json" to use ERC20 tokens
+import allowedTokens from "./eth.json"; // change to "./erc20.json" to use ERC20 tokens
 
 const GREETER_CONTRACT_ADDRESS = ""; // TODO: insert the Greeter contract address here
-import * as GREETER_CONTRACT_ABI from './abi.json' // TODO: Complete and import the ABI
+import GREETER_CONTRACT_ABI from './abi.json' // TODO: Complete and import the ABI
 
 // reactive references
 const correctNetwork = ref(false)
-const tokens = ref(allowedTokens.default);
-const newGreeting:string = ref("");
-const greeting:string = ref("")
-const mainLoading:boolean = ref(true)
-const retreivingFee:boolean = ref(false)
-const retreivingBalance:boolean= ref(false)
-const currentBalance:string = ref("")
-const currentFee:string = ref("")
-const selectedTokenAddress:string = ref(null)
-const selectedToken = ref(null)
+const tokens = ref(allowedTokens);
+const newGreeting = ref("");
+const greeting = ref("")
+const mainLoading = ref(true)
+const retrievingFee = ref(false)
+const retrievingBalance = ref(false)
+const currentBalance = ref("")
+const currentFee = ref("")
+const selectedTokenAddress = ref(null)
+const selectedToken = ref<{
+  l2Address: string;
+  decimals: number;
+  symbol: string;
+} | null>(null)
 // txStatus is a reactive variable that tracks the status of the transaction
 // 0 stands for no status, i.e no tx has been sent
 // 1 stands for tx is beeing submitted to the operator
@@ -27,14 +97,14 @@ const selectedToken = ref(null)
 // 3 stands for updating the balance and greeting on the page
 const txStatus = ref(0)
 
-let provider:Provider = null
-let signer:Wallet = null
-let contract:Contract = null
+let provider: Provider | null = null
+let signer: Wallet | null = null
+let contract: Contract | null = null
 
 // Lifecycle hook
 onMounted(async () => {
-  const network = await window.ethereum.request({ method: "net_version" });
-  if(+network == 300){
+  const network = await window.ethereum?.request({ method: "net_version" });
+  if(+network === 300){
     correctNetwork.value = true;
   }
 });
@@ -45,11 +115,10 @@ onMounted(async () => {
     // Note that we still need to get the Metamask signer
     signer = await (new BrowserProvider(window.ethereum)).getSigner();
     contract = new Contract(
-        GREETER_CONTRACT_ADDRESS,
-        GREETER_CONTRACT_ABI.default,
-        signer
+      GREETER_CONTRACT_ADDRESS,
+      GREETER_CONTRACT_ABI,
+      signer
     );
-
   }
 
   const getGreeting = async ()=> {
@@ -85,8 +154,8 @@ onMounted(async () => {
         // Update greeting
         greeting.value = await getGreeting();
 
-        retreivingFee.value = true;
-        retreivingBalance.value = true;
+        retrievingFee.value = true;
+        retrievingBalance.value = true;
         // Update balance and fee
         currentBalance.value = await getBalance();
         currentFee.value = await getFee();
@@ -96,41 +165,41 @@ onMounted(async () => {
       }
 
       txStatus.value = 0;
-      retreivingFee.value = false;
-      retreivingBalance.value = false;
+      retrievingFee.value = false;
+      retrievingBalance.value = false;
       newGreeting.value = "";
 
      
     }
 
     const updateFee = async()=>{
-      retreivingFee.value = true;
+      retrievingFee.value = true;
       getFee()
         .then((fee) => {
           currentFee.value = fee;
         })
         .catch((e) => console.log(e))
         .finally(() => {
-          retreivingFee.value = false;
+          retrievingFee.value = false;
         });
     }
     const updateBalance = async()=>{
-      retreivingBalance.value = true;
+      retrievingBalance.value = true;
       getBalance()
         .then((balance) => {
           currentBalance.value = balance;
         })
         .catch((e) => console.log(e))
         .finally(() => {
-          retreivingBalance.value = false;
+          retrievingBalance.value = false;
         });
     }
     const changeToken = async()=>{
-      retreivingFee.value = true;
-      retreivingBalance.value = true;
+      retrievingFee.value = true;
+      retrievingBalance.value = true;
       
       const tokenAddress = tokens.value.filter(
-        (t) => t.address == selectedTokenAddress.value,
+        (t) => t.address === selectedTokenAddress.value,
       )[0];
       selectedToken.value = {
         l2Address: tokenAddress.address,
@@ -145,8 +214,8 @@ onMounted(async () => {
         console.log(e)
       }
       finally{
-        retreivingFee.value = false;
-        retreivingBalance.value = false;
+        retrievingFee.value = false;
+        retrievingBalance.value = false;
       }
     }
     const loadMainScreen = async()=> {
@@ -188,81 +257,6 @@ onMounted(async () => {
     }
 
 </script>
-
-<template>
-   <div id="app" v-if="!mainLoading">
-    <h1>Greeter says: {{ greeting }} 👋</h1>
-    <div class="title">
-      This a simple dApp, which can choose fee token and interact with the
-      `Greeter` smart contract. 
-      <p>The contract is deployed on the zkSync testnet on <a :href="`https://sepolia.explorer.zksync.io/address/${GREETER_CONTRACT_ADDRESS}`" target="_blank">{{ GREETER_CONTRACT_ADDRESS }}</a></p>
-    </div>
-    <div class="main-box">
-      <div>
-        Select token:
-        <select v-model="selectedTokenAddress" v-on:change="changeToken">
-          <option
-            v-for="token in tokens"
-            v-bind:value="token.address"
-            v-bind:key="token.address"
-          >
-            {{ token.symbol }}
-          </option>
-        </select>
-      </div>
-      <div class="balance" v-if="selectedToken">
-        <p>
-          Balance: <span v-if="retreivingBalance">Loading...</span>
-          <span v-else>{{ currentBalance }} {{ selectedToken.symbol }}</span>
-        </p>
-        <p>
-          Expected fee: <span v-if="retreivingFee">Loading...</span>
-          <span v-else>{{ currentFee }} {{ selectedToken.symbol }}</span>
-          <button class="refresh-button" v-on:click="updateFee">Refresh</button>
-        </p>
-      </div>
-      <div class="greeting-input">
-        <input
-          v-model="newGreeting"
-          :disabled="!selectedToken || txStatus != 0"
-          placeholder="Write new greeting here..."
-        />
-
-        <button
-          class="change-button"
-          :disabled="!selectedToken || txStatus != 0 || retreivingFee"
-          v-on:click="changeGreeting"
-        >
-          <span v-if="selectedToken && !txStatus">Change greeting</span>
-          <span v-else-if="!selectedToken">Select token to pay fee first</span>
-          <span v-else-if="txStatus == 1">Sending tx...</span>
-          <span v-else-if="txStatus == 2"
-            >Waiting until tx is committed...</span
-          >
-          <span v-else-if="txStatus == 3">Updating the page...</span>
-          <span v-else-if="retreivingFee">Updating the fee...</span>
-        </button>
-      </div>
-    </div>
-  </div>
-  <div id="app" v-else>
-    <div class="start-screen">
-      <h1>Welcome to Greeter dApp!</h1>
-      <button v-if="correctNetwork" v-on:click="connectMetamask">Connect Metamask</button>
-      <button v-else v-on:click="addZkSyncSepolia">Switch to zkSync Sepolia</button>
-
-    </div>
-  </div>
-  <!-- <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" /> -->
-</template>
 
 <style scoped>
 .logo {
