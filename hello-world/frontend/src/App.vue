@@ -11,15 +11,15 @@ import * as GREETER_CONTRACT_ABI from './abi.json' // TODO: Complete and import 
 // reactive references
 const correctNetwork = ref(false)
 const tokens = ref(allowedTokens.default);
-const newGreeting = ref("");
-const greeting = ref("")
-const mainLoading = ref(true)
-const retreivingFee = ref(false)
-const retreivingBalance= ref(false)
-const currentBalance = ref("")
-const currentFee = ref("")
+const newGreeting:string = ref("");
+const greeting:string = ref("")
+const mainLoading:boolean = ref(true)
+const retreivingFee:boolean = ref(false)
+const retreivingBalance:boolean= ref(false)
+const currentBalance:string = ref("")
+const currentFee:string = ref("")
+const selectedTokenAddress:string = ref(null)
 const selectedToken = ref(null)
-const  selectedTokenAddress = ref(null)
 // txStatus is a reactive variable that tracks the status of the transaction
 // 0 stands for no status, i.e no tx has been sent
 // 1 stands for tx is beeing submitted to the operator
