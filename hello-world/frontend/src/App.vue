@@ -66,12 +66,14 @@
 
 <script setup lang="ts" >
 import { ref, onMounted } from "vue"
+// TODO: import ethers and zksync-ethers
+
+const GREETER_CONTRACT_ADDRESS = ""; // TODO: insert the Greeter contract address here
+import GREETER_CONTRACT_ABI from './abi.json' // TODO: Complete and import the ABI
 
 const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
 import allowedTokens from "./eth.json"; // change to "./erc20.json" to use ERC20 tokens
 
-const GREETER_CONTRACT_ADDRESS = ""; // TODO: insert the Greeter contract address here
-import GREETER_CONTRACT_ABI from './abi.json' // TODO: Complete and import the ABI
 
 // reactive references
 const correctNetwork = ref(false)
@@ -108,21 +110,14 @@ onMounted(async () => {
   }
 });
 
- const initializeProviderAndSigner= async ()=>{
+  // METHODS TO BE IMPLEMENTED
+  const initializeProviderAndSigner= async ()=>{
     // TODO: initialize provider and signer based on `window.ethereum`
-    provider = new Provider('https://sepolia.era.zksync.dev');
-    // Note that we still need to get the Metamask signer
-    signer = await (new BrowserProvider(window.ethereum)).getSigner();
-    contract = new Contract(
-      GREETER_CONTRACT_ADDRESS,
-      GREETER_CONTRACT_ABI,
-      signer
-    );
   }
 
   const getGreeting = async ()=> {
     // TODO: return the current greeting
-     return "";
+    return "";
   }
 
   const getFee = async() => {
@@ -167,11 +162,10 @@ onMounted(async () => {
       retrievingFee.value = false;
       retrievingBalance.value = false;
       newGreeting.value = "";
-
      
     }
 
-    const updateFee = async()=>{
+    const updateFee = async () => {
       retrievingFee.value = true;
       getFee()
         .then((fee) => {
@@ -182,7 +176,7 @@ onMounted(async () => {
           retrievingFee.value = false;
         });
     }
-    const updateBalance = async()=>{
+    const updateBalance = async () => {
       retrievingBalance.value = true;
       getBalance()
         .then((balance) => {
