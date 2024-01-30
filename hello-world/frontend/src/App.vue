@@ -1,10 +1,17 @@
 <template>
-   <div id="app" v-if="!mainLoading">
+  <div id="app" v-if="!mainLoading">
     <h1>Greeter says: {{ greeting }} 👋</h1>
     <div class="title">
       This a simple dApp, which can choose fee token and interact with the
-      `Greeter` smart contract. 
-      <p>The contract is deployed on the zkSync testnet on <a :href="`https://sepolia.explorer.zksync.io/address/${GREETER_CONTRACT_ADDRESS}`" target="_blank">{{ GREETER_CONTRACT_ADDRESS }}</a></p>
+      `Greeter` smart contract.
+      <p>
+        The contract is deployed on the zkSync testnet on
+        <a
+          :href="`https://sepolia.explorer.zksync.io/address/${GREETER_CONTRACT_ADDRESS}`"
+          target="_blank"
+          >{{ GREETER_CONTRACT_ADDRESS }}</a
+        >
+      </p>
     </div>
     <div class="main-box">
       <div>
@@ -57,198 +64,196 @@
   <div id="app" v-else>
     <div class="start-screen">
       <h1>Welcome to Greeter dApp!</h1>
-      <button v-if="correctNetwork" @click="connectMetamask">Connect Metamask</button>
+      <button v-if="correctNetwork" @click="connectMetamask">
+        Connect Metamask
+      </button>
       <button v-else @click="addZkSyncSepolia">Switch to zkSync Sepolia</button>
-
     </div>
   </div>
 </template>
 
-<script setup lang="ts" >
-import { ref, onMounted } from "vue"
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
 // TODO: import ethers and zksync-ethers
 
 const GREETER_CONTRACT_ADDRESS = ""; // TODO: insert the Greeter contract address here
-import GREETER_CONTRACT_ABI from './abi.json' // TODO: Complete and import the ABI
+import GREETER_CONTRACT_ABI from "./abi.json"; // TODO: Complete and import the ABI
 
 const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
 import allowedTokens from "./eth.json"; // change to "./erc20.json" to use ERC20 tokens
 
-
 // reactive references
-const correctNetwork = ref(false)
+const correctNetwork = ref(false);
 const tokens = ref(allowedTokens);
 const newGreeting = ref("");
-const greeting = ref("")
-const mainLoading = ref(true)
-const retrievingFee = ref(false)
-const retrievingBalance = ref(false)
-const currentBalance = ref("")
-const currentFee = ref("")
-const selectedTokenAddress = ref(null)
+const greeting = ref("");
+const mainLoading = ref(true);
+const retrievingFee = ref(false);
+const retrievingBalance = ref(false);
+const currentBalance = ref("");
+const currentFee = ref("");
+const selectedTokenAddress = ref(null);
 const selectedToken = ref<{
   l2Address: string;
   decimals: number;
   symbol: string;
-} | null>(null)
+} | null>(null);
 // txStatus is a reactive variable that tracks the status of the transaction
 // 0 stands for no status, i.e no tx has been sent
 // 1 stands for tx is beeing submitted to the operator
 // 2 stands for tx awaiting commit
 // 3 stands for updating the balance and greeting on the page
-const txStatus = ref(0)
+const txStatus = ref(0);
 
-let provider: Provider | null = null
-let signer: Wallet | null = null
-let contract: Contract | null = null
+let provider: Provider | null = null;
+let signer: Wallet | null = null;
+let contract: Contract | null = null;
 
 // Lifecycle hook
 onMounted(async () => {
   const network = await window.ethereum?.request({ method: "net_version" });
-  if(+network === 300){
+  if (+network === 300) {
     correctNetwork.value = true;
   }
 });
 
-  // METHODS TO BE IMPLEMENTED
-  const initializeProviderAndSigner= async ()=>{
-    // TODO: initialize provider and signer based on `window.ethereum`
+// METHODS TO BE IMPLEMENTED
+const initializeProviderAndSigner = async () => {
+  // TODO: initialize provider and signer based on `window.ethereum`
+};
+
+const getGreeting = async () => {
+  // TODO: return the current greeting
+  return "";
+};
+
+const getFee = async () => {
+  // TODO: return formatted fee
+  return "";
+};
+
+const getBalance = async () => {
+  // TODO: Return formatted balance
+  return "";
+};
+const getOverrides = async () => {
+  if (selectedToken.value.l2Address != ETH_ADDRESS) {
+    // TODO: Return data for the paymaster
   }
 
-  const getGreeting = async ()=> {
-    // TODO: return the current greeting
-    return "";
+  return {};
+};
+const changeGreeting = async () => {
+  txStatus.value = 1;
+  try {
+    // TODO: Submit the transaction
+    txStatus.value = 2;
+
+    // TODO: Wait for transaction compilation
+    txStatus.value = 3;
+
+    // Update greeting
+    greeting.value = await getGreeting();
+
+    retrievingFee.value = true;
+    retrievingBalance.value = true;
+    // Update balance and fee
+    currentBalance.value = await getBalance();
+    currentFee.value = await getFee();
+  } catch (e) {
+    console.error(e);
+    alert(e);
   }
 
-  const getFee = async() => {
-    // TODO: return formatted fee
-    return "";
-  }
+  txStatus.value = 0;
+  retrievingFee.value = false;
+  retrievingBalance.value = false;
+  newGreeting.value = "";
+};
 
-  const getBalance = async()=> {
-    // TODO: Return formatted balance
-    return "";
-  }
-  const getOverrides = async() => {
-    if (selectedToken.value.l2Address != ETH_ADDRESS) {
-      // TODO: Return data for the paymaster
-    }
-
-    return {};
-  }
-  const changeGreeting = async()=> {
-      txStatus.value = 1;
-      try {
-        // TODO: Submit the transaction
-        txStatus.value = 2;
-
-        // TODO: Wait for transaction compilation
-        txStatus.value = 3;
-
-        // Update greeting
-        greeting.value = await getGreeting();
-
-        retrievingFee.value = true;
-        retrievingBalance.value = true;
-        // Update balance and fee
-        currentBalance.value = await getBalance();
-        currentFee.value = await getFee();
-      } catch (e) {
-        console.error(e);
-        alert(e);
-      }
-
-      txStatus.value = 0;
+const updateFee = async () => {
+  retrievingFee.value = true;
+  getFee()
+    .then((fee) => {
+      currentFee.value = fee;
+    })
+    .catch((e) => console.log(e))
+    .finally(() => {
       retrievingFee.value = false;
+    });
+};
+const updateBalance = async () => {
+  retrievingBalance.value = true;
+  getBalance()
+    .then((balance) => {
+      currentBalance.value = balance;
+    })
+    .catch((e) => console.log(e))
+    .finally(() => {
       retrievingBalance.value = false;
-      newGreeting.value = "";
-     
-    }
+    });
+};
+const changeToken = async () => {
+  retrievingFee.value = true;
+  retrievingBalance.value = true;
 
-    const updateFee = async () => {
-      retrievingFee.value = true;
-      getFee()
-        .then((fee) => {
-          currentFee.value = fee;
-        })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          retrievingFee.value = false;
-        });
-    }
-    const updateBalance = async () => {
-      retrievingBalance.value = true;
-      getBalance()
-        .then((balance) => {
-          currentBalance.value = balance;
-        })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          retrievingBalance.value = false;
-        });
-    }
-    const changeToken = async()=>{
-      retrievingFee.value = true;
-      retrievingBalance.value = true;
-      
-      const tokenAddress = tokens.value.filter(
-        (t) => t.address === selectedTokenAddress.value,
-      )[0];
-      selectedToken.value = {
-        l2Address: tokenAddress.address,
-        decimals: tokenAddress.decimals,
-        symbol: tokenAddress.symbol,
-      };
-      try{
-          updateFee();
-          updateBalance();
-        }
-      catch(e){
-        console.log(e)
-      }
-      finally{
-        retrievingFee.value = false;
-        retrievingBalance.value = false;
-      }
-    }
-    const loadMainScreen = async()=> {
-      await initializeProviderAndSigner();
+  const tokenAddress = tokens.value.filter(
+    (t) => t.address === selectedTokenAddress.value,
+  )[0];
+  selectedToken.value = {
+    l2Address: tokenAddress.address,
+    decimals: tokenAddress.decimals,
+    symbol: tokenAddress.symbol,
+  };
+  try {
+    updateFee();
+    updateBalance();
+  } catch (e) {
+    console.log(e);
+  } finally {
+    retrievingFee.value = false;
+    retrievingBalance.value = false;
+  }
+};
+const loadMainScreen = async () => {
+  await initializeProviderAndSigner();
 
-      if (!provider || !signer) {
-        alert("Follow the tutorial to learn how to connect to Metamask!");
-        return;
-      }
+  if (!provider || !signer) {
+    alert("Follow the tutorial to learn how to connect to Metamask!");
+    return;
+  }
 
-      greeting.value = await getGreeting().catch((e) => console.log(e));
-        
-      mainLoading.value = false;
-      
-    }
-    const addZkSyncSepolia = async () =>{
-      // add zkSync testnet to Metamask
-      await window.ethereum.request({ method: "wallet_addEthereumChain",params: [
-        {
-          chainId: '0x12C',
-          chainName: 'zkSync Sepolia testnet',
-          rpcUrls: ['https://sepolia.era.zksync.dev'],
-          blockExplorerUrls: ['https://sepolia.explorer.zksync.io/'],
-          nativeCurrency: {
-            name: 'ETH',
-            symbol: 'ETH', 
-            decimals: 18,
-          },
-        }
-      ]})
-      window.location.reload();
-    }
-    const connectMetamask = async ()=> {
-      await window.ethereum
-        .request({ method: "eth_requestAccounts" })
-        .catch((e) => console.log(e));
+  greeting.value = await getGreeting().catch((e) => console.log(e));
 
-        loadMainScreen()
-    }
+  mainLoading.value = false;
+};
+const addZkSyncSepolia = async () => {
+  // add zkSync testnet to Metamask
+  await window.ethereum.request({
+    method: "wallet_addEthereumChain",
+    params: [
+      {
+        chainId: "0x12C",
+        chainName: "zkSync Sepolia testnet",
+        rpcUrls: ["https://sepolia.era.zksync.dev"],
+        blockExplorerUrls: ["https://sepolia.explorer.zksync.io/"],
+        nativeCurrency: {
+          name: "ETH",
+          symbol: "ETH",
+          decimals: 18,
+        },
+      },
+    ],
+  });
+  window.location.reload();
+};
+const connectMetamask = async () => {
+  await window.ethereum
+    .request({ method: "eth_requestAccounts" })
+    .catch((e) => console.log(e));
 
+  loadMainScreen();
+};
 </script>
 
 <style scoped>
@@ -264,14 +269,18 @@ onMounted(async () => {
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }
-input, select{
+input,
+select {
   padding: 8px 3px;
   margin: 0 5px;
 }
-button{
+button {
   margin: 0 5px;
 }
-.title, .main-box, .greeting-input, .balance{
+.title,
+.main-box,
+.greeting-input,
+.balance {
   margin: 10px;
 }
 </style>
