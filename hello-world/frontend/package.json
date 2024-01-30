@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "vue": "^3.3.11",
-    "zksync-ethers": "^6.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.2",

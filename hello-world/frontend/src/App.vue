@@ -66,7 +66,6 @@
 
 <script setup lang="ts" >
 import { ref, onMounted } from "vue"
-import { Provider, Wallet, Contract, BrowserProvider } from "zksync-ethers";
 
 const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
 import allowedTokens from "./eth.json"; // change to "./erc20.json" to use ERC20 tokens
