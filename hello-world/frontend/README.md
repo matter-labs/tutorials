@@ -1,6 +1,6 @@
 # greeter-front-end
 
-Make sure to check out the [tutorial here](https://era.zksync.io/docs/dev/building-on-zksync/hello-world.html).
+Make sure to check out the [tutorial here](https://docs.zksync.io/build/tutorials/dapp-development/frontend-quickstart-paymaster.html).
 
 ## Project setup
 
@@ -11,7 +11,7 @@ yarn install
 ### Compiles and hot-reloads for development
 
 ```
-yarn serve
+yarn dev
 ```
 
 ### Compiles and minifies for production
@@ -19,17 +19,3 @@ yarn serve
 ```
 yarn build
 ```
-
-### Lints and fixes files
-
-```
-yarn lint
-```
-
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).
-
-:::Note
-The values under src/erc20.json will be updated.
-:::

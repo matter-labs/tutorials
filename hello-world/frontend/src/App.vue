@@ -1,14 +1,22 @@
 <template>
   <div id="app" v-if="!mainLoading">
     <h1>Greeter says: {{ greeting }} 👋</h1>
-    <div>
+    <div class="title">
       This a simple dApp, which can choose fee token and interact with the
       `Greeter` smart contract.
+      <p>
+        The contract is deployed on the zkSync testnet on
+        <a
+          :href="`https://sepolia.explorer.zksync.io/address/${GREETER_CONTRACT_ADDRESS}`"
+          target="_blank"
+          >{{ GREETER_CONTRACT_ADDRESS }}</a
+        >
+      </p>
     </div>
     <div class="main-box">
       <div>
         Select token:
-        <select v-model="selectedTokenAddress" v-on:change="changeToken">
+        <select v-model="selectedTokenAddress" @change="changeToken">
           <option
             v-for="token in tokens"
             v-bind:value="token.address"
@@ -20,13 +28,13 @@
       </div>
       <div class="balance" v-if="selectedToken">
         <p>
-          Balance: <span v-if="retreivingBalance">Loading...</span>
+          Balance: <span v-if="retrievingBalance">Loading...</span>
           <span v-else>{{ currentBalance }} {{ selectedToken.symbol }}</span>
         </p>
         <p>
-          Expected fee: <span v-if="retreivingFee">Loading...</span>
+          Expected fee: <span v-if="retrievingFee">Loading...</span>
           <span v-else>{{ currentFee }} {{ selectedToken.symbol }}</span>
-          <button class="refresh-button" v-on:click="updateFee">Refresh</button>
+          <button class="refresh-button" @click="updateFee">Refresh</button>
         </p>
       </div>
       <div class="greeting-input">
@@ -38,17 +46,17 @@
 
         <button
           class="change-button"
-          :disabled="!selectedToken || txStatus != 0 || retreivingFee"
-          v-on:click="changeGreeting"
+          :disabled="!selectedToken || txStatus != 0 || retrievingFee"
+          @click="changeGreeting"
         >
           <span v-if="selectedToken && !txStatus">Change greeting</span>
           <span v-else-if="!selectedToken">Select token to pay fee first</span>
-          <span v-else-if="txStatus == 1">Sending tx...</span>
-          <span v-else-if="txStatus == 2"
+          <span v-else-if="txStatus === 1">Sending tx...</span>
+          <span v-else-if="txStatus === 2"
             >Waiting until tx is committed...</span
           >
-          <span v-else-if="txStatus == 3">Updating the page...</span>
-          <span v-else-if="retreivingFee">Updating the fee...</span>
+          <span v-else-if="txStatus === 3">Updating the page...</span>
+          <span v-else-if="retrievingFee">Updating the fee...</span>
         </button>
       </div>
     </div>
@@ -56,209 +64,215 @@
   <div id="app" v-else>
     <div class="start-screen">
       <h1>Welcome to Greeter dApp!</h1>
-      <button v-on:click="connectMetamask">Connect Metamask</button>
+      <button v-if="correctNetwork" @click="connectMetamask">
+        Connect Metamask
+      </button>
+      <button v-else @click="addZkSyncSepolia">Switch to zkSync Sepolia</button>
     </div>
   </div>
 </template>
 
-<script>
-// eslint-disable-next-line
-const GREETER_CONTRACT_ADDRESS = ""; // TODO: Add smart contract address
-// eslint-disable-next-line
-const GREETER_CONTRACT_ABI = []; // TODO: Complete and import the ABI
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+// TODO: import ethers and zksync-ethers
 
-const ETH_L1_ADDRESS = "0x0000000000000000000000000000000000000000";
-const allowedTokens = require("./eth.json");
+const GREETER_CONTRACT_ADDRESS = ""; // TODO: insert the Greeter contract address here
+import GREETER_CONTRACT_ABI from "./abi.json"; // TODO: Complete and import the ABI
 
-export default {
-  name: "App",
-  data() {
-    return {
-      newGreeting: "",
-      greeting: "unknown",
-      tokens: allowedTokens,
-      selectedToken: null,
-      selectedTokenAddress: "",
-      mainLoading: true,
-      provider: null,
-      signer: null,
-      contract: null,
-      canSubmit: true,
-      // 0 stands for no status, i.e no tx has been sent
-      // 1 stands for tx is beeing submitted to the operator
-      // 2 stands for tx awaiting commit
-      // 3 stands for updating the balance and greeting on the page
-      txStatus: 0,
-      retreivingFee: false,
-      retreivingBalance: false,
+const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
+import allowedTokens from "./eth.json"; // change to "./erc20.json" to use ERC20 tokens
 
-      currentBalance: "",
-      currentFee: "",
-    };
-  },
-  methods: {
-    initializeProviderAndSigner() {
-      // TODO: initialize provider and signer based on `window.ethereum`
-    },
-    async getGreeting() {
-      // TODO: return the current greeting
-      return "";
-    },
-    async getFee() {
-      // TOOD: return formatted fee
-      return "";
-    },
-    async getBalance() {
-      // Return formatted balance
-      return "";
-    },
-    async getOverrides() {
-      if (this.selectedToken.l1Address != ETH_L1_ADDRESS) {
-        // TODO: Return data for the paymaster
-      }
+// reactive references
+const correctNetwork = ref(false);
+const tokens = ref(allowedTokens);
+const newGreeting = ref("");
+const greeting = ref("");
+const mainLoading = ref(true);
+const retrievingFee = ref(false);
+const retrievingBalance = ref(false);
+const currentBalance = ref("");
+const currentFee = ref("");
+const selectedTokenAddress = ref(null);
+const selectedToken = ref<{
+  l2Address: string;
+  decimals: number;
+  symbol: string;
+} | null>(null);
+// txStatus is a reactive variable that tracks the status of the transaction
+// 0 stands for no status, i.e no tx has been sent
+// 1 stands for tx is beeing submitted to the operator
+// 2 stands for tx awaiting commit
+// 3 stands for updating the balance and greeting on the page
+const txStatus = ref(0);
 
-      return {};
-    },
-    async changeGreeting() {
-      this.txStatus = 1;
-      try {
-        // TODO: Submit the transaction
-        this.txStatus = 2;
+let provider: Provider | null = null;
+let signer: Wallet | null = null;
+let contract: Contract | null = null;
 
-        // TODO: Wait for transaction compilation
-        this.txStatus = 3;
+// Lifecycle hook
+onMounted(async () => {
+  const network = await window.ethereum?.request<string>({
+    method: "net_version",
+  });
+  if (network !== null && network !== undefined && +network === 300) {
+    correctNetwork.value = true;
+  }
+});
 
-        // Update greeting
-        this.greeting = await this.getGreeting();
+// METHODS TO BE IMPLEMENTED
+const initializeProviderAndSigner = async () => {
+  // TODO: initialize provider and signer based on `window.ethereum`
+};
 
-        this.retreivingFee = true;
-        this.retreivingBalance = true;
-        // Update balance and fee
-        this.currentBalance = await this.getBalance();
-        this.currentFee = await this.getFee();
-      } catch (e) {
-        alert(JSON.stringify(e));
-      }
+const getGreeting = async () => {
+  // TODO: return the current greeting
+  return "";
+};
 
-      this.txStatus = 0;
-      this.retreivingFee = false;
-      this.retreivingBalance = false;
-    },
+const getFee = async () => {
+  // TODO: return formatted fee
+  return "";
+};
 
-    updateFee() {
-      this.retreivingFee = true;
-      this.getFee()
-        .then((fee) => {
-          this.currentFee = fee;
-        })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          this.retreivingFee = false;
-        });
-    },
-    updateBalance() {
-      this.retreivingBalance = true;
-      this.getBalance()
-        .then((balance) => {
-          this.currentBalance = balance;
-        })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          this.retreivingBalance = false;
-        });
-    },
-    changeToken() {
-      this.retreivingFee = true;
-      this.retreivingBalance = true;
-      const l1Token = this.tokens.filter(
-        (t) => t.address == this.selectedTokenAddress,
-      )[0];
-      this.provider
-        .l2TokenAddress(l1Token.address)
-        .then((l2Address) => {
-          this.selectedToken = {
-            l1Address: l1Token.address,
-            l2Address: l2Address,
-            decimals: l1Token.decimals,
-            symbol: l1Token.symbol,
-          };
-          this.updateFee();
-          this.updateBalance();
-        })
-        .catch((e) => console.log(e))
-        .finally(() => {
-          this.retreivingFee = false;
-          this.retreivingBalance = false;
-        });
-    },
-    loadMainScreen() {
-      this.initializeProviderAndSigner();
+const getBalance = async () => {
+  // TODO: Return formatted balance
+  return "";
+};
+const getOverrides = async () => {
+  if (selectedToken.value?.l2Address != ETH_ADDRESS) {
+    // TODO: Return data for the paymaster
+  }
 
-      if (!this.provider || !this.signer) {
-        alert("Follow the tutorial to learn how to connect to Metamask!");
-        return;
-      }
+  return {};
+};
+const changeGreeting = async () => {
+  txStatus.value = 1;
+  try {
+    // TODO: Submit the transaction
+    txStatus.value = 2;
 
-      this.getGreeting().then((greeting) => {
-        this.greeting = greeting;
-        this.mainLoading = false;
-      });
-    },
-    connectMetamask() {
-      window.ethereum
-        .request({ method: "eth_requestAccounts" })
-        .then(() => {
-          if (+window.ethereum.networkVersion == 280) {
-            this.loadMainScreen();
-          } else {
-            alert("Please switch network to zkSync!");
-          }
-        })
-        .catch((e) => console.log(e));
-    },
-  },
+    // TODO: Wait for transaction compilation
+    txStatus.value = 3;
+
+    // Update greeting
+    greeting.value = await getGreeting();
+
+    retrievingFee.value = true;
+    retrievingBalance.value = true;
+    // Update balance and fee
+    currentBalance.value = await getBalance();
+    currentFee.value = await getFee();
+  } catch (e) {
+    console.error(e);
+    alert(e);
+  }
+
+  txStatus.value = 0;
+  retrievingFee.value = false;
+  retrievingBalance.value = false;
+  newGreeting.value = "";
+};
+
+const updateFee = async () => {
+  retrievingFee.value = true;
+  getFee()
+    .then((fee) => {
+      currentFee.value = fee;
+    })
+    .catch((e) => console.log(e))
+    .finally(() => {
+      retrievingFee.value = false;
+    });
+};
+const updateBalance = async () => {
+  retrievingBalance.value = true;
+  getBalance()
+    .then((balance) => {
+      currentBalance.value = balance;
+    })
+    .catch((e) => console.log(e))
+    .finally(() => {
+      retrievingBalance.value = false;
+    });
+};
+const changeToken = async () => {
+  retrievingFee.value = true;
+  retrievingBalance.value = true;
+
+  const tokenAddress = tokens.value.filter(
+    (t) => t.address === selectedTokenAddress.value,
+  )[0];
+  selectedToken.value = {
+    l2Address: tokenAddress.address,
+    decimals: tokenAddress.decimals,
+    symbol: tokenAddress.symbol,
+  };
+  try {
+    updateFee();
+    updateBalance();
+  } catch (e) {
+    console.log(e);
+  } finally {
+    retrievingFee.value = false;
+    retrievingBalance.value = false;
+  }
+};
+const loadMainScreen = async () => {
+  await initializeProviderAndSigner();
+
+  if (!provider || !signer) {
+    alert("Follow the tutorial to learn how to connect to Metamask!");
+    return;
+  }
+
+  await getGreeting()
+    .then((newGreeting) => (greeting.value = newGreeting))
+    .catch((e: unknown) => console.error(e));
+
+  mainLoading.value = false;
+};
+const addZkSyncSepolia = async () => {
+  // add zkSync testnet to Metamask
+  await window.ethereum?.request({
+    method: "wallet_addEthereumChain",
+    params: [
+      {
+        chainId: "0x12C",
+        chainName: "zkSync Sepolia testnet",
+        rpcUrls: ["https://sepolia.era.zksync.dev"],
+        blockExplorerUrls: ["https://sepolia.explorer.zksync.io/"],
+        nativeCurrency: {
+          name: "ETH",
+          symbol: "ETH",
+          decimals: 18,
+        },
+      },
+    ],
+  });
+  window.location.reload();
+};
+const connectMetamask = async () => {
+  await window.ethereum
+    ?.request({ method: "eth_requestAccounts" })
+    .catch((e: unknown) => console.error(e));
+
+  loadMainScreen();
 };
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 30px;
+<style scoped>
+input,
+select {
+  padding: 8px 3px;
+  margin: 0 5px;
 }
-
-#app ul {
-  display: inline-block;
+button {
+  margin: 0 5px;
 }
-
-.main-box {
-  text-align: left;
-  width: 400px;
-
-  margin: auto;
-  margin-top: 40px;
-}
-
-.greeting-input {
-  margin-top: 20px;
-}
-
-.change-button {
-  margin-left: 20px;
-}
-
-.start-screen {
-  margin-top: 100px;
-}
-
+.title,
+.main-box,
+.greeting-input,
 .balance {
-  margin-top: 10px;
-}
-
-.refresh-button {
-  margin-left: 15px;
+  margin: 10px;
 }
 </style>
