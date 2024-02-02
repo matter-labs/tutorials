@@ -111,7 +111,9 @@ let contract: Contract | null = null;
 
 // Lifecycle hook
 onMounted(async () => {
-  const network = await window.ethereum?.request<string>({ method: "net_version" });
+  const network = await window.ethereum?.request<string>({
+    method: "net_version",
+  });
   if (network !== null && network !== undefined && +network === 300) {
     correctNetwork.value = true;
   }
@@ -224,7 +226,7 @@ const loadMainScreen = async () => {
   }
 
   await getGreeting()
-    .then(newGreeting => greeting.value = newGreeting)
+    .then((newGreeting) => (greeting.value = newGreeting))
     .catch((e: unknown) => console.error(e));
 
   mainLoading.value = false;
@@ -250,7 +252,9 @@ const addZkSyncSepolia = async () => {
   window.location.reload();
 };
 const connectMetamask = async () => {
-  await window.ethereum?.request({ method: "eth_requestAccounts" }).catch((e: unknown) => console.error(e));
+  await window.ethereum
+    ?.request({ method: "eth_requestAccounts" })
+    .catch((e: unknown) => console.error(e));
 
   loadMainScreen();
 };
