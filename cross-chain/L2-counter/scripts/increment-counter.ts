@@ -11,7 +11,7 @@ const COUNTER_ADDRESS = "<COUNTER-ADDRESS>";
 
 const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
 if (!PRIVATE_KEY)
-throw "⛔️ Private key not detected! Add it to the .env file!";
+  throw "⛔️ Private key not detected! Add it to the .env file!";
 // Initialize the wallet.
 
 async function main() {

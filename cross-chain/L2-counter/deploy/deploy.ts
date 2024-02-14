@@ -14,9 +14,9 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
   if (!PRIVATE_KEY)
-  throw "⛔️ Private key not detected! Add it to the .env file!";
+    throw "⛔️ Private key not detected! Add it to the .env file!";
   // Initialize the wallet.
-  const wallet = new Wallet(PRIVATE_KEY)
+  const wallet = new Wallet(PRIVATE_KEY);
 
   // Create deployer object and load the artifact of the contract you want to deploy.
   const deployer = new Deployer(hre, wallet);
