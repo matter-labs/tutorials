@@ -1,5 +1,4 @@
-import "@nomiclabs/hardhat-waffle";
-
+import "@nomicfoundation/hardhat-ethers";
 import { HardhatUserConfig } from "hardhat/config";
 
 // import file with Sepolia params
@@ -7,7 +6,7 @@ const sepolia = require("./sepolia.json");
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.19",
+    version: "0.8.20",
   },
   networks: {
     // Sepolia network

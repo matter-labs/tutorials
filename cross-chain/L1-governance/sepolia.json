@@ -1,4 +1,4 @@
 {
-  "nodeUrl": "",
-  "deployerPrivateKey": ""
+  "nodeUrl": "https://sepolia.infura.io/v3/b06416e7b8f640b7a7559e84368dc016",
+  "deployerPrivateKey": "0ef0b37dc92e86791c28fa2ceeeacbb97e241d8a72325e4d82ec7513f9d6cd56"
 }
