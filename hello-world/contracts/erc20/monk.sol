@@ -16,7 +16,7 @@ contract MonkToken is ERC20Burnable {
      * You can edit these values as needed.
      */
     constructor() ERC20("MONK", "MNK") {
-        // Default initial supply of 1 million tokens (with 18 decimals)
+        // Default initial supply of 1 billion tokens (with 18 decimals)
         uint256 initialSupply = 1_000_000_000 * (10 ** 18);
 
         // The initial supply is minted to the deployer's address
