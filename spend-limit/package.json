@@ -13,7 +13,6 @@
     "test": "hardhat test --network hardhat"
   },
   "devDependencies": {
-    "@matterlabs/hardhat-zksync-chai-matchers": "^0.1.2",
     "@matterlabs/hardhat-zksync-deploy": "^1.1.2",
     "@matterlabs/hardhat-zksync-node": "^1.0.1",
     "@matterlabs/hardhat-zksync-solc": "^1.0.6",
