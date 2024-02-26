@@ -5,26 +5,32 @@
   "repository": "git@github.com:porco-rosso-j/daily-spendlimit-tutorial.git",
   "author": "Porco <porcorossoj89@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "deploy": "hardhat deploy-zksync --script deploy.ts",
+    "interact": "hardhat deploy-zksync --script interact.ts",
+    "compile": "hardhat compile",
+    "clean": "hardhat clean",
+    "test": "hardhat test --network hardhat"
+  },
   "devDependencies": {
     "@matterlabs/hardhat-zksync-chai-matchers": "^0.1.2",
-    "@matterlabs/hardhat-zksync-deploy": "^0.7.0",
-    "@matterlabs/hardhat-zksync-solc": "^0.4.2",
-    "@matterlabs/hardhat-zksync-verify": "^0.4.0",
+    "@matterlabs/hardhat-zksync-deploy": "^1.1.2",
+    "@matterlabs/hardhat-zksync-node": "^1.0.1",
+    "@matterlabs/hardhat-zksync-solc": "^1.0.6",
+    "@matterlabs/hardhat-zksync-verify": "^1.2.2",
+    "@matterlabs/zksync-contracts": "^0.6.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.5",
-    "@nomiclabs/hardhat-etherscan": "^3.1.5",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "@openzeppelin/contracts": "4.9.5",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
     "chai": "^4.3.7",
     "dotenv": "^16.0.3",
-    "ethers": "^5.7.2",
-    "hardhat": "^2.12.6",
+    "ethers": "^6.9.2",
+    "hardhat": "^2.12.4",
     "mocha": "^10.2.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.4",
-    "zksync-ethers": "^5"
-  },
-  "dependencies": {
-    "@matterlabs/zksync-contracts": "^0.6.1",
-    "@openzeppelin/contracts": "^4.8.1"
+    "typescript": "^4.9.5",
+    "zksync-ethers": "^6.0.0"
   }
 }

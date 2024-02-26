@@ -1,7 +1,8 @@
-import "@matterlabs/hardhat-zksync-chai-matchers";
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
 import "@matterlabs/hardhat-zksync-verify";
+import "@matterlabs/hardhat-zksync-node";
+import "@matterlabs/hardhat-zksync-chai-matchers";
 
 import * as dotenv from "dotenv";
 
@@ -32,9 +33,16 @@ const config: HardhatUserConfig = {
     },
   },
 
-  defaultNetwork: "zkSyncTestnet",
+  defaultNetwork: "zkSyncSepoliaTestnet",
 
   networks: {
+    zkSyncSepoliaTestnet: {
+      url: "https://sepolia.era.zksync.dev",
+      ethNetwork: "sepolia",
+      zksync: true,
+      verifyURL:
+        "https://explorer.sepolia.era.zksync.dev/contract_verification",
+    },
     hardhat: {
       zksync: true,
     },

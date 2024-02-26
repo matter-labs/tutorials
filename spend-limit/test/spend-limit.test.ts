@@ -22,7 +22,9 @@ let wallet: Wallet;
 let user: Wallet;
 
 let factory: Contract;
+let factoryAddress: string;
 let account: Contract;
+let accountAddress: string;
 
 before(async () => {
   provider = Provider.getDefaultProvider();
@@ -30,12 +32,13 @@ before(async () => {
   user = Wallet.createRandom();
 
   factory = await deployAAFactory(wallet);
-  account = await deployAccount(wallet, user, factory.address);
-
+  factoryAddress = await factory.getAddress();
+  account = await deployAccount(wallet, user, factoryAddress);
+  accountAddress = await account.getAddress();
   // 100 ETH transfered to Account
   await (
     await wallet.sendTransaction({
-      to: account.address,
+      to: accountAddress,
       value: toBN("100"),
     })
   ).wait();
@@ -46,7 +49,7 @@ before(async () => {
 
 describe("Deployment, Setup & Transfer", function () {
   it.only("Should deploy contracts, send ETH, and set varible correctly", async function () {
-    expect(await provider.getBalance(account.address)).to.eq(toBN("100"));
+    expect(await provider.getBalance(accountAddress)).to.eq(toBN("100"));
     expect((await account.ONE_DAY()).toNumber()).to.equal(SLEEP_TIME);
 
     expect(await account.owner()).to.equal(user.address);
@@ -84,7 +87,7 @@ describe("Deployment, Setup & Transfer", function () {
     const txReceipt = await sendTx(provider, account, user, tx);
     await txReceipt.wait();
 
-    expect(await provider.getBalance(account.address)).to.be.closeTo(
+    expect(await provider.getBalance(accountAddress)).to.be.closeTo(
       balances.AccountETHBal.sub(toBN("5")),
       toBN("0.01"),
     );
@@ -110,7 +113,7 @@ describe("Deployment, Setup & Transfer", function () {
     const txReceipt = await sendTx(provider, account, user, tx);
     await expect(txReceipt.wait()).to.be.revertedWith("Exceeds daily limit");
 
-    expect(await provider.getBalance(account.address)).to.be.closeTo(
+    expect(await provider.getBalance(accountAddress)).to.be.closeTo(
       balances.AccountETHBal,
       toBN("0.01"),
     );
@@ -147,7 +150,7 @@ describe("Deployment, Setup & Transfer", function () {
       await txReceipt.wait();
     }
 
-    expect(await provider.getBalance(account.address)).to.be.closeTo(
+    expect(await provider.getBalance(accountAddress)).to.be.closeTo(
       balances.AccountETHBal.sub(toBN("6")),
       toBN("0.01"),
     );
@@ -203,7 +206,7 @@ describe("Spending Limit Updates to make a transfer", function () {
     const txReceipt3 = await sendTx(provider, account, user, tx1);
     await txReceipt3.wait();
 
-    expect(await provider.getBalance(account.address)).to.be.closeTo(
+    expect(await provider.getBalance(accountAddress)).to.be.closeTo(
       balances.AccountETHBal.sub(toBN("15")),
       toBN("0.01"),
     );
@@ -243,7 +246,7 @@ describe("Spending Limit Updates to make a transfer", function () {
     const txReceipt3 = await sendTx(provider, account, user, tx1);
     await txReceipt3.wait();
 
-    expect(await provider.getBalance(account.address)).to.be.closeTo(
+    expect(await provider.getBalance(accountAddress)).to.be.closeTo(
       balances.AccountETHBal.sub(toBN("30")),
       toBN("0.01"),
     );

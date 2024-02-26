@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.17;
 
 contract SpendLimit {
     // uint public ONE_DAY = 24 hours;
@@ -34,7 +34,7 @@ contract SpendLimit {
         require(_amount != 0, "Invalid amount");
 
         uint resetTime;
-        uint timestamp = block.timestamp; // L1 batch timestamp
+        uint timestamp = block.timestamp; // L2 block timestamp
 
         if (isValidUpdate(_token)) {
             resetTime = timestamp + ONE_DAY;
@@ -93,7 +93,7 @@ contract SpendLimit {
         // return if spending limit hasn't been enabled yet
         if (!limit.isEnabled) return;
 
-        uint timestamp = block.timestamp; // L1 batch timestamp
+        uint timestamp = block.timestamp; // L2 block timestamp
 
         // Renew resetTime and available amount, which is only performed
         // if a day has already passed since the last update: timestamp > resetTime
