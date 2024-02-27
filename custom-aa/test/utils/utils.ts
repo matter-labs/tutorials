@@ -123,14 +123,11 @@ export class Utils {
     const wallet = new Wallet(localConfig.privateKey).connect(provider);
     const factoryArtifact = await hre.artifacts.readArtifact("AAFactory");
 
-    console.log("factoryArtifact :>> ", factoryArtifact);
     const aaFactory = new ethers.Contract(
       AA_FACTORY_ADDRESS,
       factoryArtifact.abi,
       wallet,
     );
-
-    // console.log('aaFactory :>> ', aaFactory);
 
     // The two owners of the multisig
     const owner1 = Wallet.createRandom();
@@ -150,9 +147,7 @@ export class Utils {
         salt,
         owner1.address,
         owner2.address,
-        // { gasLimit: 10000000 },
       );
-      console.log("deploy multi tx.hash :>> ", tx.hash);
       await tx.wait();
       this.txHash = tx.hash;
     } catch (e) {
@@ -230,7 +225,6 @@ export class Utils {
       ...aaTx,
       from: wallet.address,
     });
-    console.log("gasLimit :>> ", gasLimit);
     const gasPrice = await provider.getGasPrice();
 
     aaTx = {
@@ -253,6 +247,7 @@ export class Utils {
       signedTxHash = await EIP712Signer.getSignedDigest(aaTx);
       signedTxHash;
     } catch (e) {
+      console.error('Error signing transaction :>> ', e);
       return e;
     }
 
@@ -315,6 +310,8 @@ export class Utils {
     result.owner1 = this.owner1;
     result.owner2 = this.owner2;
     result.provider = this.provider;
+
+    console.log('result :>> ', result);
 
     return result;
   }
