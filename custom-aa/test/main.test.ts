@@ -8,12 +8,13 @@ import * as zks from "zksync-ethers";
 
 describe("Custom AA Tests", function () {
   let result: any;
-  let factory: eth.Contract;
+  let factory: zks.Contract;
   let multiSigResult: MultiSigResult;
   let richWallet: zks.Wallet;
   let multiSigWallet: zks.Wallet;
   const helper = new Helper();
   const utils = new Utils();
+  let factoryAddress: string;
 
   before(async function () {
     richWallet = new zks.Wallet(localConfig.privateKey);
@@ -23,37 +24,24 @@ describe("Custom AA Tests", function () {
     before(async function () {
       this.timeout(10000);
       factory = await utils.deployFactory(localConfig.privateKey);
+      factoryAddress = await factory.getAddress();
     });
 
     it("Should have a correct address", async function () {
-      result = await helper.isValidEthFormat(factory.address);
+      result = await helper.isValidEthFormat(factoryAddress);
       expect(result).to.be.true;
     });
 
-    it("Should have a tx hash that starts from 0x", async function () {
-      result = factory.deployTransaction.hash;
-      expect(result).to.contains("0x");
-    });
-
-    it("Should have the confirmations value as 0", async function () {
-      result = factory.deployTransaction.confirmations;
-      expect(result).to.equal(0);
-    });
-
-    it("Should have the From value as a rich wallet address", async function () {
-      result = factory.deployTransaction.from;
-      expect(result).to.equal(Wallets.firstWalletAddress);
-    });
-
+    // Removed tests as we don't get the deployTransaction object from the deployer
     it("Should have the Signer address value as a rich wallet address", async function () {
-      result = factory.signer;
-      expect(result.address).to.equal(Wallets.firstWalletAddress);
+      result = factory.runner;
+      expect(await result.getAddress()).to.equal(Wallets.firstWalletAddress);
     });
   });
 
   describe("Multisig", function () {
     before(async function () {
-      await utils.deployMultisig(factory.address);
+      await utils.deployMultisig(factoryAddress);
       await utils.fundingMultiSigAccount();
       multiSigResult = await utils.performSignedMultiSigTx();
     });
@@ -123,7 +111,7 @@ describe("Custom AA Tests", function () {
       await (
         await multiSigWallet.transfer({
           to: richWallet.address,
-          amount: eth.utils.parseUnits("5", 18),
+          amount: eth.parseUnits("5", 18),
           overrides: { type: 113 },
         })
       ).wait();
@@ -149,7 +137,7 @@ describe("Custom AA Tests", function () {
         await (
           await randomWallet.transfer({
             to: richWallet.address,
-            amount: eth.utils.parseUnits("5", 18),
+            amount: eth.parseUnits("5", 18),
             overrides: { type: 113 },
           })
         ).wait();
@@ -162,7 +150,7 @@ describe("Custom AA Tests", function () {
     });
 
     it("Should fail when the deployed account balance is higher than 0", async function () {
-      await utils.deployMultisig(factory.address);
+      await utils.deployMultisig(factoryAddress);
       await utils.fundingMultiSigAccount();
       result = await utils.performSignedMultiSigTx(1);
 
@@ -171,7 +159,7 @@ describe("Custom AA Tests", function () {
     });
 
     it("Should fail when the deployed account balance is higher than balance on the main wallet", async function () {
-      await utils.deployMultisig(factory.address);
+      await utils.deployMultisig(factoryAddress);
       await utils.fundingMultiSigAccount();
       result = await utils.performSignedMultiSigTx(10000000000000);
 

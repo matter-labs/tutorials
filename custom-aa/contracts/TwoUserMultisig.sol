@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.17;
 
 import "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IAccount.sol";
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
 
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
+import "hardhat/console.sol";
+
 // Used for signature validation
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-// Access zkSync system contracts, in this case for nonce validation vs NONCE_HOLDER_SYSTEM_CONTRACT
+// Access zkSync system contracts for nonce validation via NONCE_HOLDER_SYSTEM_CONTRACT
 import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
-// to call non-view method of system contracts
+// to call non-view function of system contracts
 import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/SystemContractsCaller.sol";
 
 contract TwoUserMultisig is IAccount, IERC1271 {
@@ -27,9 +29,9 @@ contract TwoUserMultisig is IAccount, IERC1271 {
     modifier onlyBootloader() {
         require(
             msg.sender == BOOTLOADER_FORMAL_ADDRESS,
-            "Only bootloader can call this method"
+            "Only bootloader can call this function"
         );
-        // Continure execution if called from the bootloader.
+        // Continue execution if called from the bootloader.
         _;
     }
 
@@ -43,7 +45,7 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         bytes32 _suggestedSignedHash,
         Transaction calldata _transaction
     ) external payable override onlyBootloader returns (bytes4 magic) {
-        magic = _validateTransaction(_suggestedSignedHash, _transaction);
+        return _validateTransaction(_suggestedSignedHash, _transaction);
     }
 
     function _validateTransaction(
@@ -69,14 +71,18 @@ contract TwoUserMultisig is IAccount, IERC1271 {
             txHash = _suggestedSignedHash;
         }
 
-        // The fact there is are enough balance for the account
+        // The fact there is enough balance for the account
         // should be checked explicitly to prevent user paying for fee for a
         // transaction that wouldn't be included on Ethereum.
         uint256 totalRequiredBalance = _transaction.totalRequiredBalance();
         require(totalRequiredBalance <= address(this).balance, "Not enough balance for fee + value");
 
         if (isValidSignature(txHash, _transaction.signature) == EIP1271_SUCCESS_RETURN_VALUE) {
+            console.log('YESSSSS signature is valid');
             magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;
+        } else {
+            console.log('NOOOOO signature is not valid');
+            magic = bytes4(0);
         }
     }
 
@@ -125,6 +131,7 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         magic = EIP1271_SUCCESS_RETURN_VALUE;
 
         if (_signature.length != 130) {
+            console.log('Signature is not 130');
             // Signature is invalid anyway, but we need to proceed with the signature verification as usual
             // in order for the fee estimation to work correctly
             _signature = new bytes(130);
@@ -138,23 +145,17 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         (bytes memory signature1, bytes memory signature2) = extractECDSASignature(_signature);
 
         if(!checkValidECDSASignatureFormat(signature1) || !checkValidECDSASignatureFormat(signature2)) {
+            console.log('one of the signature is not valid');
             magic = bytes4(0);
         }
+        console.log('signatures are valid');
 
-        (address recoveredAddr1, ECDSA.RecoverError error) = ECDSA.tryRecover(_hash, signature1);
-        if (error != ECDSA.RecoverError.NoError)  {
-            magic = bytes4(0);
-            return magic;
-        }
-
-        (address recoveredAddr2, ECDSA.RecoverError error2) = ECDSA.tryRecover(_hash, signature2);
-        if (error2 != ECDSA.RecoverError.NoError)  {
-            magic = bytes4(0);
-            return magic;
-        }
+        address recoveredAddr1 = ECDSA.recover(_hash, signature1);
+        address recoveredAddr2 = ECDSA.recover(_hash, signature2);
 
         // Note, that we should abstain from using the require here in order to allow for fee estimation to work
         if(recoveredAddr1 != owner1 || recoveredAddr2 != owner2) {
+            console.log('recoveredAddr1 != owner1 || recoveredAddr2 != owner2');
             magic = bytes4(0);
         }
     }
