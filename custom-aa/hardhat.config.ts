@@ -20,8 +20,8 @@ const config: HardhatUserConfig = {
       zksync: true,
     },
     hardhat: {
-      zksync: true
-    }
+      zksync: true,
+    },
   },
   solidity: {
     version: "0.8.17",
