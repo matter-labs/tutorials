@@ -112,10 +112,6 @@ export class Utils {
 
   async deployMultisig(factoryAddress: string) {
     const AA_FACTORY_ADDRESS = factoryAddress;
-    console.log(
-      "Running deployMultisig with factoryAddress :>> ",
-      factoryAddress,
-    );
 
     const provider = new Provider(localConfig.L2Network);
     this.provider = provider;
@@ -151,10 +147,8 @@ export class Utils {
       await tx.wait();
       this.txHash = tx.hash;
     } catch (e) {
-      console.error("Error deploying multisig :>> ", e);
       return e;
     }
-    const x = await aaFactory.aaBytecodeHash();
     // Getting the address of the deployed contract account
     const abiCoder = new ethers.AbiCoder();
     let multisigAddress = utils.create2Address(
@@ -239,7 +233,7 @@ export class Utils {
       customData: {
         gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
       } as types.Eip712Meta,
-      value: 0n,
+      value: BigInt(deployedAccountBalance),
     };
 
     //try-catch needs to be used for stack trace extraction during negative test execution
@@ -247,7 +241,6 @@ export class Utils {
       signedTxHash = await EIP712Signer.getSignedDigest(aaTx);
       signedTxHash;
     } catch (e) {
-      console.error('Error signing transaction :>> ', e);
       return e;
     }
 
@@ -310,8 +303,6 @@ export class Utils {
     result.owner1 = this.owner1;
     result.owner2 = this.owner2;
     result.provider = this.provider;
-
-    console.log('result :>> ', result);
 
     return result;
   }
