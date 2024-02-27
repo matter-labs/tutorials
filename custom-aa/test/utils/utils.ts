@@ -1,7 +1,14 @@
 import * as hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
-import { EIP712Signer, Contract, Provider, types, utils, Wallet } from "zksync-ethers";
+import {
+  EIP712Signer,
+  Contract,
+  Provider,
+  types,
+  utils,
+  Wallet,
+} from "zksync-ethers";
 import { localConfig } from "../../../tests/testConfig";
 import * as ethers from "ethers";
 import { Helper } from "../../../tests/helper";
@@ -73,7 +80,9 @@ export class Utils {
     this.txHash = undefined;
   }
 
-  async deployFactory(privateKey: string = localConfig.privateKey): Promise<Contract>{
+  async deployFactory(
+    privateKey: string = localConfig.privateKey,
+  ): Promise<Contract> {
     // Private key of the account used to deploy
     const provider = new Provider(localConfig.L2Network);
     const wallet = new Wallet(privateKey).connect(provider);
@@ -83,7 +92,7 @@ export class Utils {
 
     // Getting the bytecodeHash of the account
     const bytecodeHash = utils.hashBytecode(aaArtifact.bytecode);
-  
+
     let factory = await deployer.deploy(
       factoryArtifact,
       [bytecodeHash],
@@ -103,7 +112,10 @@ export class Utils {
 
   async deployMultisig(factoryAddress: string) {
     const AA_FACTORY_ADDRESS = factoryAddress;
-    console.log('Running deployMultisig with factoryAddress :>> ', factoryAddress);
+    console.log(
+      "Running deployMultisig with factoryAddress :>> ",
+      factoryAddress,
+    );
 
     const provider = new Provider(localConfig.L2Network);
     this.provider = provider;
@@ -111,7 +123,7 @@ export class Utils {
     const wallet = new Wallet(localConfig.privateKey).connect(provider);
     const factoryArtifact = await hre.artifacts.readArtifact("AAFactory");
 
-    console.log('factoryArtifact :>> ', factoryArtifact);
+    console.log("factoryArtifact :>> ", factoryArtifact);
     const aaFactory = new ethers.Contract(
       AA_FACTORY_ADDRESS,
       factoryArtifact.abi,
@@ -130,7 +142,6 @@ export class Utils {
     // For the simplicity of the tutorial, we will use zero hash as salt
     const salt = ethers.ZeroHash;
 
-
     this.salt = salt;
     //try-catch needs to be used for stack trace extraction during negative test execution
     try {
@@ -141,11 +152,11 @@ export class Utils {
         owner2.address,
         // { gasLimit: 10000000 },
       );
-      console.log('deploy multi tx.hash :>> ', tx.hash);
+      console.log("deploy multi tx.hash :>> ", tx.hash);
       await tx.wait();
       this.txHash = tx.hash;
     } catch (e) {
-      console.error('Error deploying multisig :>> ', e);
+      console.error("Error deploying multisig :>> ", e);
       return e;
     }
     const x = await aaFactory.aaBytecodeHash();
@@ -215,8 +226,11 @@ export class Utils {
       Wallet.createRandom().address,
     );
 
-    const gasLimit = await provider.estimateGas({...aaTx, from: wallet.address});
-    console.log('gasLimit :>> ', gasLimit);
+    const gasLimit = await provider.estimateGas({
+      ...aaTx,
+      from: wallet.address,
+    });
+    console.log("gasLimit :>> ", gasLimit);
     const gasPrice = await provider.getGasPrice();
 
     aaTx = {
@@ -242,12 +256,14 @@ export class Utils {
       return e;
     }
 
-  const signature = ethers.concat([
-    // Note, that `signMessage` wouldn't work here, since we don't want
-    // the signed hash to be prefixed with `\x19Ethereum Signed Message:\n`
-    ethers.Signature.from(this.owner1.signingKey.sign(signedTxHash)).serialized,
-    ethers.Signature.from(this.owner2.signingKey.sign(signedTxHash)).serialized,
-  ]);
+    const signature = ethers.concat([
+      // Note, that `signMessage` wouldn't work here, since we don't want
+      // the signed hash to be prefixed with `\x19Ethereum Signed Message:\n`
+      ethers.Signature.from(this.owner1.signingKey.sign(signedTxHash))
+        .serialized,
+      ethers.Signature.from(this.owner2.signingKey.sign(signedTxHash))
+        .serialized,
+    ]);
 
     aaTx.customData = {
       ...aaTx.customData,
@@ -262,7 +278,9 @@ export class Utils {
       `The multisig's nonce before the first tx is ${multiSigNonceBeforeTx}`,
     );
 
-    const sentTx = await provider.broadcastTransaction(types.Transaction.from(aaTx).serialized,);
+    const sentTx = await provider.broadcastTransaction(
+      types.Transaction.from(aaTx).serialized,
+    );
     //try-catch needs to be used for stack trace extraction during negative test execution
     try {
       await sentTx.wait(0);
