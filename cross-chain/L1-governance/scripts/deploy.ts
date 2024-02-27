@@ -10,10 +10,10 @@ async function main() {
   const Governance = await ethers.getContractFactory("Governance");
 
   const contract = await Governance.deploy();
-  await contract.deployed();
+  const receipt = await contract.deploymentTransaction()?.wait();
 
   console.log(
-    `Governance contract was successfully deployed at ${contract.address}`,
+    `Governance contract was successfully deployed at ${receipt?.contractAddress}`,
   );
 }
 

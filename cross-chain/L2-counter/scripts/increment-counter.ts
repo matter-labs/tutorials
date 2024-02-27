@@ -1,15 +1,24 @@
-import { BigNumber, Contract, Wallet, ethers } from "ethers";
+import { Contract, Wallet, Interface } from "ethers";
 import { Provider, utils } from "zksync-ethers";
+// load env file
+import dotenv from "dotenv";
+dotenv.config();
+
 const GOVERNANCE_ABI = require("./governance.json");
 const GOVERNANCE_ADDRESS = "<GOVERNANCE-ADDRESS>";
 const COUNTER_ABI = require("./counter.json");
 const COUNTER_ADDRESS = "<COUNTER-ADDRESS>";
 
+const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
+if (!PRIVATE_KEY)
+  throw "⛔️ Private key not detected! Add it to the .env file!";
+// Initialize the wallet.
+
 async function main() {
   // Enter your Ethereum L1 provider RPC URL.
-  const l1Provider = new ethers.providers.JsonRpcProvider("<RPC-URL>");
+  const l1Provider = new Provider("<L1-RPC-URL>");
   // Set up the Governor wallet to be the same as the one that deployed the governance contract.
-  const wallet = new ethers.Wallet("<YOUR-PRIVATE-KEY>", l1Provider);
+  const wallet = new Wallet(PRIVATE_KEY, l1Provider);
   // Set a constant that accesses the Layer 1 contract.
   const govcontract = new Contract(GOVERNANCE_ADDRESS, GOVERNANCE_ABI, wallet);
 
@@ -26,7 +35,7 @@ async function main() {
 
   // Encoding the L1 transaction is done in the same way as it is done on Ethereum.
   // Use an Interface which gives access to the contract functions.
-  const counterInterface = new ethers.utils.Interface(COUNTER_ABI);
+  const counterInterface = new Interface(COUNTER_ABI);
   const data = counterInterface.encodeFunctionData("increment", []);
 
   // The price of an L1 transaction depends on the gas price used.

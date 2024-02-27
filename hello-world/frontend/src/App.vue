@@ -111,8 +111,10 @@ let contract: Contract | null = null;
 
 // Lifecycle hook
 onMounted(async () => {
-  const network = await window.ethereum?.request({ method: "net_version" });
-  if (+network === 300) {
+  const network = await window.ethereum?.request<string>({
+    method: "net_version",
+  });
+  if (network !== null && network !== undefined && +network === 300) {
     correctNetwork.value = true;
   }
 });
@@ -137,7 +139,7 @@ const getBalance = async () => {
   return "";
 };
 const getOverrides = async () => {
-  if (selectedToken.value.l2Address != ETH_ADDRESS) {
+  if (selectedToken.value?.l2Address != ETH_ADDRESS) {
     // TODO: Return data for the paymaster
   }
 
@@ -223,13 +225,15 @@ const loadMainScreen = async () => {
     return;
   }
 
-  greeting.value = await getGreeting().catch((e) => console.log(e));
+  await getGreeting()
+    .then((newGreeting) => (greeting.value = newGreeting))
+    .catch((e: unknown) => console.error(e));
 
   mainLoading.value = false;
 };
 const addZkSyncSepolia = async () => {
   // add zkSync testnet to Metamask
-  await window.ethereum.request({
+  await window.ethereum?.request({
     method: "wallet_addEthereumChain",
     params: [
       {
@@ -249,26 +253,14 @@ const addZkSyncSepolia = async () => {
 };
 const connectMetamask = async () => {
   await window.ethereum
-    .request({ method: "eth_requestAccounts" })
-    .catch((e) => console.log(e));
+    ?.request({ method: "eth_requestAccounts" })
+    .catch((e: unknown) => console.error(e));
 
   loadMainScreen();
 };
 </script>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
 input,
 select {
   padding: 8px 3px;
