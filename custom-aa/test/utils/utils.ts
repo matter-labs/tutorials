@@ -136,7 +136,7 @@ export class Utils {
     const salt = ethers.ZeroHash;
 
     this.salt = salt;
-    // try-catch needs to be used for stack trace extraction during 
+    // try-catch needs to be used for stack trace extraction during
     // negative test execution
     try {
       // deploy account owned by owner1 & owner2
@@ -156,10 +156,7 @@ export class Utils {
       AA_FACTORY_ADDRESS,
       await aaFactory.aaBytecodeHash(),
       salt,
-      abiCoder.encode(
-        ["address", "address"], 
-        [owner1.address, owner2.address]
-      ),
+      abiCoder.encode(["address", "address"], [owner1.address, owner2.address]),
     );
 
     this.multisigAddress = multisigAddress;

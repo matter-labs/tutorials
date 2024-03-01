@@ -10,7 +10,7 @@ dotenv.config();
 const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
 
 // Put the address of your AA factory
-const AA_FACTORY_ADDRESS = "<FACTORY_ADDRESS>"; //sepolia
+const AA_FACTORY_ADDRESS = "<FACTORY_ADDRESS>";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   const provider = new Provider("https://sepolia.era.zksync.dev");
