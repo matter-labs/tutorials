@@ -148,7 +148,12 @@ describe("Custom AA Tests", function () {
           await randomWallet.transfer({
             to: richWallet.address,
             amount: eth.parseUnits("5", 18),
-            overrides: { chainId: 260, type: 113, gasLimit: 1_000_000, customData:{customSignature:'0x'} },
+            overrides: {
+              chainId: 260,
+              type: 113,
+              gasLimit: 1_000_000,
+              customData: { customSignature: "0x" },
+            },
           })
         ).wait();
         expect.fail("Should fail");

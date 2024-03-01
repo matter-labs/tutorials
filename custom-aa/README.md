@@ -27,7 +27,7 @@ Here's a lineup of commands to assist you:
 - `yarn compile`: Compiles the contracts.
 - `yarn deploy:factory`: Deploys your contracts smoothly.
 - `yarn deploy:multisig`: Executes the `deploy-multisig.ts` script.
-- `yarn test`: Runs tests. 
+- `yarn test`: Runs tests.
 
 ### Environment variables 🌳
 

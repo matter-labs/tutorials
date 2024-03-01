@@ -258,9 +258,8 @@ export class Utils {
       customSignature: signature,
     };
 
-    const multiSigNonceBeforeTx = await provider.getTransactionCount(
-      multisigAddress,
-    );
+    const multiSigNonceBeforeTx =
+      await provider.getTransactionCount(multisigAddress);
 
     console.log(
       `The multisig's nonce before the first tx is ${multiSigNonceBeforeTx}`,
@@ -276,9 +275,8 @@ export class Utils {
       return e;
     }
 
-    const multiSigNonceAfterTx = await provider.getTransactionCount(
-      multisigAddress,
-    );
+    const multiSigNonceAfterTx =
+      await provider.getTransactionCount(multisigAddress);
     // Checking that the nonce for the account has increased
     console.log(
       `The multisig's nonce after the first tx is ${multiSigNonceAfterTx}`,

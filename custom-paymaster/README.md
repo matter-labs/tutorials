@@ -29,7 +29,7 @@ Here's a lineup of commands to assist you:
 - `yarn compile`: Compiles the contracts.
 - `yarn deploy-pm`: Deploys your contracts smoothly.
 - `yarn use-pm`: Executes the `use-paymaster.ts` script.
-- `yarn test`: Runs tests. 
+- `yarn test`: Runs tests.
 
 ### Environment variables 🌳
 
