@@ -9,7 +9,7 @@ async function deployContract(
 ): Promise<Contract> {
   const artifact = await deployer.loadArtifact(contract);
   const deploymentFee = await deployer.estimateDeployFee(artifact, params);
-  const parsedFee = ethers.utils.formatEther(deploymentFee.toString());
+  const parsedFee = ethers.formatEther(deploymentFee.toString());
 
   return await deployer.deploy(artifact, params);
 }
@@ -18,7 +18,7 @@ async function fundAccount(wallet: Wallet, address: string, amount: string) {
   await (
     await wallet.sendTransaction({
       to: address,
-      value: ethers.utils.parseEther(amount),
+      value: ethers.parseEther(amount),
     })
   ).wait();
 }

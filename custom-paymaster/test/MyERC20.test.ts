@@ -10,8 +10,10 @@ import { deployContract, fundAccount } from "./utils";
 import dotenv from "dotenv";
 dotenv.config();
 
-const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
-const GAS_LIMIT = 6000000;
+// rich wallet from era-test-node
+const PRIVATE_KEY =
+  process.env.WALLET_PRIVATE_KEY ||
+  "0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110";
 
 describe("MyERC20", function () {
   let provider: Provider;
@@ -21,7 +23,7 @@ describe("MyERC20", function () {
   let erc20: Contract;
 
   before(async function () {
-    provider = new Provider(hre.userConfig.networks?.zkSyncLocalTestnet?.url);
+    provider = new Provider(hre.network.config.url);
     wallet = new Wallet(PRIVATE_KEY, provider);
     deployer = new Deployer(hre, wallet);
 
@@ -32,8 +34,9 @@ describe("MyERC20", function () {
   });
 
   it("should mint tokens to the specified address", async function () {
-    const amount = ethers.BigNumber.from(100);
-    const tx = await erc20.connect(wallet).mint(userWallet.address, amount);
+    const amount = BigInt(100);
+    await erc20.connect(wallet);
+    const tx = await erc20.mint(userWallet.address, amount);
     await tx.wait();
     const balance = await erc20.balanceOf(userWallet.address);
     expect(balance).to.be.eql(amount);
@@ -41,6 +44,6 @@ describe("MyERC20", function () {
 
   it("should have correct decimals", async function () {
     const decimals = await erc20.decimals();
-    expect(decimals).to.be.eql(18);
+    expect(decimals).to.be.eql(18n);
   });
 });
