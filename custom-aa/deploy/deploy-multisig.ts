@@ -2,14 +2,21 @@ import { utils, Wallet, Provider, EIP712Signer, types } from "zksync-ethers";
 import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
+import dotenv from "dotenv";
+
+// Load env file
+dotenv.config();
+
+const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
+
 // Put the address of your AA factory
-const AA_FACTORY_ADDRESS = "<FACTORY-ADDRESS>"; //sepolia
+const AA_FACTORY_ADDRESS = "<FACTORY_ADDRESS>"; //sepolia
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   const provider = new Provider("https://sepolia.era.zksync.dev");
+  // const provider = new Provider('http://127.0.0.1:8011')
   // Private key of the account used to deploy
-  const wallet = new Wallet("<WALLET-PRIVATE-KEY>").connect(provider);
-
+  const wallet = new Wallet(PRIVATE_KEY).connect(provider);
   const factoryArtifact = await hre.artifacts.readArtifact("AAFactory");
 
   const aaFactory = new ethers.Contract(

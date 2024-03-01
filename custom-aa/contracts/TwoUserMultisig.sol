@@ -6,8 +6,6 @@ import "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHe
 
 import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 
-import "hardhat/console.sol";
-
 // Used for signature validation
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
@@ -78,10 +76,8 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         require(totalRequiredBalance <= address(this).balance, "Not enough balance for fee + value");
 
         if (isValidSignature(txHash, _transaction.signature) == EIP1271_SUCCESS_RETURN_VALUE) {
-            console.log('YESSSSS signature is valid');
             magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;
         } else {
-            console.log('NOOOOO signature is not valid');
             magic = bytes4(0);
         }
     }
@@ -131,11 +127,10 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         magic = EIP1271_SUCCESS_RETURN_VALUE;
 
         if (_signature.length != 130) {
-            console.log('Signature is not 130');
             // Signature is invalid anyway, but we need to proceed with the signature verification as usual
             // in order for the fee estimation to work correctly
             _signature = new bytes(130);
-            
+
             // Making sure that the signatures look like a valid ECDSA signature and are not rejected rightaway
             // while skipping the main verification process.
             _signature[64] = bytes1(uint8(27));
@@ -145,17 +140,14 @@ contract TwoUserMultisig is IAccount, IERC1271 {
         (bytes memory signature1, bytes memory signature2) = extractECDSASignature(_signature);
 
         if(!checkValidECDSASignatureFormat(signature1) || !checkValidECDSASignatureFormat(signature2)) {
-            console.log('one of the signature is not valid');
             magic = bytes4(0);
         }
-        console.log('signatures are valid');
 
         address recoveredAddr1 = ECDSA.recover(_hash, signature1);
         address recoveredAddr2 = ECDSA.recover(_hash, signature2);
 
         // Note, that we should abstain from using the require here in order to allow for fee estimation to work
         if(recoveredAddr1 != owner1 || recoveredAddr2 != owner2) {
-            console.log('recoveredAddr1 != owner1 || recoveredAddr2 != owner2');
             magic = bytes4(0);
         }
     }
@@ -197,14 +189,14 @@ contract TwoUserMultisig is IAccount, IERC1271 {
 
         return true;
     }
-    
+
     function extractECDSASignature(bytes memory _fullSignature) internal pure returns (bytes memory signature1, bytes memory signature2) {
         require(_fullSignature.length == 130, "Invalid length");
 
         signature1 = new bytes(65);
         signature2 = new bytes(65);
 
-        // Copying the first signature. Note, that we need an offset of 0x20 
+        // Copying the first signature. Note, that we need an offset of 0x20
         // since it is where the length of the `_fullSignature` is stored
         assembly {
             let r := mload(add(_fullSignature, 0x20))

@@ -50,4 +50,5 @@ Local tests make use of the in-memory-node thanks to the `hardhat-zksync-node` p
 - [zkSync's Documentation](https://era.zksync.io/docs/)
 - [GitHub](https://github.com/matter-labs)
 - [Twitter @zkSync](https://twitter.com/zksync)
+- [Twitter @zkSyncDevs](https://twitter.com/zkSyncDevs)
 - [Join our Discord Community](https://join.zksync.dev)

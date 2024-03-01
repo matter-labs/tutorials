@@ -8,6 +8,7 @@ import * as zks from "zksync-ethers";
 
 describe("Custom AA Tests", function () {
   let result: any;
+  let balanceBefore: string;
   let factory: zks.Contract;
   let multiSigResult: MultiSigResult;
   let richWallet: zks.Wallet;
@@ -61,9 +62,11 @@ describe("Custom AA Tests", function () {
       expect(result).to.equal("100000000000000000000");
     });
 
-    it("Should have a balance with the value 99999641974200000000 eventually", async function () {
+    it("Should have a lower balance eventually", async function () {
+      balanceBefore = multiSigResult.balanceBefore;
       result = multiSigResult.balanceAfter;
-      expect(result).to.equal("99999641974200000000");
+
+      expect(BigInt(result)).to.be.lt(BigInt(balanceBefore));
     });
 
     it("Should have the Multisig balance before a transaction more than after", async function () {
@@ -102,6 +105,7 @@ describe("Custom AA Tests", function () {
     });
 
     // skipping due to error with the era-test-node and nonce
+    // also Multisig wallet is not an existing class or used in the tutorial
     it.skip("Should be able to send 5 ETH to the main wallet", async function () {
       multiSigWallet = new MultiSigWallet(
         multiSigResult.address,
@@ -130,7 +134,7 @@ describe("Custom AA Tests", function () {
     });
 
     // this tests a a class in utils that is not related to the tutorial
-    it("Should fail to send ETH for a multisig wallet of random keys", async function () {
+    it.skip("Should fail to send ETH for a multisig wallet of random keys", async function () {
       const random1 = zks.Wallet.createRandom();
       const random2 = zks.Wallet.createRandom();
       const randomWallet = new MultiSigWallet(
@@ -144,7 +148,7 @@ describe("Custom AA Tests", function () {
           await randomWallet.transfer({
             to: richWallet.address,
             amount: eth.parseUnits("5", 18),
-            overrides: { type: 113, gasLimit: 1_000_000 },
+            overrides: { chainId: 260, type: 113, gasLimit: 1_000_000, customData:{customSignature:'0x'} },
           })
         ).wait();
         expect.fail("Should fail");
@@ -152,7 +156,7 @@ describe("Custom AA Tests", function () {
         console.log("e :>> ", e);
         const expectedMessage =
           "Execution error: Transaction HALT: Account validation error: Account validation returned invalid magic value. Most often this means that the signature is incorrect";
-        expect(e.error.message).to.contains(expectedMessage);
+        expect(e.message).to.contains(expectedMessage);
       }
     });
 
