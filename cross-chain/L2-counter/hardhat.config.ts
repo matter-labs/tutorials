@@ -13,11 +13,11 @@ module.exports = {
     },
     zkSyncTestnet: {
       url: "https://sepolia.era.zksync.dev",
-      ethNetwork: "<Sepolia RPC URL>",
+      ethNetwork: "sepolia",
       zksync: true,
     },
   },
   solidity: {
-    version: "0.8.19",
+    version: "0.8.20",
   },
 };
