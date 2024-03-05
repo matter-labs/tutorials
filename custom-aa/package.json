@@ -16,7 +16,6 @@
     "@matterlabs/hardhat-zksync-node": "^1.0.0",
     "@matterlabs/hardhat-zksync-solc": "^1.0.6",
     "@matterlabs/zksync-contracts": "^0.6.1",
-    "@nomicfoundation/hardhat-chai-matchers": "^2.0.6",
     "@openzeppelin/contracts": "^4.9.5",
     "@types/chai": "^4.3.5",
     "@types/mocha": "^10.0.1",
