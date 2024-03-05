@@ -1,16 +1,26 @@
 import * as ethers from "ethers";
 
-import { Provider, Wallet, utils } from "zksync-ethers";
+import { Provider, Wallet } from "zksync-ethers";
 
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
+
+// load env file
+import dotenv from "dotenv";
+dotenv.config();
+
+// load wallet private key from env file
+const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
+
+if (!PRIVATE_KEY)
+  throw "⛔️ Private key not detected! Add it to the .env file!";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   const provider = new Provider("https://sepolia.era.zksync.dev");
 
   // The wallet that will deploy the token and the paymaster
   // It is assumed that this wallet already has sufficient funds on zkSync
-  const wallet = new Wallet("<PRIVATE-KEY>");
+  const wallet = new Wallet(PRIVATE_KEY);
 
   // The wallet that will receive ERC20 tokens
   const emptyWallet = Wallet.createRandom();
@@ -38,7 +48,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   await (
     await deployer.zkWallet.sendTransaction({
       to: paymaster.address,
-      value: ethers.utils.parseEther("0.06"),
+      value: ethers.utils.parseEther("0.005"),
     })
   ).wait();
 
