@@ -8,9 +8,9 @@
     "hardhat": "^2.19.5"
   },
   "dependencies": {
+    "@matterlabs/hardhat-zksync-deploy": "^1.1.2",
     "@matterlabs/hardhat-zksync-solc": "^1.0.6",
     "@matterlabs/hardhat-zksync-verify": "^1.2.2",
-    "@matterlabs/hardhat-zksync-deploy": "^1.1.2",
     "ethers": "^6.9.2",
     "hardhat": "^2.19.5",
     "ts-node": "^10.9.1",
