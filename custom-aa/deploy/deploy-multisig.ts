@@ -1,16 +1,22 @@
+import { utils, Wallet, Provider, EIP712Signer, types } from "zksync-ethers";
 import * as ethers from "ethers";
-
-import { EIP712Signer, Provider, Wallet, types, utils } from "zksync-ethers";
-
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
+import dotenv from "dotenv";
+
+// Load env file
+dotenv.config();
+
+const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
+
 // Put the address of your AA factory
-const AA_FACTORY_ADDRESS = "<FACTORY-ADDRESS>";
+const AA_FACTORY_ADDRESS = "<FACTORY_ADDRESS>";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
   const provider = new Provider("https://sepolia.era.zksync.dev");
+  // const provider = new Provider('http://127.0.0.1:8011')
   // Private key of the account used to deploy
-  const wallet = new Wallet("<WALLET-PRIVATE-KEY>").connect(provider);
+  const wallet = new Wallet(PRIVATE_KEY).connect(provider);
   const factoryArtifact = await hre.artifacts.readArtifact("AAFactory");
 
   const aaFactory = new ethers.Contract(
@@ -24,7 +30,7 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const owner2 = Wallet.createRandom();
 
   // For the simplicity of the tutorial, we will use zero hash as salt
-  const salt = ethers.constants.HashZero;
+  const salt = ethers.ZeroHash;
 
   // deploy account owned by owner1 & owner2
   const tx = await aaFactory.deployAccount(
@@ -35,7 +41,9 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   await tx.wait();
 
   // Getting the address of the deployed contract account
-  const abiCoder = new ethers.utils.AbiCoder();
+  // Always use the JS utility methods
+  const abiCoder = new ethers.AbiCoder();
+
   const multisigAddress = utils.create2Address(
     AA_FACTORY_ADDRESS,
     await aaFactory.aaBytecodeHash(),
@@ -50,7 +58,8 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     await wallet.sendTransaction({
       to: multisigAddress,
       // You can increase the amount of ETH sent to the multisig
-      value: ethers.utils.parseEther("0.013"),
+      value: ethers.parseEther("0.008"),
+      nonce: await wallet.getNonce(),
     })
   ).wait();
 
@@ -59,14 +68,17 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   console.log(`Multisig account balance is ${multisigBalance.toString()}`);
 
   // Transaction to deploy a new account using the multisig we just deployed
-  let aaTx = await aaFactory.populateTransaction.deployAccount(
+  let aaTx = await aaFactory.deployAccount.populateTransaction(
     salt,
     // These are accounts that will own the newly deployed account
     Wallet.createRandom().address,
     Wallet.createRandom().address,
   );
 
-  const gasLimit = await provider.estimateGas(aaTx);
+  const gasLimit = await provider.estimateGas({
+    ...aaTx,
+    from: wallet.address,
+  });
   const gasPrice = await provider.getGasPrice();
 
   aaTx = {
@@ -81,15 +93,15 @@ export default async function (hre: HardhatRuntimeEnvironment) {
     customData: {
       gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
     } as types.Eip712Meta,
-    value: ethers.BigNumber.from(0),
+    value: 0n,
   };
+
   const signedTxHash = EIP712Signer.getSignedDigest(aaTx);
 
-  const signature = ethers.utils.concat([
-    // Note, that `signMessage` wouldn't work here, since we don't want
-    // the signed hash to be prefixed with `\x19Ethereum Signed Message:\n`
-    ethers.utils.joinSignature(owner1._signingKey().signDigest(signedTxHash)),
-    ethers.utils.joinSignature(owner2._signingKey().signDigest(signedTxHash)),
+  // Sign the transaction with both owners
+  const signature = ethers.concat([
+    ethers.Signature.from(owner1.signingKey.sign(signedTxHash)).serialized,
+    ethers.Signature.from(owner2.signingKey.sign(signedTxHash)).serialized,
   ]);
 
   aaTx.customData = {
@@ -102,7 +114,12 @@ export default async function (hre: HardhatRuntimeEnvironment) {
       multisigAddress,
     )}`,
   );
-  const sentTx = await provider.sendTransaction(utils.serialize(aaTx));
+
+  const sentTx = await provider.broadcastTransaction(
+    types.Transaction.from(aaTx).serialized,
+  );
+  console.log(`Transaction sent from multisig with hash ${sentTx.hash}`);
+
   await sentTx.wait();
 
   // Checking that the nonce for the account has increased

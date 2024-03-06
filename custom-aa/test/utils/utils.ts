@@ -1,9 +1,16 @@
 import * as hre from "hardhat";
 import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
 
-import { EIP712Signer, Provider, types, utils, Wallet } from "zksync-ethers";
+import {
+  EIP712Signer,
+  Contract,
+  Provider,
+  types,
+  utils,
+  Wallet,
+} from "zksync-ethers";
 import { localConfig } from "../../../tests/testConfig";
-import { Contract, ethers } from "ethers";
+import * as ethers from "ethers";
 import { Helper } from "../../../tests/helper";
 
 // Temporary wallet for testing - that is accepting two private keys - and signs the transaction with both.
@@ -35,7 +42,8 @@ export class MultiSigWallet extends Wallet {
       throw new Error("Transaction customData is undefined");
     }
     transaction.customData.customSignature = sig1 + sig2.substring(2);
-    return (0, utils.serialize)(transaction);
+    return types.Transaction.from(transaction).serialized;
+    // return (0, ethers.serialize)(transaction);
   }
 }
 
@@ -44,8 +52,8 @@ export class MultiSigResult {
   address: string;
   balanceBefore: string;
   balanceAfter: string;
-  signedTxHash: ethers.utils.BytesLike;
-  signature: Uint8Array;
+  signedTxHash: ethers.BytesLike;
+  signature: Uint8Array | string;
   nonceBeforeTx: string;
   nonceAfterTx: string;
   owner1: Wallet;
@@ -72,7 +80,9 @@ export class Utils {
     this.txHash = undefined;
   }
 
-  async deployFactory(privateKey: string = localConfig.privateKey) {
+  async deployFactory(
+    privateKey: string = localConfig.privateKey,
+  ): Promise<Contract> {
     // Private key of the account used to deploy
     const provider = new Provider(localConfig.L2Network);
     const wallet = new Wallet(privateKey).connect(provider);
@@ -82,6 +92,7 @@ export class Utils {
 
     // Getting the bytecodeHash of the account
     const bytecodeHash = utils.hashBytecode(aaArtifact.bytecode);
+
     let factory = await deployer.deploy(
       factoryArtifact,
       [bytecodeHash],
@@ -93,9 +104,8 @@ export class Utils {
       ],
     );
 
-    console.log(`AA factory address: ${factory.address}`);
-
-    this.factoryAddress = factory.address;
+    this.factoryAddress = await factory.getAddress();
+    console.log(`AA factory address: ${this.factoryAddress}`);
 
     return factory;
   }
@@ -123,25 +133,25 @@ export class Utils {
     this.owner2 = owner2;
 
     // For the simplicity of the tutorial, we will use zero hash as salt
-    const salt = ethers.constants.HashZero;
+    const salt = ethers.ZeroHash;
 
     this.salt = salt;
-    //try-catch needs to be used for stack trace extraction during negative test execution
+    // try-catch needs to be used for stack trace extraction during
+    // negative test execution
     try {
       // deploy account owned by owner1 & owner2
       const tx = await aaFactory.deployAccount(
         salt,
         owner1.address,
         owner2.address,
-        { gasLimit: 10000000 },
       );
-      await tx.wait(1);
+      await tx.wait();
       this.txHash = tx.hash;
     } catch (e) {
       return e;
     }
     // Getting the address of the deployed contract account
-    const abiCoder = new ethers.utils.AbiCoder();
+    const abiCoder = new ethers.AbiCoder();
     let multisigAddress = utils.create2Address(
       AA_FACTORY_ADDRESS,
       await aaFactory.aaBytecodeHash(),
@@ -166,7 +176,7 @@ export class Utils {
       await wallet.sendTransaction({
         to: multisigAddress,
         // You can increase the amount of ETH sent to the multisig
-        value: ethers.utils.parseEther(fundingMultiSigSum),
+        value: ethers.parseEther(fundingMultiSigSum),
       })
     ).wait();
     const multisigBalanceBefore = await provider.getBalance(multisigAddress);
@@ -181,7 +191,7 @@ export class Utils {
   async performSignedMultiSigTx(
     deployedAccountBalance: number = 0,
   ): Promise<MultiSigResult> {
-    let signedTxHash: ethers.utils.BytesLike;
+    let signedTxHash: ethers.BytesLike;
     const helper = new Helper();
     const provider = new Provider(localConfig.L2Network);
     // Private key of the account used to deploy
@@ -199,14 +209,17 @@ export class Utils {
 
     // Transaction to deploy a new account using the multisig we just deployed
 
-    let aaTx = await aaFactory.populateTransaction.deployAccount(
+    let aaTx = await aaFactory.deployAccount.populateTransaction(
       this.salt,
       // These are accounts that will own the newly deployed account
       Wallet.createRandom().address,
       Wallet.createRandom().address,
     );
 
-    const gasLimit = await provider.estimateGas(aaTx);
+    const gasLimit = await provider.estimateGas({
+      ...aaTx,
+      from: wallet.address,
+    });
     const gasPrice = await provider.getGasPrice();
 
     aaTx = {
@@ -221,26 +234,24 @@ export class Utils {
       customData: {
         gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
       } as types.Eip712Meta,
-      value: ethers.BigNumber.from(deployedAccountBalance),
+      value: BigInt(deployedAccountBalance),
     };
 
-    signedTxHash = await EIP712Signer.getSignedDigest(aaTx);
     //try-catch needs to be used for stack trace extraction during negative test execution
     try {
+      signedTxHash = await EIP712Signer.getSignedDigest(aaTx);
       signedTxHash;
     } catch (e) {
       return e;
     }
 
-    const signature = ethers.utils.concat([
+    const signature = ethers.concat([
       // Note, that `signMessage` wouldn't work here, since we don't want
       // the signed hash to be prefixed with `\x19Ethereum Signed Message:\n`
-      ethers.utils.joinSignature(
-        this.owner1._signingKey().signDigest(signedTxHash),
-      ),
-      ethers.utils.joinSignature(
-        this.owner2._signingKey().signDigest(signedTxHash),
-      ),
+      ethers.Signature.from(this.owner1.signingKey.sign(signedTxHash))
+        .serialized,
+      ethers.Signature.from(this.owner2.signingKey.sign(signedTxHash))
+        .serialized,
     ]);
 
     aaTx.customData = {
@@ -256,7 +267,9 @@ export class Utils {
       `The multisig's nonce before the first tx is ${multiSigNonceBeforeTx}`,
     );
 
-    const sentTx = await provider.sendTransaction(utils.serialize(aaTx));
+    const sentTx = await provider.broadcastTransaction(
+      types.Transaction.from(aaTx).serialized,
+    );
     //try-catch needs to be used for stack trace extraction during negative test execution
     try {
       await sentTx.wait(0);

@@ -10,7 +10,10 @@ import { deployContract, fundAccount } from "./utils";
 import dotenv from "dotenv";
 dotenv.config();
 
-const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
+// rich wallet from era-test-node
+const PRIVATE_KEY =
+  process.env.WALLET_PRIVATE_KEY ||
+  "0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110";
 const GAS_LIMIT = 6000000;
 
 describe("MyPaymaster", function () {
@@ -23,7 +26,7 @@ describe("MyPaymaster", function () {
   let erc20: Contract;
 
   before(async function () {
-    provider = new Provider(hre.userConfig.networks?.zkSyncLocalTestnet?.url);
+    provider = new Provider(hre.network.config.url);
     wallet = new Wallet(PRIVATE_KEY, provider);
     deployer = new Deployer(hre, wallet);
 
@@ -33,16 +36,16 @@ describe("MyPaymaster", function () {
 
     erc20 = await deployContract(deployer, "MyERC20", ["TestToken", "TTK", 18]);
     paymaster = await deployContract(deployer, "MyPaymaster", [
-      erc20.address.toString(),
+      await erc20.getAddress(),
     ]);
 
-    await fundAccount(wallet, paymaster.address, "13");
+    await fundAccount(wallet, await paymaster.getAddress(), "13");
     await (await erc20.mint(userWallet.address, 130)).wait();
   });
 
   async function getToken(wallet: Wallet) {
     const artifact = hre.artifacts.readArtifactSync("MyERC20");
-    return new ethers.Contract(erc20.address, artifact.abi, wallet);
+    return new Contract(await erc20.getAddress(), artifact.abi, wallet);
   }
 
   async function executeTransaction(
@@ -53,28 +56,25 @@ describe("MyPaymaster", function () {
     const erc20Contract = await getToken(user);
     const gasPrice = await provider.getGasPrice();
 
+    erc20Contract.connect(user);
+
     const paymasterParams = utils.getPaymasterParams(
-      paymaster.address.toString(),
+      await paymaster.getAddress(),
       {
         type: payType,
         token: tokenAddress,
-        minimalAllowance: ethers.BigNumber.from(1),
+        minimalAllowance: BigInt(1),
         innerInput: new Uint8Array(),
       },
     );
 
-    await erc20Contract.estimateGas.mint(user.address, 5, {
-      customData: {
-        gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
-        paymasterParams: paymasterParams,
-      },
-    });
-
     await (
       await erc20Contract.mint(userWallet.address, 5, {
-        maxPriorityFeePerGas: ethers.BigNumber.from(0),
+        maxPriorityFeePerGas: BigInt(0),
         maxFeePerGas: gasPrice,
         gasLimit: GAS_LIMIT,
+        from: user.address,
+        type: 113,
         customData: {
           paymasterParams: paymasterParams,
           gasPerPubdata: utils.DEFAULT_GAS_PER_PUBDATA_LIMIT,
@@ -87,7 +87,7 @@ describe("MyPaymaster", function () {
     await executeTransaction(
       userWallet,
       "ApprovalBased",
-      erc20.address.toString(),
+      await erc20.getAddress(),
     );
     const newBalance = await userWallet.getBalance();
     expect(newBalance).to.be.eql(initialBalance);
@@ -95,7 +95,7 @@ describe("MyPaymaster", function () {
 
   it("should revert if unsupported paymaster flow", async function () {
     await expect(
-      executeTransaction(userWallet, "General", erc20.address),
+      executeTransaction(userWallet, "General", await erc20.getAddress()),
     ).to.be.rejectedWith("Unsupported paymaster flow");
   });
 
@@ -109,15 +109,15 @@ describe("MyPaymaster", function () {
   it("should revert if allowance is too low", async function () {
     const erc20Contract = await getToken(userWallet);
     await fundAccount(wallet, userWallet.address, "13");
-    await erc20Contract.approve(paymaster.address, ethers.BigNumber.from(0));
+    await erc20Contract.approve(await paymaster.getAddress(), BigInt(0));
     try {
       await executeTransaction(
         userWallet,
         "ApprovalBased",
-        erc20.address.toString(),
+        await erc20.getAddress().toString(),
       );
     } catch (e) {
-      expect(e.message).to.include("Min allowance too low");
+      expect(e.shortMessage).to.include("Min allowance too low");
     }
   });
 });

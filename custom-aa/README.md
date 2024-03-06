@@ -1,33 +1,52 @@
-# Account abstraction tutorial
+# Account abstraction multisig tutorial 📖
 
-Code for the "Account abstraction" tutorial from the [zkSync v2 documentation](https://v2-docs.zksync.io/dev/).
+This repository is crafted to guide you through the process of building a native multisig account on zkSync Era. Coupled with this, you'll find a practical, easy-to-follow guide to implement and understand every step [here](https://docs.zksync.io/build/tutorials/smart-contract-development/account-abstraction/custom-aa-tutorial.html).
 
-You can find a full step-by-step guide to build this project [in this article](https://v2-docs.zksync.io/dev/tutorials/custom-aa-tutorial.html#prerequisite).
+## Need Assistance? 💡
 
-## Installation and compilation
+If you're stumbling upon any issues or uncertainties:
 
-You need Node.js and Yarn.
+- 📖 Explore the [multisig tutorial](https://docs.zksync.io/build/tutorials/smart-contract-development/account-abstraction/custom-aa-tutorial.html) for a comprehensive walkthrough of the code in this repository.
+- 🗣️ Or simply [reach out on Discord](https://join.zksync.dev/). We're always here to help!
 
-Install all dependencies with `yarn`.
+## Repository Overview 📂
 
-Compile contracts with `yarn hardhat compile`
+Dive into the key sections of this repository:
 
-## Deployment and usage
+- `/contracts`: All the essential smart contracts you need are neatly stored here.
 
-Before deployment make sure you have enough Sepolia ETH in your L2 balance.
+- `/deploy`: Discover deployment and usage scripts tailored to assist your development process.
 
-Replace "<WALLET_PRIVATE_KEY>" with your wallet private key in "deploy-factory.ts" file
+- `/test`: Unit tests for the provided contracts.
 
-To run the scripts to deploy and execute the contracts, use the `zksync-deploy` command:
+## Handy Commands 🛠️
 
-- `yarn hardhat deploy-zksync --script deploy-factory.ts`: deploys the factory contract
+Here's a lineup of commands to assist you:
 
-Replace "<WALLET_PRIVATE_KEY>" with your wallet private key in "deploy-multisig.ts" file
+- `yarn install`: Installs the required dependencies.
+- `yarn compile`: Compiles the contracts.
+- `yarn deploy:factory`: Deploys your contracts smoothly.
+- `yarn deploy:multisig`: Executes the `deploy-multisig.ts` script.
+- `yarn test`: Runs tests.
 
-Replace AA_FACTORY_ADDRESS = "<FACTORY-ADDRESS>" value in "deploy-multisig.ts" file with received "AA factory address: 0x..." value
+### Environment variables 🌳
 
-- `yarn hardhat deploy-zksync --script deploy-multisig.ts`: deploys a multisig wallet and executes a transaction.
+To prevent the leakage of private keys, we use the `dotenv` package to load environment variables. This is particularly used to load the wallet private key, which is required to run the deployment script.
 
-## Support
+To use it, rename `.env.example` to `.env` and input your private key.
 
-Check out the [common errors section in the tutorial](https://v2-docs.zksync.io/dev/tutorials/custom-paymaster-tutorial.html#prerequisite), open an issue, or [contact us on Discord](https://discord.com/invite/px2aR7w).
+```
+WALLET_PRIVATE_KEY=123cde574ccff....
+```
+
+### Local testing 🧪
+
+Local tests make use of the in-memory-node thanks to the `hardhat-zksync-node` plugin. Please refer to [this section of the docs](https://era.zksync.io/docs/tools/testing/) for more details.
+
+## Stay Connected 🌐
+
+- [zkSync's Documentation](https://era.zksync.io/docs/)
+- [GitHub](https://github.com/matter-labs)
+- [Twitter @zkSync](https://twitter.com/zksync)
+- [Twitter @zkSyncDevs](https://twitter.com/zkSyncDevs)
+- [Join our Discord Community](https://join.zksync.dev)
