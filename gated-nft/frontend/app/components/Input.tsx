@@ -71,11 +71,12 @@ export default function Input({
         </div>
         <button
           type="button"
-          className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-gray-300 bg-transparent hover:bg-gray-50 hover:text-black"
           onClick={openModal}
         >
           Change message
         </button>
+
       </div>
       {isOpen && (
         <Modal

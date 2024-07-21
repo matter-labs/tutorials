@@ -2,12 +2,13 @@ import React from "react";
 
 type TextProps = {
   children: React.ReactNode;
+  className?: string; 
 };
 
-const Text = ({ children }: TextProps) => {
+const Text = ({ children, className = "" }: TextProps) => {
   return (
     <div>
-      <p className="text-base text-center max-w-lg">{children}</p>
+      <p className={`text-base text-center max-w-lg ${className}`}>{children}</p>
     </div>
   );
 };
