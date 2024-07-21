@@ -1,4 +1,4 @@
-import { Contract, utils } from "zksync-ethers";
+import { utils } from "zksync-ethers";
 import { PAYMASTER_CONTRACT_ADDRESS } from "../constants/consts";
 import { PaymasterProps } from "../types/types";
 import * as ethers from "ethers";
