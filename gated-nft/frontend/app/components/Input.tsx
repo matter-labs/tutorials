@@ -76,7 +76,6 @@ export default function Input({
         >
           Change message
         </button>
-
       </div>
       {isOpen && (
         <Modal
