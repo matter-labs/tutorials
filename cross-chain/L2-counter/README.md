@@ -1,62 +1,51 @@
-# L2 Counter project
+# zkSync Hardhat project template
 
-This folder contains the hardhat project for the `Counter` L2 smart contract. It also contains scripts that are used to display the value of the counter as well as to call the governance to increment the counter's value from L1.
+This project was scaffolded with [zksync-cli](https://github.com/matter-labs/zksync-cli).
 
-## Structure
+## Project Layout
 
-- `contracts/Counter.sol` contains the code of the counter smart contract.
-- `deploy/counter.ts` contains the script for deploying the counter smart contract on L2.
-- `scripts/counter.json` contains the ABI of the counter smart contract.
-- `scripts/governance.json` contains the ABI of the L1 governance smart contract.
-- `scripts/display-counter.ts` contains the code for displaying the counter's value.
-- `scripts/increment-counter.ts` contains the code for incrementing the counter
+- `/contracts`: Contains solidity smart contracts.
+- `/deploy`: Scripts for contract deployment and interaction.
+- `/test`: Test files.
+- `hardhat.config.ts`: Configuration settings.
 
-## Usage
+## How to Use
 
-Before using any scripts, you should install the dependencies by running the following command:
+- `npm run compile`: Compiles contracts.
+- `npm run deploy`: Deploys using script `/deploy/deploy.ts`.
+- `npm run interact`: Interacts with the deployed contract using `/deploy/interact.ts`.
+- `npm run test`: Tests the contracts.
 
-```
-yarn
-```
+Note: Both `npm run deploy` and `npm run interact` are set in the `package.json`. You can also run your files directly, for example: `npx hardhat deploy-zksync --script deploy.ts`
 
-### Building and deploying a counter smart contract
+### Environment Settings
 
-1. Make sure to deploy the L1 governance smart contract first. The instructions for that can be found in the [deploy-governance](../deploy-governance) folder.
+To keep private keys safe, this project pulls in environment variables from `.env` files. Primarily, it fetches the wallet's private key.
 
-2. Open `deploy/counter.ts`.
-
-3. Replace the `<WALLET-PRIVATE-KEY>` and the `<GOVERNANCE-ADDRESS>` with the `0x`-prefixed private key of the Ethereum wallet with some ETH balance on Sepolia and the address of the L1 governance contract respectively
-
-4. Run the script using the following command:
+Rename `.env.example` to `.env` and fill in your private key:
 
 ```
-yarn hardhat deploy-zksync
+WALLET_PRIVATE_KEY=your_private_key_here...
 ```
 
-The script will output the address of the deployed counter contract.
+### Network Support
 
-### Displaying counter value
+`hardhat.config.ts` comes with a list of networks to deploy and test contracts. Add more by adjusting the `networks` section in the `hardhat.config.ts`. To make a network the default, set the `defaultNetwork` to its name. You can also override the default using the `--network` option, like: `hardhat test --network dockerizedNode`.
 
-1. Open `scripts/display-value.ts`.
+### Local Tests
 
-2. Replace `<COUNTER-ADDRESS>` with the address of the deployed counter contract.
+Running `npm run test` by default runs the [zkSync In-memory Node](https://era.zksync.io/docs/tools/testing/era-test-node.html) provided by the [@matterlabs/hardhat-zksync-node](https://era.zksync.io/docs/tools/hardhat/hardhat-zksync-node.html) tool.
 
-3. Run the script using the following command
+Important: zkSync In-memory Node currently supports only the L2 node. If contracts also need L1, use another testing environment like Dockerized Node. Refer to [test documentation](https://era.zksync.io/docs/tools/testing/) for details.
 
-```
-yarn ts-node ./scripts/display-value.ts
-```
+## Useful Links
 
-### Incrementing counter
+- [Docs](https://era.zksync.io/docs/dev/)
+- [Official Site](https://zksync.io/)
+- [GitHub](https://github.com/matter-labs)
+- [Twitter](https://twitter.com/zksync)
+- [Discord](https://join.zksync.dev/)
 
-1. Open `scripts/increment-counter.ts`.
+## License
 
-2. Replace `WALLET-PRIVATE-KEY`, `<GOVERNANCE-ADDRESS>`, and `COUNTER-ADDRESS` with the `0x`-prefixed private key of the Ethereum wallet that deployed the governance contract, the address of the L1 governance contract, and the address of the counter contract respectively.
-
-3. Run the script using the following command:
-
-```
-yarn ts-node ./scripts/increment-counter.ts
-```
-
-If successful, it will show the hash of the L2 transaction which corresponds to the `Execute` call on L2 that updated the value.
+This project is under the [MIT](./LICENSE) license.

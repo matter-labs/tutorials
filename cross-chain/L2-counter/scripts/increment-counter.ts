@@ -5,9 +5,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const GOVERNANCE_ABI = require("./governance.json");
-const GOVERNANCE_ADDRESS = "<GOVERNANCE-ADDRESS>";
+const GOVERNANCE_ADDRESS = "GOVERNANCE_CONTRACT_ADDRESS";
 const COUNTER_ABI = require("./counter.json");
-const COUNTER_ADDRESS = "<COUNTER-ADDRESS>";
+const COUNTER_ADDRESS = "COUNTER_CONTRACT_ADDRESS";
 
 const PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY || "";
 if (!PRIVATE_KEY)
@@ -16,7 +16,7 @@ if (!PRIVATE_KEY)
 
 async function main() {
   // Enter your Ethereum L1 provider RPC URL.
-  const l1Provider = new Provider("<L1-RPC-URL>");
+  const l1Provider = new Provider("RPC_NODE_URL");
   // Set up the Governor wallet to be the same as the one that deployed the governance contract.
   const wallet = new Wallet(PRIVATE_KEY, l1Provider);
   // Set a constant that accesses the Layer 1 contract.
