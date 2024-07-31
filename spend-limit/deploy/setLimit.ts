@@ -1,4 +1,11 @@
-import { utils, Wallet, Provider, Contract, EIP712Signer, types } from "zksync-ethers";
+import {
+  utils,
+  Wallet,
+  Provider,
+  Contract,
+  EIP712Signer,
+  types,
+} from "zksync-ethers";
 import * as ethers from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
@@ -7,8 +14,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // load the values into .env file after deploying the FactoryAccount
-const DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY = process.env.DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY || "";
-const ETH_ADDRESS = process.env.ETH_ADDRESS || "0x000000000000000000000000000000000000800A";
+const DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY =
+  process.env.DEPLOYED_ACCOUNT_OWNER_PRIVATE_KEY || "";
+const ETH_ADDRESS =
+  process.env.ETH_ADDRESS || "0x000000000000000000000000000000000000800A";
 const ACCOUNT_ADDRESS = process.env.DEPLOYED_ACCOUNT_ADDRESS || "";
 
 export default async function (hre: HardhatRuntimeEnvironment) {
@@ -20,7 +29,10 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   const accountArtifact = await hre.artifacts.readArtifact("Account");
   const account = new Contract(ACCOUNT_ADDRESS, accountArtifact.abi, owner);
 
-  let setLimitTx = await account.setSpendingLimit.populateTransaction(ETH_ADDRESS, ethers.parseEther("0.0005"));
+  let setLimitTx = await account.setSpendingLimit.populateTransaction(
+    ETH_ADDRESS,
+    ethers.parseEther("0.0005"),
+  );
 
   setLimitTx = {
     ...setLimitTx,
@@ -39,7 +51,9 @@ export default async function (hre: HardhatRuntimeEnvironment) {
 
   const signedTxHash = EIP712Signer.getSignedDigest(setLimitTx);
 
-  const signature = ethers.concat([ethers.Signature.from(owner.signingKey.sign(signedTxHash)).serialized]);
+  const signature = ethers.concat([
+    ethers.Signature.from(owner.signingKey.sign(signedTxHash)).serialized,
+  ]);
 
   setLimitTx.customData = {
     ...setLimitTx.customData,
@@ -47,7 +61,9 @@ export default async function (hre: HardhatRuntimeEnvironment) {
   };
 
   console.log("Setting limit for account...");
-  const sentTx = await provider.broadcastTransaction(types.Transaction.from(setLimitTx).serialized);
+  const sentTx = await provider.broadcastTransaction(
+    types.Transaction.from(setLimitTx).serialized,
+  );
 
   await sentTx.wait();
 

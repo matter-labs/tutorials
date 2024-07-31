@@ -20,7 +20,14 @@ contract Governance {
         require(msg.sender == governor, "Only governor is allowed");
 
         IZkSync zksync = IZkSync(zkSyncAddress);
-        zksync.requestL2Transaction{value: msg.value}(contractAddr, 0, 
-            data, gasLimit, gasPerPubdataByteLimit, new bytes[](0), msg.sender);
+        zksync.requestL2Transaction{value: msg.value}(
+            contractAddr,
+            0,
+            data,
+            gasLimit,
+            gasPerPubdataByteLimit,
+            new bytes[](0),
+            msg.sender
+        );
     }
 }

@@ -1,30 +1,13 @@
-# L1 Governance example
+# Sample Hardhat Project
 
-This folder as an example of an L1 contract project that interacts with the zkSync bridge contract.
+This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
 
-## Structure
+Try running some of the following tasks:
 
-- `contracts/Governance.sol` contains the code of a simple L1 governance contract that can send execution requests to zkSync.
-- `scripts/deploy.ts` contains the script that deploys the Governance smart contract.
-
-## Usage
-
-1. Open `sepolia.json` and fill in the following values there:
-
-- `nodeUrl` should be equal to your Sepolia Ethereum node provider URL.
-- `deployerPrivateKey` should be equal to the private key of the wallet that will deploy the governance smart contract. It needs to have some ETH on Sepolia.
-
-2. To deploy the governance smart contract run the following commands:
-
+```shell
+npx hardhat help
+npx hardhat test
+REPORT_GAS=true npx hardhat test
+npx hardhat node
+npx hardhat ignition deploy ./ignition/modules/Lock.ts
 ```
-# Installing dependencies
-yarn
-
-# Building the governance smart contract
-yarn build
-
-# Deploying the governance smart contract
-yarn deploy-governance
-```
-
-The last command will output the deployed governance smart contract address.
