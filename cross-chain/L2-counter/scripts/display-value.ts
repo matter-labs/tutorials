@@ -1,11 +1,11 @@
 import { Contract, Provider } from "zksync-ethers";
 
-const COUNTER_ADDRESS = "<COUNTER-ADDRESS>";
+const COUNTER_ADDRESS = "COUNTER_CONTRACT_ADDRESS";
 const COUNTER_ABI = require("./counter.json");
 
 async function main() {
   // Initialize the provider
-  const l2Provider = new Provider("https://sepolia.era.zksync.dev");
+  const l2Provider = new Provider("RPC_NODE_URL");
 
   const counterContract = new Contract(
     COUNTER_ADDRESS,

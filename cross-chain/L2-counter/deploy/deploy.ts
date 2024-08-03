@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // Insert the address of the governance contract
-const GOVERNANCE_ADDRESS = "<GOVERNANCE-ADDRESS>";
+const GOVERNANCE_ADDRESS = "0xA7d27A1202bE1237919Cf2cb60970141100725b4";
 
 // An example of a deploy script that will deploy and call a simple contract.
 export default async function (hre: HardhatRuntimeEnvironment) {

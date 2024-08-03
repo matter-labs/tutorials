@@ -1,18 +1,15 @@
-import "@nomicfoundation/hardhat-ethers";
 import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
 
-// import file with Sepolia params
-const sepolia = require("./sepolia.json");
+import dotenv from "dotenv";
+dotenv.config();
 
 const config: HardhatUserConfig = {
-  solidity: {
-    version: "0.8.20",
-  },
+  solidity: "0.8.24",
   networks: {
-    // Sepolia network
     sepolia: {
-      url: sepolia.nodeUrl,
-      accounts: [sepolia.deployerPrivateKey],
+      url: process.env.NODE_RPC_URL,
+      accounts: [process.env.PRIVATE_KEY as any],
     },
   },
 };
