@@ -126,7 +126,7 @@ export default function Checkout({
           <div className="mx-auto max-w-lg mt-12">
             {hasNFT ? (
               <div className="flex flex-col items-center">
-                <Text>
+                <Text className="text-black">
                   Congratulations! You own an Infinity Stone NFT. Enjoy gas-free
                   transactions, courtesy of Stark Industries Paymaster.
                 </Text>
@@ -137,7 +137,7 @@ export default function Checkout({
                 />
               </div>
             ) : (
-              <Text>
+              <Text className="text-black">
                 Unfortunately, you don't own an Infinity Stone NFT. A small gas
                 fee will be charged to update the greeting.
               </Text>
@@ -151,7 +151,7 @@ export default function Checkout({
                 height={250}
               />
             </div>
-            <Text>
+            <Text className="text-black">
               If you want to learn more about Paymasters on zkSync Era, check
               out our docs for more information{" "}
               <a
